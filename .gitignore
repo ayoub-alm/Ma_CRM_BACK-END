@@ -40,7 +40,7 @@ logs/
 *.temp
 
 # Compiled class files
-target/
+./target/
 bin/
 out/
 
@@ -55,10 +55,6 @@ out/
 
 # IDEs and editors
 .idea/
-*.iml
-*.ipr
-*.iws
-.vscode/
 *.swp
 *.swo
 *.bak
@@ -80,7 +76,7 @@ application.properties
 application-*.properties
 
 # Cache
-*.class
+./*.class
 *.cache
 *.project
 *.classpath
@@ -118,12 +114,12 @@ yarn-error.log
 *.intellij/
 *.intellij10/
 *.workspace/
-*.iws
+./*.iws
 
 # Eclipse specific files
-.project
-.classpath
-.settings/
+./project
+./classpath
+./settings/
 
 # JetBrains Rider
 *.sln
@@ -131,7 +127,9 @@ yarn-error.log
 *.run/
 
 # Generated files
-!.mvn/wrapper/maven-wrapper.jar
+./!.mvn/wrapper/maven-wrapper.jar
 
 # Out folder
-out/
+./out/
+.mvn
+/target/

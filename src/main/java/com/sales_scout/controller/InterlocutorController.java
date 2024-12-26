@@ -2,7 +2,7 @@ package com.sales_scout.controller;
 
 import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
-import com.sales_scout.dto.respense.InterlocutorResponseDto;
+import com.sales_scout.dto.response.InterlocutorResponseDto;
 import com.sales_scout.entity.Interlocutor;
 import com.sales_scout.service.InterlocutorService;
 import org.springframework.http.HttpStatus;

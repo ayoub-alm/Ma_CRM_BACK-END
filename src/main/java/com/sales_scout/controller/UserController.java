@@ -1,7 +1,7 @@
 package com.sales_scout.controller;
 
 
-import com.sales_scout.dto.respense.UserResponseDto;
+import com.sales_scout.dto.response.UserResponseDto;
 import com.sales_scout.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

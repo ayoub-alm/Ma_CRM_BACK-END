@@ -2,8 +2,8 @@ package com.sales_scout.service;
 
 import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
-import com.sales_scout.dto.respense.InterlocutorResponseDto;
-import com.sales_scout.dto.respense.ProspectResponseDto;
+import com.sales_scout.dto.response.InterlocutorResponseDto;
+import com.sales_scout.dto.response.ProspectResponseDto;
 import com.sales_scout.entity.Interlocutor;
 import com.sales_scout.entity.Prospect;
 import com.sales_scout.entity.data.Department;

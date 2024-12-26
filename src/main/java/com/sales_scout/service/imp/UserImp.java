@@ -2,7 +2,7 @@ package com.sales_scout.service.imp;
 
 import com.sales_scout.config.AuthConfig;
 import com.sales_scout.dto.request.UserRequestDto;
-import com.sales_scout.dto.respense.UserResponseDto;
+import com.sales_scout.dto.response.UserResponseDto;
 import com.sales_scout.entity.UserEntity;
 import com.sales_scout.exception.UserAlreadyExistsException;
 import com.sales_scout.repository.UserRepository;

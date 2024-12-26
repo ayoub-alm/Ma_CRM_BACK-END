@@ -1,3 +1,4 @@
+
 INSERT INTO `banks`(`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `active`, `name`)
 VALUES
     ('id-1', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Banque Populaire (BP)'),

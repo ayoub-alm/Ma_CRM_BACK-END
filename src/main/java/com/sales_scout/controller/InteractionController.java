@@ -2,7 +2,7 @@ package com.sales_scout.controller;
 
 
 import com.sales_scout.dto.request.create.InteractionRequestDto;
-import com.sales_scout.dto.respense.InteractionResponseDto;
+import com.sales_scout.dto.response.InteractionResponseDto;
 import com.sales_scout.service.InteractionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

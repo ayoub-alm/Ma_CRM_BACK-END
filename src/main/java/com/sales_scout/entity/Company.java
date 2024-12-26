@@ -95,6 +95,10 @@ public class Company extends BaseEntity {
     @JoinColumn(name = "job_title_id", nullable = false)
     private JobTitle reprosentaveJobTitle;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "workspace_id", nullable = true)
+    private Workspace workspace;
+
     @JsonIgnore
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<CompanyBankAccount> companyBankAccounts;
@@ -117,7 +121,16 @@ public class Company extends BaseEntity {
     private List<Project> projects;
 
     @JsonIgnore
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Prospect> prospects;
+
+    @JsonIgnore
     @ManyToMany(mappedBy = "companies")
     private Set<UserEntity> employees;
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CompanyDepartment>  companyDepartments;
+
+
 
 }

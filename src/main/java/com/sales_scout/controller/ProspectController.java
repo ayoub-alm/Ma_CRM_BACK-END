@@ -1,7 +1,7 @@
 package com.sales_scout.controller;
 
 import com.sales_scout.dto.request.ProspectRequestDto;
-import com.sales_scout.dto.respense.ProspectResponseDto;
+import com.sales_scout.dto.response.ProspectResponseDto;
 import com.sales_scout.entity.Prospect;
 import com.sales_scout.enums.ProspectStatus;
 import com.sales_scout.service.ProspectService;

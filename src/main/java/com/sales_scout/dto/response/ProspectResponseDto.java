@@ -1,4 +1,4 @@
-package com.sales_scout.dto.respense;
+package com.sales_scout.dto.response;
 
 import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;

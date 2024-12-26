@@ -1,8 +1,8 @@
 package com.sales_scout.mapper;
 
-import com.sales_scout.dto.respense.ProspectResponseDto;
-import com.sales_scout.dto.respense.TrackingLogForProspect;
-import com.sales_scout.dto.respense.UserResponseDto;
+import com.sales_scout.dto.response.ProspectResponseDto;
+import com.sales_scout.dto.response.TrackingLogForProspect;
+import com.sales_scout.dto.response.UserResponseDto;
 import com.sales_scout.entity.Prospect;
 
 import java.util.List;

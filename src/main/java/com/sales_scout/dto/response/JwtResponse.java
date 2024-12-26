@@ -1,4 +1,4 @@
-package com.sales_scout.dto.respense;
+package com.sales_scout.dto.response;
 
 import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;

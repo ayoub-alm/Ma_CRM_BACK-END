@@ -5,10 +5,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 
-
+@Setter
+@Getter
 @MappedSuperclass
 public abstract class BaseEntity {
 
@@ -24,48 +28,28 @@ public abstract class BaseEntity {
     @Column(name = "created_by")
     private String createdBy;
 
+    @Column(name = "last_updated_by")
+    private String updatedBy;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        createdBy = getCurrentUser();
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+        updatedBy = getCurrentUser();
     }
 
-    // Getters and setters
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    private String getCurrentUser() {
+        // Replace with your user-fetching logic
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 }

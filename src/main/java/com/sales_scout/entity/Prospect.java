@@ -83,8 +83,12 @@ public class Prospect extends BaseEntity{
     @JoinColumn(name = "company_size_id", nullable = true)
     private CompanySize companySize;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = true)
+    private Company company;
+
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "indusrty_id", nullable = true)
+    @JoinColumn(name = "industry_id", nullable = true)
     private Industry industry;
 
     @ManyToOne
@@ -113,5 +117,8 @@ public class Prospect extends BaseEntity{
     @OneToMany(mappedBy = "prospect", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<TrackingLog> trackingLogs =  new ArrayList<>();
+
+    @ManyToMany(mappedBy = "prospects", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProspectInterest> interests; // Plusieurs intérêts liés à ce prospect
 
 }

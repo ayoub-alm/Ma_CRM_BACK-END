@@ -2,7 +2,7 @@ package com.sales_scout.service;
 
 
 import com.sales_scout.dto.request.UserRequestDto;
-import com.sales_scout.dto.respense.UserResponseDto;
+import com.sales_scout.dto.response.UserResponseDto;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;

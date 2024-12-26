@@ -1,7 +1,8 @@
 package com.sales_scout.service;
 
 import com.sales_scout.dto.request.ProspectRequestDto;
-import com.sales_scout.dto.respense.ProspectResponseDto;
+import com.sales_scout.dto.response.ProspectResponseDto;
+import com.sales_scout.entity.Company;
 import com.sales_scout.entity.Prospect;
 import com.sales_scout.entity.TrackingLog;
 import com.sales_scout.entity.UserEntity;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProspectService {
     private final ProspectRepository prospectRepository;
+
     private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
     @Autowired
     private LegalStatusRepository legalStatusRepository;
@@ -78,7 +80,9 @@ public class ProspectService {
      * @return { List<Prospect> }
      */
     public List<ProspectResponseDto> getAllProspects() {
-        return this.prospectRepository.findAllByDeletedAtIsNull()
+        UserEntity CurrentUser = this.authenticationService.getCurrentUser();
+        List<Long> companiesIds =  CurrentUser.getCompanies().stream().map(Company::getId).toList();
+        return this.prospectRepository.findAllByDeletedAtIsNullAndCompanyIdIn(companiesIds)
                 .stream()
                 .map(ProspectResponseDtoBuilder::fromEntity) // Explicitly return the mapped object
                 .collect(Collectors.toList());

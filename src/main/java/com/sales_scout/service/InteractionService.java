@@ -1,7 +1,7 @@
 package com.sales_scout.service;
 
 import com.sales_scout.dto.request.create.InteractionRequestDto;
-import com.sales_scout.dto.respense.InteractionResponseDto;
+import com.sales_scout.dto.response.InteractionResponseDto;
 import com.sales_scout.entity.Interaction;
 import com.sales_scout.entity.Interlocutor;
 import com.sales_scout.entity.Prospect;
@@ -21,13 +21,15 @@ public class InteractionService {
     private final ProspectRepository prospectRepository;
     private final InterlocutorRepository interlocutorRepository;
     private final UserRepository userRepository;
+    private final AuthenticationService authenticationService;
     public InteractionService(InteractionRepository interactionRepository,
                               ProspectRepository prospectRepository,
-                              InterlocutorRepository interlocutorRepository, UserRepository userRepository) {
+                              InterlocutorRepository interlocutorRepository, UserRepository userRepository, AuthenticationService authenticationService) {
         this.interactionRepository = interactionRepository;
         this.prospectRepository = prospectRepository;
         this.interlocutorRepository = interlocutorRepository;
         this.userRepository = userRepository;
+        this.authenticationService = authenticationService;
     }
 
     /**
@@ -83,8 +85,7 @@ public class InteractionService {
             interlocutor = interlocutorRepository.findById(interactionRequestDto.getInterlocutorId())
                     .orElseThrow(() -> new IllegalArgumentException("Interlocutor not found for ID: " + interactionRequestDto.getInterlocutorId()));
         }
-        UserEntity user = new UserEntity();
-        user.setId(2);
+        UserEntity user = this.authenticationService.getCurrentUser();
 
 
         UserEntity affectedTo = null;

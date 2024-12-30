@@ -35,16 +35,16 @@ public class CommentController {
     /**
      * Get all comments for a module.
      *
-     * @param moduleType        the module type
-     * @param moduleReferenceId the ID of the associated module entity
+     * @param entity        the module type
+     * @param entityId the ID of the associated module entity
      * @return a list of comments
      */
     @GetMapping("")
     public ResponseEntity<List<CommentResponseDto>> getCommentsByModule(
-            @RequestParam String moduleType,
-            @RequestParam Long moduleReferenceId) {
+            @RequestParam String entity,
+            @RequestParam Long entityId) {
 
-        List<CommentResponseDto> comments = commentService.getCommentsByModule(moduleType, moduleReferenceId);
+        List<CommentResponseDto> comments = commentService.getCommentsByModule(entity, entityId);
         return ResponseEntity.ok(comments);
     }
 

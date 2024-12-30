@@ -3,7 +3,7 @@ package com.sales_scout.mapper;
 import com.sales_scout.dto.response.ProspectResponseDto;
 import com.sales_scout.dto.response.TrackingLogForProspect;
 import com.sales_scout.dto.response.UserResponseDto;
-import com.sales_scout.entity.Prospect;
+import com.sales_scout.entity.leads.Prospect;
 
 import java.util.List;
 

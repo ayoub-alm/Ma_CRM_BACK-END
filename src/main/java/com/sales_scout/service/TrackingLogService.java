@@ -1,7 +1,7 @@
 package com.sales_scout.service;
 
-import com.sales_scout.entity.TrackingLog;
-import com.sales_scout.repository.TrackingLogRepository;
+import com.sales_scout.entity.leads.TrackingLog;
+import com.sales_scout.repository.leads.TrackingLogRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

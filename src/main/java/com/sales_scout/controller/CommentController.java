@@ -1,6 +1,7 @@
 package com.sales_scout.controller;
 
 import com.sales_scout.dto.request.CommentRequestDto;
+import com.sales_scout.dto.response.CommentResponseDto;
 import com.sales_scout.entity.Comment;
 import com.sales_scout.service.CommentService;
 import org.springframework.http.HttpStatus;
@@ -38,12 +39,12 @@ public class CommentController {
      * @param moduleReferenceId the ID of the associated module entity
      * @return a list of comments
      */
-    @GetMapping
-    public ResponseEntity<List<Comment>> getCommentsByModule(
+    @GetMapping("")
+    public ResponseEntity<List<CommentResponseDto>> getCommentsByModule(
             @RequestParam String moduleType,
             @RequestParam Long moduleReferenceId) {
 
-        List<Comment> comments = commentService.getCommentsByModule(moduleType, moduleReferenceId);
+        List<CommentResponseDto> comments = commentService.getCommentsByModule(moduleType, moduleReferenceId);
         return ResponseEntity.ok(comments);
     }
 

@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum EntityEnum {
     PROSPECT("PROSPECT"),
     INTERACTION("INTERACTION"),
-    INTERLOCUTOR("INTERLOCUTOR");
+    INTERLOCUTOR("INTERLOCUTOR"),
+    INCLASSED("IN CLASSED");
 
     private final String value;
 

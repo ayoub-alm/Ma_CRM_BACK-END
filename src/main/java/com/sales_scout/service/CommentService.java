@@ -1,8 +1,10 @@
 package com.sales_scout.service;
 
 import com.sales_scout.dto.request.CommentRequestDto;
+import com.sales_scout.dto.response.CommentResponseDto;
 import com.sales_scout.entity.Comment;
 import com.sales_scout.entity.UserEntity;
+import com.sales_scout.enums.EntityEnum;
 import com.sales_scout.repository.CommentRepository;
 import com.sales_scout.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Service
 public class CommentService {
@@ -36,7 +40,7 @@ public class CommentService {
         Comment comment = Comment.builder()
                 .commentTxt(commentRequestDto.getCommentTxt())
                 .user(user)
-                .entity(commentRequestDto.getEntity().toString())
+                .entity(commentRequestDto.getEntity())
                 .entityId(commentRequestDto.getEntityId())
                 .build();
 
@@ -50,9 +54,25 @@ public class CommentService {
      * @param moduleReferenceId the ID of the associated module entity
      * @return a list of comments
      */
-    public List<Comment> getCommentsByModule(String moduleType, Long moduleReferenceId) {
-        System.out.println("*************************************test");
-        return commentRepository.findByEntityAndEntityIdAndDeletedAtIsNull(moduleType, moduleReferenceId);
+    public List<CommentResponseDto> getCommentsByModule(String moduleType, Long moduleReferenceId) {
+        EntityEnum entityEnum;
+        try {
+            entityEnum = EntityEnum.valueOf(moduleType); // Convert String to Enum
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid module type: " + moduleType);
+        }
+
+        List<Comment> comments = commentRepository.findByEntityAndEntityIdAndDeletedAtIsNull(entityEnum, moduleReferenceId);
+        return comments.stream()
+                .map(comment -> CommentResponseDto.builder()
+                        .id(comment.getId())
+                        .commentTxt(comment.getCommentTxt())
+                        .userId(comment.getUser().getId())
+                        .userName(comment.getUser().getName())
+                        .entity(comment.getEntity())
+                        .entityId(comment.getEntityId())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     /**

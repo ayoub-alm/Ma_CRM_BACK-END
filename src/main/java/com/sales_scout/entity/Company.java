@@ -2,6 +2,7 @@ package com.sales_scout.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sales_scout.entity.data.*;
+import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import jakarta.persistence.*;
 import lombok.*;

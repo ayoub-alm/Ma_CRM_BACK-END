@@ -1,6 +1,6 @@
 package com.sales_scout.controller;
 
-import com.sales_scout.entity.TrackingLog;
+import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.service.TrackingLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

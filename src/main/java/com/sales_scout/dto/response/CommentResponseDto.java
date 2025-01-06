@@ -3,6 +3,8 @@ package com.sales_scout.dto.response;
 import com.sales_scout.enums.EntityEnum;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,4 +17,5 @@ public class CommentResponseDto {
     private String userName; // Optional: User's name for display purposes.
     private EntityEnum entity; // The module name (e.g., "Invoice", "Customer").
     private Long entityId; // The ID of the associated entity.
+    private LocalDateTime createdAt;
 }

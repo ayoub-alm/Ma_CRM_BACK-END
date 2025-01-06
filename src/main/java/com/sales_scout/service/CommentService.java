@@ -71,6 +71,7 @@ public class CommentService {
                         .userName(comment.getUser().getName())
                         .entity(comment.getEntity())
                         .entityId(comment.getEntityId())
+                        .createdAt(comment.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
     }

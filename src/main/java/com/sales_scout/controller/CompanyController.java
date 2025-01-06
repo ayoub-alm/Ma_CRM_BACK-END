@@ -1,6 +1,7 @@
 package com.sales_scout.controller;
 
 import com.sales_scout.dto.request.create.CreateCompanyDTO;
+import com.sales_scout.dto.response.CompanyResponseDto;
 import com.sales_scout.entity.Company;
 import com.sales_scout.service.CompanyService;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -23,8 +25,8 @@ public class CompanyController {
      * Get all companies that are not soft deleted
      */
     @GetMapping
-    public ResponseEntity<List<Company>> getAllCompanies() {
-        List<Company> companies = companyService.findAllCompanies();
+    public ResponseEntity<List<CompanyResponseDto>> getAllCompanies() {
+        List<CompanyResponseDto> companies = companyService.findAllCompanies();
         return ResponseEntity.ok(companies);
     }
 
@@ -32,10 +34,9 @@ public class CompanyController {
      * Get a company by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Company> getCompanyById(@PathVariable Long id) {
-        return companyService.findCompanyById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<CompanyResponseDto> getCompanyById(@PathVariable Long id) {
+        CompanyResponseDto company = companyService.findCompanyById(id);
+        return ResponseEntity.ok(company);
     }
 
 
@@ -52,8 +53,8 @@ public class CompanyController {
      * Update a company
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Company> updateCompany(@PathVariable Long id, @RequestBody Company companyDetails) {
-        Company updatedCompany = companyService.updateCompany(id, companyDetails);
+    public ResponseEntity<CompanyResponseDto> updateCompany(@PathVariable Long id, @RequestBody CreateCompanyDTO companyDetails) {
+        CompanyResponseDto updatedCompany = companyService.updateCompany(id, companyDetails);
         return ResponseEntity.ok(updatedCompany);
     }
 
@@ -61,9 +62,9 @@ public class CompanyController {
      * Get all companies including soft deleted ones
      */
     @GetMapping("/all")
-    public ResponseEntity<List<Company>> getAllCompaniesIncludingDeleted() {
-        List<Company> companies = companyService.findAllCompaniesIncludingDeleted();
-        return ResponseEntity.ok(companies);
+    public ResponseEntity<List<CompanyResponseDto>> getAllCompaniesIncludingDeleted() {
+        List<CompanyResponseDto> companyResponseDtos = companyService.findAllCompaniesIncludingDeleted();
+        return ResponseEntity.ok(companyResponseDtos);
     }
 
     /**
@@ -79,8 +80,8 @@ public class CompanyController {
      * Add a new company
      */
     @PostMapping
-    public ResponseEntity<Company> addCompany(@RequestBody CreateCompanyDTO company) {
-        Company newCompany = companyService.addCompany(company);
+    public ResponseEntity<CompanyResponseDto> addCompany(@RequestBody CreateCompanyDTO company) {
+        CompanyResponseDto newCompany = companyService.addCompany(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCompany);
     }
 }

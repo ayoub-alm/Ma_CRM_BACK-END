@@ -1,8 +1,10 @@
 package com.sales_scout.service;
 
 import com.sales_scout.dto.request.create.CreateCompanyDTO;
+import com.sales_scout.dto.response.CompanyResponseDto;
 import com.sales_scout.entity.Company;
 import com.sales_scout.enums.ActiveInactiveEnum;
+import com.sales_scout.mapper.CompanyDtoBuilder;
 import com.sales_scout.repository.CompanyRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CompanyService {
@@ -24,14 +27,19 @@ public class CompanyService {
 
     public CompanyService(CompanyRepository companyRepository) {
         this.companyRepository = companyRepository;
+
     }
 
     /**
      * This function allows to get companies that are not soft deleted
      * @return {List<Company>} the list of companies
      */
-    public List<Company> findAllCompanies() {
-        return companyRepository.findAllByDeletedAtIsNull();
+    public List<CompanyResponseDto> findAllCompanies() {
+
+        return companyRepository.findAllByDeletedAtIsNull()
+                .stream()
+                .map(CompanyDtoBuilder::fromEntity)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -40,10 +48,12 @@ public class CompanyService {
      * @return Optional<Company>
      * @throws {EntityNotFoundException}
      */
-    public Optional<Company> findCompanyById(Long id) {
-        return companyRepository.findByDeletedAtIsNullAndId(id);
-    }
+    public CompanyResponseDto findCompanyById(Long id) {
 
+        return companyRepository.findByDeletedAtIsNullAndId(id)
+                .map(CompanyDtoBuilder::fromEntity)
+                .orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas ou est supprimée"));
+    }
     /**
      * This function allows to soft delete a company
      * @param id the ID of the company to delete
@@ -65,22 +75,66 @@ public class CompanyService {
      * @return the updated Company
      * @throws {EntityNotFoundException}
      */
-    public Company updateCompany(Long id, Company companyDetails) throws EntityNotFoundException {
-        Company existingCompany = companyRepository.findByDeletedAtIsNullAndId(id)
-                .orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas ou est supprimée"));
+    public CompanyResponseDto updateCompany(Long id, CreateCompanyDTO companyDetails) throws EntityNotFoundException {
 
-        companyDetails.setId(existingCompany.getId());
-        existingCompany = companyDetails;
+        Optional<Company> existingCompany = companyRepository.findByDeletedAtIsNullAndId(id);
+        if(existingCompany.isEmpty()){
+            throw  new RuntimeException("Entreprise n'existe pas ou est supprimée");
+        }
 
-        return companyRepository.save(existingCompany);
+        String imagePath = existingCompany.get().getLogo();
+        if (companyDetails.getLogo() != null && !companyDetails.getLogo().isEmpty()) {
+            try {
+                imagePath = saveImageFromBase64(companyDetails.getLogo());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Company company = existingCompany.get();
+        company.setLogo(imagePath);
+        company.setName(companyDetails.getName());
+        company.setSigle(companyDetails.getSigle());
+        company.setCapital(companyDetails.getCapital());
+        company.setHeadOffice(companyDetails.getCertificationText());
+        company.setLegalRepresentative(companyDetails.getLegalRepresentative());
+        company.setYearOfCreation(companyDetails.getYearOfCreation());
+        company.setDateOfRegistration(companyDetails.getDateOfRegistration());
+        company.setEmail(companyDetails.getEmail());
+        company.setPhone(companyDetails.getPhone());
+        company.setFax(companyDetails.getFax());
+        company.setWhatsapp(companyDetails.getWhatsapp());
+        company.setWebsite(companyDetails.getWebsite());
+        company.setLinkedin(companyDetails.getLinkedin());
+        company.setIce(companyDetails.getIce());
+        company.setRc(companyDetails.getRc());
+        company.setIfm(companyDetails.getIfm());
+        company.setPatent(companyDetails.getPatent());
+        company.setCnss(companyDetails.getCnss());
+        company.setBusinessDescription(companyDetails.getBusinessDescription());
+        company.setLegalStatus(companyDetails.getLegalStatus());
+        company.setCity(companyDetails.getCity());
+        company.setCourt(companyDetails.getCourt());
+        company.setCompanySize(companyDetails.getCompanySize());
+        company.setIndustry(companyDetails.getIndustry());
+        company.setCountry(companyDetails.getCountry());
+        company.setProprietaryStructure(companyDetails.getProprietaryStructure());
+        company.setTitle(companyDetails.getTitle());
+        company.setReprosentaveJobTitle(companyDetails.getReprosentaveJobTitle());
+
+        Company updatedCompany = companyRepository.save(company);
+
+        return CompanyDtoBuilder.fromEntity(updatedCompany);
     }
 
     /**
      * This function allows to get all companies including soft deleted ones
      * @return {List<Company>} the list of all companies
      */
-    public List<Company> findAllCompaniesIncludingDeleted() {
-        return companyRepository.findAll();
+    public List<CompanyResponseDto> findAllCompaniesIncludingDeleted() {
+        return companyRepository.findAll()
+                .stream()
+                .map(CompanyDtoBuilder::fromEntity)
+                .collect(Collectors.toList());
     }
 
 
@@ -131,7 +185,7 @@ public class CompanyService {
  * @param companyDTO The DTO containing company details.
  * @return The saved Company object.
  */
-public Company addCompany(CreateCompanyDTO companyDTO) {
+public CompanyResponseDto addCompany(CreateCompanyDTO companyDTO) {
     // Set the deletedAt to null to ensure the company isn’t marked as deleted
     companyDTO.setDeletedAt(null);
 
@@ -143,44 +197,14 @@ public Company addCompany(CreateCompanyDTO companyDTO) {
         }
 
         // Create a new Company entity from the DTO
-        Company newCompany = Company.builder()
-                .name(companyDTO.getName())
-                .sigle(companyDTO.getSigle())
-                .capital(companyDTO.getCapital())
-                .headOffice(companyDTO.getHeadOffice())
-                .legalRepresentative(companyDTO.getLegalRepresentative())
-                .yearOfCreation(companyDTO.getYearOfCreation())
-                .dateOfRegistration(companyDTO.getDateOfRegistration())
-                .email(companyDTO.getEmail())
-                .phone(companyDTO.getPhone())
-                .fax(companyDTO.getFax())
-                .whatsapp(companyDTO.getWhatsapp())
-                .website(companyDTO.getWebsite())
-                .linkedin(companyDTO.getLinkedin())
-                .ice(companyDTO.getIce())
-                .rc(companyDTO.getRc())
-                .ifm(companyDTO.getIfm())
-                .patent(companyDTO.getPatent())
-                .cnss(companyDTO.getCnss())
-                .certificationText(companyDTO.getCertificationText())
-                .businessDescription(companyDTO.getBusinessDescription())
-                .legalStatus(companyDTO.getLegalStatus())
-                .city(companyDTO.getCity())
-                .court(companyDTO.getCourt())
-                .companySize(companyDTO.getCompanySize())
-                .industry(companyDTO.getIndustry())
-                .country(companyDTO.getCountry())
-                .proprietaryStructure(companyDTO.getProprietaryStructure())
-                .title(companyDTO.getTitle())
-                .reprosentaveJobTitle(companyDTO.getReprosentaveJobTitle())
-                .logo(imagePath)
-                .build();
+        Company newCompany = CompanyDtoBuilder.fromDto(companyDTO,imagePath);
 
         newCompany.setCreatedAt(LocalDateTime.now());
         newCompany.setUpdatedAt(LocalDateTime.now());
         newCompany.setStatus(ActiveInactiveEnum.ACTIVE);
+        Company savedCompany = companyRepository.save(newCompany);
 
-        return companyRepository.save(newCompany);
+        return CompanyDtoBuilder.fromEntity(savedCompany);
 
     } catch (IOException e) {
         // Log the exception
@@ -222,5 +246,6 @@ private String saveImageFromBase64(String base64Image) throws IOException {
 
     return fileName; // Return only the name of the image
 }
+
 
 }

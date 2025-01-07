@@ -180,6 +180,7 @@ public class ProspectService {
                         .reprosentaveJobTitle(prospectRequestDto.getReprosentaveJobTitle())
                         .logo(imagePath)
                         .active(ActiveInactiveEnum.ACTIVE)
+                        .company(Company.builder().id((long)1).build())
                         .build();
             }
 

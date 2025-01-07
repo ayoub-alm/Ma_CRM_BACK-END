@@ -82,10 +82,13 @@ public class AuthController {
             // Build the user response
             UserDetails user = userDetailsService.loadUserByUsername(jwtRequest.getEmail());
             System.out.println("currentUser: {}"+ user.getUsername());
+
+
             // Return the JWT and user details in the response
+            // #TODO fix response content should contain clean data
             JwtResponse jwtResponse = JwtResponse.builder()
                     .token(token)
-                    .userResponseDto(user)
+                    .userResponseDto(null)
                     .build();
 
             return new ResponseEntity<>(jwtResponse, HttpStatus.OK);

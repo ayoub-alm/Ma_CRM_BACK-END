@@ -1,6 +1,9 @@
 package com.sales_scout.entity.leads;
 
+import com.sales_scout.dto.response.InterestResponseDto;
+import com.sales_scout.dto.response.ProspectResponseDto;
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.Interest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,11 +23,13 @@ public class ProspectInterest extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "prospect_interest_mapping", // Nom de la table de jointure
-            joinColumns = @JoinColumn(name = "interest_id"), // Clé étrangère vers ProspectInterest
-            inverseJoinColumns = @JoinColumn(name = "prospect_id") // Clé étrangère vers Prospect
-    )
-    private List<Prospect> prospects;
+    private Boolean status;
+
+    @ManyToOne
+    @JoinColumn(name = "prospect_id", nullable = false)
+    private Prospect prospect; // Reference a single Prospect entity
+
+    @ManyToOne
+    @JoinColumn(name = "interest_id", nullable = false)
+    private Interest interest; // Reference a single Inter
 }

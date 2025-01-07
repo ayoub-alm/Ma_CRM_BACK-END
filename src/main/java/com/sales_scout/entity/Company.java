@@ -7,9 +7,7 @@ import com.sales_scout.enums.ActiveInactiveEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -132,6 +130,9 @@ public class Company extends BaseEntity {
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CompanyDepartment>  companyDepartments;
 
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Interest> interests = new ArrayList<>();
 
 
 }

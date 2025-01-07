@@ -121,8 +121,9 @@ public class Prospect extends BaseEntity {
     @Builder.Default
     private List<TrackingLog> trackingLogs =  new ArrayList<>();
 
+
     @OneToMany(mappedBy = "prospect", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Interest> interests = new HashSet<>();
+    private List<ProspectInterest> prospectInterests =  new ArrayList<>();
 
 
 }

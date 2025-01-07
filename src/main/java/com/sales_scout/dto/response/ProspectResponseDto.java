@@ -1,6 +1,8 @@
 package com.sales_scout.dto.response;
 
+import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.data.*;
+import com.sales_scout.entity.leads.ProspectInterest;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import lombok.Builder;
@@ -52,4 +54,6 @@ public class ProspectResponseDto {
     private Title title;
     private JobTitle reprosentaveJobTitle;
     private List<TrackingLogForProspect> trackingLogs;
+    private List<InterestResponseDto> interest;
+
 }

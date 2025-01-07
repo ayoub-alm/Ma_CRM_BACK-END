@@ -1,5 +1,6 @@
 package com.sales_scout.dto.request;
 
+import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 
 @Getter
@@ -48,4 +50,5 @@ public class ProspectRequestDto {
     private ProprietaryStructure proprietaryStructure;
     private Title title;
     private JobTitle reprosentaveJobTitle;
+    private List<Interest> interest;
 }

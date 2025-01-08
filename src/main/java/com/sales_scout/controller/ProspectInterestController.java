@@ -18,9 +18,9 @@ public class ProspectInterestController {
     public ProspectInterestController(ProspectInterestService prospectInterestService) {
         this.prospectInterestService = prospectInterestService;
     }
-    @PutMapping("/prospectId={prospectId}/interestId={interestId}")
-    public ResponseEntity<ProspectInterestResponseDto> UpdateInterestById(@PathVariable Long prospectId, @PathVariable Long interestId , @RequestBody ProspectInterestRequestDto prospectinterestDetails){
-        ProspectInterestResponseDto prospectInterest = prospectInterestService.updateProspectInterest(interestId,prospectId,prospectinterestDetails);
+    @PutMapping("")
+    public ResponseEntity<ProspectInterestResponseDto> UpdateInterestById(@RequestBody ProspectInterestRequestDto prospectinterestDetails){
+        ProspectInterestResponseDto prospectInterest = prospectInterestService.updateProspectInterest(prospectinterestDetails);
         return ResponseEntity.ok(prospectInterest);
     }
 

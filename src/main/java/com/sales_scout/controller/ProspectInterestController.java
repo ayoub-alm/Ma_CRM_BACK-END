@@ -19,7 +19,7 @@ public class ProspectInterestController {
         this.prospectInterestService = prospectInterestService;
     }
     @PutMapping("")
-    public ResponseEntity<ProspectInterestResponseDto> UpdateInterestById(@RequestBody ProspectInterestRequestDto prospectinterestDetails){
+    public ResponseEntity<ProspectInterestResponseDto> UpdateInterestById(@RequestBody ProspectInterestRequestDto prospectinterestDetails) throws RuntimeException{
         ProspectInterestResponseDto prospectInterest = prospectInterestService.updateProspectInterest(prospectinterestDetails);
         return ResponseEntity.ok(prospectInterest);
     }

@@ -2,7 +2,6 @@ package com.sales_scout.service;
 
 import com.sales_scout.dto.request.InterestRequestDto;
 import com.sales_scout.dto.response.InterestResponseDto;
-import com.sales_scout.dto.response.ProspectResponseDto;
 import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.leads.ProspectInterest;
@@ -58,5 +57,15 @@ public class InterestService {
        return InterestDtoBuilder.fromEntity(updateInterest);
    }
 
-
+    /**
+     *
+     * @param companyId
+     * @return
+     */
+    public List<InterestResponseDto> getAllInterestByCompanyId(Long companyId) {
+        return this.interestRepository.findAllByCompanyIdAndDeletedAtIsNull(companyId)
+                .stream()
+                .map(InterestDtoBuilder::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

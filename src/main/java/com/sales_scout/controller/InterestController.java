@@ -1,14 +1,9 @@
 package com.sales_scout.controller;
 
-
-
 import com.sales_scout.dto.response.InterestResponseDto;
-
 import com.sales_scout.service.InterestService;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -22,11 +17,21 @@ public class InterestController {
 
     }
 
+
     /**
-     function get Interest by ID prospect
+     function get Interest by Company Id
+     **/
+    @GetMapping("/company/{companyId}")
+    public ResponseEntity<List<InterestResponseDto>> getAllInterestByCompanyId(@PathVariable Long companyId){
+        List<InterestResponseDto> interestResponseDtos = interestService.getAllInterestByCompanyId(companyId);
+        return ResponseEntity.ok(interestResponseDtos);
+    }
+
+    /**
+     function get Interest by prospect ID
       **/
-    @GetMapping("/{prospectId}")
-    public ResponseEntity<List<InterestResponseDto>> getAllInterestByCompanyId(@PathVariable Long prospectId){
+    @GetMapping("/prospect/{prospectId}")
+    public ResponseEntity<List<InterestResponseDto>> getAllInterestByProspectId(@PathVariable Long prospectId){
         List<InterestResponseDto> interestResponseDtos = interestService.getAllInterestByProspectId(prospectId);
         return ResponseEntity.ok(interestResponseDtos);
     }

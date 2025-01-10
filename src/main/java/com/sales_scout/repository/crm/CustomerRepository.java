@@ -7,12 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-
-
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     /**
-     *
+     * function get Customer By prospectId and deleted at Is null
      * @param prospectId
      * @return
      */

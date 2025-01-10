@@ -6,7 +6,7 @@ import com.sales_scout.entity.Company;
 import com.sales_scout.entity.Customer;
 import com.sales_scout.entity.leads.Prospect;
 
-public class CustomerDtoBuilder {
+public class CustomerMapper {
     /**
      *
      * @param customer

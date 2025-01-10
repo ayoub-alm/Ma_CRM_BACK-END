@@ -495,7 +495,6 @@ public class ProspectService {
         if ((status == ProspectStatus.INTERESTED || status == ProspectStatus.CONVERTED || status == ProspectStatus.OPPORTUNITY)
                 && !status.equals(oldStatus)) {
 
-
             if (customer.isEmpty()) {
                     // Create a new customer
                     Customer addCustomer = new Customer();
@@ -537,15 +536,9 @@ public class ProspectService {
                     addCustomer.setProspect(prospect);
                     addCustomer.setCompany(prospect.getCompany());
                     addCustomer.setCreatedAt(prospect.getCreatedAt());
-
                     // Save the new customer
                     this.customerRepository.save(addCustomer);
-
-
-
             }
-
-
         }
         // Check if the customer exists
         if (customer.isPresent()) {
@@ -554,11 +547,8 @@ public class ProspectService {
             updateCustomer.setStatus(status);
             this.customerRepository.save(updateCustomer);
         }
-
         // Save the updated prospect
         Prospect updatedProspect = this.prospectRepository.save(prospect);
-
-
         return ProspectResponseDtoBuilder.fromEntity(updatedProspect);
     }
 

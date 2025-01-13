@@ -3,6 +3,7 @@ package com.sales_scout.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.entity.leads.Interlocutor;
+import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
@@ -122,5 +123,12 @@ public class Customer extends BaseEntity {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Interlocutor> interlocutors = new ArrayList<>();
+
+    @ElementCollection
+    private List<Interest> interest ;
+
+    @OneToOne
+    @JoinColumn(name = "prospect_Id" , nullable = false)
+    private Prospect prospect;
 
 }

@@ -106,22 +106,31 @@ public class CommentService {
      *
      * @param commentId the ID of the comment
      */
-    public void softDeleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + commentId));
-        comment.setDeletedAt(LocalDateTime.now());
-        commentRepository.save(comment);
+    public boolean softDeleteComment(Long commentId) {
+        Optional<Comment> comment = commentRepository.findByIdAndDeletedAtIsNull(commentId);
+        if(comment.isPresent()){
+            comment.get().setDeletedAt(LocalDateTime.now());
+            commentRepository.save(comment.get());
+        return true;
+        }else {
+            return false;
+        }
+
     }
 
     /**
-     * This function allows us to restore a soft-deleted comment
+     * This function allows us to restore a  comment
      *
      * @param commentId  the ID of the comment
      */
-    public void restoreComment(Long commentId){
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + commentId));
-        comment.setDeletedAt(null);
-        commentRepository.save(comment);
+    public boolean restoreComment(Long commentId){
+        Optional<Comment> comment = commentRepository.findByIdAndDeletedAtIsNotNull(commentId);
+        if(comment.isPresent()){
+            comment.get().setDeletedAt(null);
+            commentRepository.save(comment.get());
+            return true;
+        }else {
+            return false;
+        }
     }
 }

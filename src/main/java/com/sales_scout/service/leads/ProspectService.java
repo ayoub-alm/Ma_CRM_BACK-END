@@ -7,18 +7,18 @@ import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.entity.UserEntity;
 import com.sales_scout.entity.data.*;
-import com.sales_scout.enums.ActiveInactiveEnum;
+        import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import com.sales_scout.mapper.ProspectResponseDtoBuilder;
 import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.leads.TrackingLogRepository;
 import com.sales_scout.repository.UserRepository;
 import com.sales_scout.repository.data.*;
-import com.sales_scout.service.AuthenticationService;
+        import com.sales_scout.service.AuthenticationService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+        import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
+        import java.util.stream.Collectors;
 
 @Service
 public class ProspectService {
@@ -104,7 +104,7 @@ public class ProspectService {
             if (prospectRequestDto.getLogo() != null && !prospectRequestDto.getLogo().isEmpty()) {
                 imagePath = saveImageFromBase64(prospectRequestDto.getLogo());
             } else if (prospectRequestDto.getLogo() == null) {
-                 imagePath = null;
+                imagePath = null;
             }
 
             Prospect prospect;
@@ -185,8 +185,8 @@ public class ProspectService {
             }
 
 
-           prospect.setCreatedAt(LocalDateTime.now());
-           prospect.setUpdatedAt(LocalDateTime.now());
+            prospect.setCreatedAt(LocalDateTime.now());
+            prospect.setUpdatedAt(LocalDateTime.now());
 
             // Save the prospect entity
             return prospectRepository.save(prospect);
@@ -487,5 +487,39 @@ public class ProspectService {
         return ProspectResponseDtoBuilder.fromEntity(updatedProspect);
     }
 
+    /**
+     * Restore Prospect By Id
+      * @param id
+     * @return true if prospect exsist else @return false
+     */
+    public boolean restoreProspectById(Long id) throws EntityNotFoundException {
+        // Restore the prospect
+        Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNotNullAndId(id);
 
+
+        if (prospect.isPresent()){
+            prospect.get().setDeletedAt(null);
+            prospectRepository.save(prospect.get());
+            return true ;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * Soft Delete Prospect By Id
+     * @param id
+     * @return true if prospect exsist else @return false
+     */
+    public boolean softDeleteById(Long id) {
+        // Restore the prospect
+        Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNullAndId(id);
+        if (prospect.isPresent()){
+            prospect.get().setDeletedAt(LocalDateTime.now());
+            prospectRepository.save(prospect.get());
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

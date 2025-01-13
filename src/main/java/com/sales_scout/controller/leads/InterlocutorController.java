@@ -62,23 +62,6 @@ public class InterlocutorController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
-    /**
-     * Soft delete an interlocutor by ID
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> softDelete(@PathVariable Long id) {
-        interlocutorService.softDelete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    /**
-     * Restore a soft-deleted interlocutor by ID
-     */
-    @PatchMapping("/restore/{id}")
-    public ResponseEntity<Void> restore(@PathVariable Long id) {
-        interlocutorService.restore(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 
     /**
      * Bulk soft delete for a list of IDs
@@ -96,5 +79,23 @@ public class InterlocutorController {
     public ResponseEntity<Void> bulkRestore(@RequestBody List<Long> ids) {
         interlocutorService.bulkRestore(ids);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * Soft Delete By Interlocutor Id
+     * @param id
+     */
+    @PostMapping("/soft-delete/{id}")
+    public boolean softDeleteInterlocutor(@PathVariable Long id){
+        return interlocutorService.softDeleteInterlocutor(id);
+    }
+
+    /**
+     * Restore Interlocutor By Id
+     * @param id
+     */
+    @PutMapping("/restore/{id}")
+    public boolean restoreInterlocutor(@PathVariable Long id){
+       return interlocutorService.restoreInterlocutor(id);
     }
 }

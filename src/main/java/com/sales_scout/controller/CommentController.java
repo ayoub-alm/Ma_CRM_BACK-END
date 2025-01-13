@@ -83,10 +83,9 @@ public class CommentController {
      * @param commentId the ID of the comment
      * @return a response indicating the result
      */
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> softDeleteComment(@PathVariable Long commentId) {
-        commentService.softDeleteComment(commentId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @PostMapping("/soft-delete/{commentId}")
+    public boolean softDeleteComment(@PathVariable Long commentId) {
+       return  commentService.softDeleteComment(commentId);
     }
 
     /**
@@ -95,9 +94,8 @@ public class CommentController {
      * @param commentId the ID of the comment
      * @return a response indicating the result
      */
-    @PutMapping("/{commentId}/restore")
-    public ResponseEntity<Void> restoreComment(@PathVariable Long commentId) {
-        commentService.restoreComment(commentId);
-        return ResponseEntity.ok().build();
+    @PutMapping("/restore/{commentId}")
+    public boolean restoreComment(@PathVariable Long commentId) {
+        return commentService.restoreComment(commentId);
     }
 }

@@ -15,9 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping("/api/prospects")
 public class ProspectController {
      @Autowired
@@ -80,5 +81,26 @@ public class ProspectController {
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    /**
+     * Soft Delete Prospect By Id
+     * @param id
+     * @return
+     */
+    @PostMapping("/soft-delete/{id}")
+    public boolean  deleteById(@PathVariable Long id){
+        return   prospectService.softDeleteById(id);
+    }
+
+    /**
+     * Restore Prospect By Id
+     * @param id
+     * @return
+     */
+    @PutMapping("/restore/{id}")
+    public boolean restoreProspectById(@PathVariable Long id) {
+
+            return prospectService.restoreProspectById(id);
     }
 }

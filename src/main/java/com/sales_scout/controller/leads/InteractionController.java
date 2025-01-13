@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/interaction")
+@RequestMapping("/api/interactions")
 public class InteractionController {
     private final InteractionService interactionService;
 
@@ -44,5 +44,23 @@ public class InteractionController {
     ResponseEntity<InteractionResponseDto> createInteraction(@RequestBody InteractionRequestDto interactionRequestDto){
         InteractionResponseDto interaction = this.interactionService.saveOrUpdateInteraction(interactionRequestDto);
         return new ResponseEntity<>(interaction, HttpStatus.OK);
+    }
+
+    /**
+     * Soft Delete Interaction By Id
+     * @param id
+     */
+    @PostMapping("/soft-delete/{id}")
+    boolean  softDeleteInteraction(@PathVariable Long id){
+       return interactionService.softDeleteInteraction(id);
+    }
+
+    /**
+     * Restore Interaction By Id
+     * @param id
+     */
+    @PutMapping("/restore/{id}")
+    boolean restoreInteraction(@PathVariable Long id){
+       return  interactionService.restoreInteraction(id);
     }
 }

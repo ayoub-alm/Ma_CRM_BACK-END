@@ -1,17 +1,12 @@
 package com.sales_scout.entity.leads;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
-import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
 import java.util.*;
 
 

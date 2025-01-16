@@ -50,7 +50,7 @@ public class InteractionController {
      * Soft Delete Interaction By Id
      * @param id
      */
-    @PostMapping("/soft-delete/{id}")
+    @PutMapping("/soft-delete/{id}")
     boolean  softDeleteInteraction(@PathVariable Long id){
        return interactionService.softDeleteInteraction(id);
     }

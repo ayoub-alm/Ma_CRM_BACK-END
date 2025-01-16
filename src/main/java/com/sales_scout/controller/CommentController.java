@@ -83,7 +83,7 @@ public class CommentController {
      * @param commentId the ID of the comment
      * @return a response indicating the result
      */
-    @PutMapping("/soft-delete/{commentId}")
+    @DeleteMapping("/soft-delete/{commentId}")
     public boolean softDeleteComment(@PathVariable Long commentId) {
        return  commentService.softDeleteComment(commentId);
     }

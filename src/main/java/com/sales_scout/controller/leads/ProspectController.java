@@ -88,7 +88,7 @@ public class ProspectController {
      * @param id
      * @return
      */
-    @PutMapping("/soft-delete/{id}")
+    @DeleteMapping("/soft-delete/{id}")
     public boolean  deleteById(@PathVariable Long id){
         return   prospectService.softDeleteById(id);
     }

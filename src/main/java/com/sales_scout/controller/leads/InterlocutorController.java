@@ -85,7 +85,7 @@ public class InterlocutorController {
      * Soft Delete By Interlocutor Id
      * @param id
      */
-    @PutMapping("/soft-delete/{id}")
+    @DeleteMapping("/soft-delete/{id}")
     public boolean softDeleteInterlocutor(@PathVariable Long id){
         return interlocutorService.softDeleteInterlocutor(id);
     }

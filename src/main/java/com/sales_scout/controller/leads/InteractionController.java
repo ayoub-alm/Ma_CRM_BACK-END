@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -41,7 +42,7 @@ public class InteractionController {
 
 
     @PostMapping("/create")
-    ResponseEntity<InteractionResponseDto> createInteraction(@RequestBody InteractionRequestDto interactionRequestDto){
+    ResponseEntity<InteractionResponseDto> createInteraction(@RequestBody InteractionRequestDto interactionRequestDto) throws IOException {
         InteractionResponseDto interaction = this.interactionService.saveOrUpdateInteraction(interactionRequestDto);
         return new ResponseEntity<>(interaction, HttpStatus.OK);
     }

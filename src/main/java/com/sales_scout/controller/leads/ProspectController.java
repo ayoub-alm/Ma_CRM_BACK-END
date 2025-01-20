@@ -1,5 +1,7 @@
 package com.sales_scout.controller.leads;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sales_scout.dto.request.ProspectRequestDto;
 import com.sales_scout.dto.response.ProspectResponseDto;
 import com.sales_scout.entity.leads.Prospect;
@@ -61,6 +63,21 @@ public class ProspectController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the file");
         }
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<String> exportProspectsToExcel(@RequestParam(required = false) String prospectsJson){
+     try {
+         List<Prospect> prospects = null;
+         if ( prospectsJson != null && !prospectsJson.isEmpty()){
+             ObjectMapper objectMapper = new ObjectMapper();
+             prospects = objectMapper.readValue(prospectsJson, new TypeReference<List<Prospect>>() {});
+         }
+         prospectService.exportFileExcel(prospects,"Prospects_file.xlsx");
+        return ResponseEntity.ok("Excel File exported successfuly: Prospects_file.xlsx" );
+     }catch (IOException e){
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to export Excel File " +e.getMessage());
+     }
     }
 
     @PutMapping("status")

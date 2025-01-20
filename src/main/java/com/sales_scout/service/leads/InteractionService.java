@@ -11,8 +11,15 @@ import com.sales_scout.repository.leads.InterlocutorRepository;
 import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.UserRepository;
 import com.sales_scout.service.AuthenticationService;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,6 +147,47 @@ public class InteractionService {
                 .orElseThrow(() -> new IllegalArgumentException("Interaction not found."));
         interaction.setDeletedAt(null);
         interactionRepository.save(interaction);
+    }
+
+    public void exportFileExcel(List<Interaction> interactions , String filePath)throws IOException {
+        try(Workbook workbook = new XSSFWorkbook()){
+            Sheet sheet = workbook.createSheet("Interaction");
+            Row headerRow = sheet.createRow(0);
+            String[] colmuns={"Id","Address","Interaction Subject"
+                    , "Interaction Type","Planning Date","Report","Affected To"
+                    ,"Agent" , "Interlocutor","Prospect"};
+
+            for (int i = 0; i < colmuns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(colmuns[i]);
+            }
+
+            int rowNum = 1;
+            if(interactions == null){
+              interactions = interactionRepository.findAll();
+            }
+
+            for(Interaction interaction : interactions){
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(interaction.getId());
+                    row.createCell(1).setCellValue(interaction.getAddress());
+                    row.createCell(2).setCellValue(interaction.getInteractionSubject().name());
+                    row.createCell(3).setCellValue(interaction.getInteractionType().name());
+                    row.createCell(4).setCellValue(interaction.getPlanningDate());
+                    row.createCell(5).setCellValue(interaction.getReport());
+                    row.createCell(6).setCellValue(interaction.getAffectedTo().getName());
+                    row.createCell(7).setCellValue(interaction.getAgent().getName());
+                    row.createCell(8).setCellValue(interaction.getInterlocutor().getFullName());
+                    row.createCell(9).setCellValue(interaction.getProspect().getName());
+            }
+
+            for(int i = 0 ; i < colmuns.length;i++){
+                sheet.autoSizeColumn(i);
+            }
+            try(FileOutputStream fileOutput= new FileOutputStream(filePath)){
+                workbook.write(fileOutput);
+            }
+        }
     }
 
     /**

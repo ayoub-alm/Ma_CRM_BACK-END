@@ -4,6 +4,7 @@ import com.sales_scout.dto.request.CommentRequestDto;
 import com.sales_scout.dto.response.CommentResponseDto;
 import com.sales_scout.entity.Comment;
 import com.sales_scout.service.CommentService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,8 +85,13 @@ public class CommentController {
      * @return a response indicating the result
      */
     @DeleteMapping("/soft-delete/{commentId}")
-    public boolean softDeleteComment(@PathVariable Long commentId) {
-       return  commentService.softDeleteComment(commentId);
+    public ResponseEntity<?> softDeleteComment(@PathVariable Long commentId)throws EntityNotFoundException {
+
+        try{
+        return  ResponseEntity.ok().body(commentService.softDeleteComment(commentId));
+        } catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error soft delete comment : "+ e.getMessage());
+        }
     }
 
     /**
@@ -95,7 +101,11 @@ public class CommentController {
      * @return a response indicating the result
      */
     @PutMapping("/restore/{commentId}")
-    public boolean restoreComment(@PathVariable Long commentId) {
-        return commentService.restoreComment(commentId);
+    public ResponseEntity<?> restoreComment(@PathVariable Long commentId)throws EntityNotFoundException {
+        try{
+            return  ResponseEntity.ok().body(commentService.restoreComment(commentId));
+        } catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error restore comment : "+ e.getMessage());
+        }
     }
 }

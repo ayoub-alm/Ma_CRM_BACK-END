@@ -89,8 +89,12 @@ public class ProspectController {
      * @return
      */
     @DeleteMapping("/soft-delete/{id}")
-    public boolean  deleteById(@PathVariable Long id){
-        return   prospectService.softDeleteById(id);
+    public ResponseEntity<?>  deleteById(@PathVariable Long id)throws EntityNotFoundException{
+        try{
+            return ResponseEntity.ok().body(prospectService.softDeleteById(id));
+        }catch(EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error soft delete prospect : "+ e.getMessage());
+        }
     }
 
     /**
@@ -99,8 +103,11 @@ public class ProspectController {
      * @return
      */
     @PutMapping("/restore/{id}")
-    public boolean restoreProspectById(@PathVariable Long id) {
-
-            return prospectService.restoreProspectById(id);
+    public ResponseEntity<?> restoreProspectById(@PathVariable Long id)throws EntityNotFoundException {
+        try{
+            return ResponseEntity.ok().body(prospectService.restoreProspectById(id));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error restored prospect : "+ e.getMessage());
+        }
     }
 }

@@ -492,17 +492,15 @@ public class ProspectService {
       * @param id
      * @return true if prospect exsist else @return false
      */
-    public boolean restoreProspectById(Long id) throws EntityNotFoundException {
+    public String restoreProspectById(Long id) throws EntityNotFoundException {
         // Restore the prospect
         Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNotNullAndId(id);
-
-
         if (prospect.isPresent()){
             prospect.get().setDeletedAt(null);
             prospectRepository.save(prospect.get());
-            return true ;
+            return "Prospect restored successfully";
         }else{
-            return false;
+            throw new EntityNotFoundException("Prospect with ID " + id + " not found or already restored.");
         }
     }
 
@@ -511,15 +509,15 @@ public class ProspectService {
      * @param id
      * @return true if prospect exsist else @return false
      */
-    public boolean softDeleteById(Long id) {
+    public String softDeleteById(Long id)throws EntityNotFoundException {
         // Restore the prospect
         Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNullAndId(id);
         if (prospect.isPresent()){
             prospect.get().setDeletedAt(LocalDateTime.now());
             prospectRepository.save(prospect.get());
-            return true;
+            return "Prospect deleted successfully";
         }else{
-            return false;
+            throw new EntityNotFoundException("Prospect with ID " + id + " not found or already deleted.");
         }
     }
 }

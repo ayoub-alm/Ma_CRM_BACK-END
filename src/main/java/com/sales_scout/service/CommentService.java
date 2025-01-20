@@ -7,6 +7,7 @@ import com.sales_scout.entity.UserEntity;
 import com.sales_scout.enums.EntityEnum;
 import com.sales_scout.repository.CommentRepository;
 import com.sales_scout.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -106,14 +107,14 @@ public class CommentService {
      *
      * @param commentId the ID of the comment
      */
-    public boolean softDeleteComment(Long commentId) {
+    public String softDeleteComment(Long commentId) {
         Optional<Comment> comment = commentRepository.findByIdAndDeletedAtIsNull(commentId);
         if(comment.isPresent()){
             comment.get().setDeletedAt(LocalDateTime.now());
             commentRepository.save(comment.get());
-        return true;
+        return "Comment deleted successfully";
         }else {
-            return false;
+            throw  new EntityNotFoundException("Comment with ID " + commentId + " not found or already deleted.");
         }
 
     }
@@ -123,14 +124,14 @@ public class CommentService {
      *
      * @param commentId  the ID of the comment
      */
-    public boolean restoreComment(Long commentId){
+    public String restoreComment(Long commentId){
         Optional<Comment> comment = commentRepository.findByIdAndDeletedAtIsNotNull(commentId);
         if(comment.isPresent()){
             comment.get().setDeletedAt(null);
             commentRepository.save(comment.get());
-            return true;
+            return "Comment restored successfully";
         }else {
-            return false;
+            throw new EntityNotFoundException("Comment with Id "+ commentId + " not found or already restored");
         }
     }
 }

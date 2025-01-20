@@ -237,15 +237,15 @@ public class InterlocutorService {
      * @param id
      * @return true if Interlocutor exsist else @return false
      */
-    public boolean softDeleteInterlocutor(Long id){
+    public String softDeleteInterlocutor(Long id)throws EntityNotFoundException{
         Optional<Interlocutor> interlocutor = interlocutorRepository.findByDeletedAtIsNullAndId(id);
 
         if (interlocutor.isPresent()){
             interlocutor.get().setDeletedAt(LocalDateTime.now());
             interlocutorRepository.save(interlocutor.get());
-            return true;
+            return "Interlocutor deleted successfully";
         }else {
-            return false;
+            throw new EntityNotFoundException("Interlocutor with ID " + id + " not found or already deleted.");
         }
 
     }
@@ -255,17 +255,16 @@ public class InterlocutorService {
      * @param id
      *  @return true if Interlocutor exsist else @return false
      */
-    public boolean restoreInterlocutor(Long id){
+    public String restoreInterlocutor(Long id) throws EntityNotFoundException{
         Optional<Interlocutor> interlocutor = interlocutorRepository.findByDeletedAtIsNotNullAndId(id);
 
         if (interlocutor.isPresent()) {
         interlocutor.get().setDeletedAt(null);
             interlocutorRepository.save(interlocutor.get());
-            return true;
+            return "Interlocutor restored successfully";
         }else {
-            return false;
+            throw new EntityNotFoundException("Interlocutor with ID " + id + " not found or already restored.");
         }
-
         }
 
 }

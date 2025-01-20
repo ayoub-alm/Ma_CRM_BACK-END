@@ -4,6 +4,8 @@ package com.sales_scout.controller.leads;
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
 import com.sales_scout.service.leads.InteractionService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,8 +53,13 @@ public class InteractionController {
      * @param id
      */
     @DeleteMapping("/soft-delete/{id}")
-    boolean  softDeleteInteraction(@PathVariable Long id){
-       return interactionService.softDeleteInteraction(id);
+    ResponseEntity<?>  softDeleteInteraction(@PathVariable Long id)throws EntityNotFoundException{
+       try{
+           return ResponseEntity.ok().body(interactionService.softDeleteInteraction(id));
+       }catch(EntityNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error soft deleting interaction: "+e.getMessage() );
+       }
+
     }
 
     /**
@@ -60,7 +67,11 @@ public class InteractionController {
      * @param id
      */
     @PutMapping("/restore/{id}")
-    boolean restoreInteraction(@PathVariable Long id){
-       return  interactionService.restoreInteraction(id);
+    ResponseEntity<?> restoreInteraction(@PathVariable Long id) throws EntityNotFoundException{
+        try {
+            return ResponseEntity.ok().body(interactionService.restoreInteraction(id));
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error restore interaction : "+e.getMessage());
+        }
     }
 }

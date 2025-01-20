@@ -5,6 +5,8 @@ import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.service.leads.InterlocutorService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -86,8 +88,12 @@ public class InterlocutorController {
      * @param id
      */
     @DeleteMapping("/soft-delete/{id}")
-    public boolean softDeleteInterlocutor(@PathVariable Long id){
-        return interlocutorService.softDeleteInterlocutor(id);
+    public ResponseEntity<?> softDeleteInterlocutor(@PathVariable Long id){
+        try {
+            return ResponseEntity.ok().body(interlocutorService.softDeleteInterlocutor(id));
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error  soft delete interlocutor : "+ e.getMessage());
+        }
     }
 
     /**
@@ -95,7 +101,11 @@ public class InterlocutorController {
      * @param id
      */
     @PutMapping("/restore/{id}")
-    public boolean restoreInterlocutor(@PathVariable Long id){
-       return interlocutorService.restoreInterlocutor(id);
+    public ResponseEntity<?> restoreInterlocutor(@PathVariable Long id){
+       try {
+           return ResponseEntity.ok().body(interlocutorService.restoreInterlocutor(id));
+       } catch (EntityNotFoundException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error restore interlocutor : "+ e.getMessage());
+       }
     }
 }

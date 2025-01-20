@@ -462,6 +462,68 @@ public class ProspectService {
         }
     }
 
+    public void exportFileExcel(List<Prospect> prospects , String filePath)throws IOException{
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Prospects");
+            Row headerRow = sheet.createRow(0);
+            String[] colmuns = {"Id","Name","Email" , "Active" , "Business Description " , "Capital" ,"Date of Registration"
+                    ,"Phone","Fax","Head Office" , "Ice", "Ifm" , "Legal Representative" ,"Whatsapp", "Linkedin" ,"WebSite" ,"Patent"
+                    ,"Rc" , "Sigle" ,"Status" , "Year of Creation" , "City" , "Company","Company Size","Country","Court","Industry"
+                    ,"Legal Status" , "Proprietary Structure" , "Job Title" , "Title Id"};
+            for (int i= 0 ; i < colmuns.length ; i++ ){
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(colmuns[i]);
+            }
+
+            int rowNum = 1;
+            if (prospects == null) {
+                prospects = prospectRepository.findAll();
+            }
+
+            for(Prospect prospect : prospects){
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(prospect.getId());
+                    row.createCell(1).setCellValue(prospect.getName());
+                    row.createCell(2).setCellValue(prospect.getEmail());
+                    row.createCell(3).setCellValue(prospect.getActive().name());
+                    row.createCell(4).setCellValue(prospect.getBusinessDescription());
+                    row.createCell(5).setCellValue(prospect.getCapital());
+                    row.createCell(6).setCellValue(prospect.getDateOfRegistration());
+                    row.createCell(7).setCellValue(prospect.getPhone());
+                    row.createCell(8).setCellValue(prospect.getFax());
+                    row.createCell(9).setCellValue(prospect.getHeadOffice());
+                    row.createCell(10).setCellValue(prospect.getIce());
+                    row.createCell(11).setCellValue(prospect.getIfm());
+                    row.createCell(12).setCellValue(prospect.getLegalRepresentative());
+                    row.createCell(13).setCellValue(prospect.getWhatsapp());
+                    row.createCell(14).setCellValue(prospect.getLinkedin());
+                    row.createCell(15).setCellValue(prospect.getWebsite());
+                    row.createCell(16).setCellValue(prospect.getPatent());
+                    row.createCell(17).setCellValue(prospect.getRc());
+                    row.createCell(18).setCellValue(prospect.getSigle());
+                    row.createCell(19).setCellValue(prospect.getStatus().name());
+                    row.createCell(20).setCellValue(prospect.getYearOfCreation());
+                    row.createCell(21).setCellValue(prospect.getCity().getName());
+                    row.createCell(22).setCellValue(prospect.getCompany().getName());
+                    row.createCell(23).setCellValue(prospect.getCompanySize().getName());
+                    row.createCell(24).setCellValue(prospect.getCountry().getName());
+                    row.createCell(25).setCellValue(prospect.getCourt().getName());
+                    row.createCell(26).setCellValue(prospect.getIndustry().getName());
+                    row.createCell(27).setCellValue(prospect.getLegalStatus().getName());
+                    row.createCell(28).setCellValue(prospect.getProprietaryStructure().getName());
+                    row.createCell(29).setCellValue(prospect.getReprosentaveJobTitle().getName());
+                    row.createCell(30).setCellValue(prospect.getTitle().getTitle());
+            }
+
+            for (int i = 0 ; i <colmuns.length ; i++){
+                sheet.autoSizeColumn(i);
+            }
+            try(FileOutputStream fileOut = new FileOutputStream(filePath)) {
+                workbook.write(fileOut);
+            }
+        }
+    }
+
     public ProspectResponseDto updateProspectStatus(ProspectStatus status, Long prospectId) throws EntityNotFoundException {
         // Fetch the prospect or throw an exception if not found
         Prospect prospect = this.prospectRepository.findByDeletedAtIsNullAndId(prospectId)

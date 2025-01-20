@@ -1,5 +1,7 @@
 package com.sales_scout.controller.leads;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -69,6 +72,22 @@ public class InterlocutorController {
     public ResponseEntity<Void> softDelete(@PathVariable Long id) {
         interlocutorService.softDelete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<String> exportInterlocutorToExcel(@RequestParam(required = false) String interlocutorsJson){
+        try {
+            List<Interlocutor> interlocutors = null;
+            if (interlocutorsJson != null && !interlocutorsJson.isEmpty()) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                interlocutors = objectMapper.readValue(interlocutorsJson, new TypeReference<List<Interlocutor>>() {}
+                );
+            }
+            interlocutorService.exportFileExcel(interlocutors,"Interlocutor_file.xlsx");
+            return ResponseEntity.ok("Excel File exported successfuly : Interlocutors_file");
+        }catch (IOException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to export Excel File "+e.getMessage());
+        }
     }
 
     /**

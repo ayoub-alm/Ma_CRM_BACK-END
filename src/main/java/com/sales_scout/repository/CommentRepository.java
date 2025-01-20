@@ -18,4 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByEntityAndEntityIdAndDeletedAtIsNull(EntityEnum moduleType, Long moduleReferenceId);
 
     Optional<Comment> findByIdAndDeletedAtIsNull(Long commentId);
+
+    Optional<Comment> findByIdAndDeletedAtIsNotNull(Long commentId);
 }

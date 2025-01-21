@@ -27,19 +27,32 @@ public class ProspectController {
         this.prospectService = prospectService;
     }
 
-
+    /**
+     *  get all prospect
+     * @return
+     */
     @GetMapping("")
     public ResponseEntity<List<ProspectResponseDto>> getAllProspect(){
         List<ProspectResponseDto> prospects = this.prospectService.getAllProspects();
         return new ResponseEntity<>(prospects, HttpStatus.OK);
     }
 
+    /**
+     * get prospect By Id
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Optional<ProspectResponseDto>> getProspectById(@PathVariable Long id){
         Optional<ProspectResponseDto> prospect = this.prospectService.getProspectById(id);
         return new ResponseEntity<>(prospect, HttpStatus.OK);
     }
 
+    /**
+     * create prospect
+     * @param prospectRequestDto
+     * @return
+     */
     @PostMapping("")
     public ResponseEntity<Prospect> createProspect(@RequestBody ProspectRequestDto prospectRequestDto) {
         // Call the service method to create the Prospect
@@ -48,7 +61,11 @@ public class ProspectController {
         return new ResponseEntity<>(prospect, HttpStatus.CREATED);
     }
 
-
+    /**
+     * upload file excel
+     * @param excelFile
+     * @return
+     */
     @PostMapping(value = "import-from-excel", consumes = "multipart/form-data")
     public ResponseEntity<?> uploadProspectFile(@RequestParam("file") MultipartFile excelFile) {
         if (excelFile == null || excelFile.isEmpty()) {
@@ -63,6 +80,12 @@ public class ProspectController {
         }
     }
 
+    /**
+     * update prospect status By prospect Id
+     * @param status
+     * @param prospectId
+     * @return
+     */
     @PutMapping("status")
     public ResponseEntity<ProspectResponseDto> updateProspectStatus(
             @RequestParam ProspectStatus status,

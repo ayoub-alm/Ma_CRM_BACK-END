@@ -29,6 +29,11 @@ public class InterlocutorController {
         return new ResponseEntity<>(interlocutors, HttpStatus.OK);
     }
 
+    /**
+     * get all interlocutor By prospect Id
+     * @param prospectId
+     * @return
+     */
     @GetMapping("/prospect/{prospectId}")
     public ResponseEntity<List<InterlocutorResponseDto>> getAllInterlocutorsByProspectId(@PathVariable Long prospectId ) {
         List<InterlocutorResponseDto> interlocutors = this.interlocutorService.getInterlocutorsByProspectId(prospectId);
@@ -46,16 +51,22 @@ public class InterlocutorController {
         return new ResponseEntity<>(interlocutors, HttpStatus.OK);
     }
 
-
     /**
      * Create or update an interlocutor
      */
+
     @PostMapping("")
     public ResponseEntity<Interlocutor> saveOrUpdate(@RequestBody CreateInterlocutorDTO interlocutor) {
         Interlocutor saved = interlocutorService.saveOrUpdate(interlocutor);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
+    /**
+     * update interlocutor by Id
+     * @param interlocutor
+     * @param id
+     * @return
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Interlocutor> update(@RequestBody UpdateInterlocutorDto interlocutor, @PathVariable Long id) {
         Interlocutor saved = interlocutorService.update(interlocutor);

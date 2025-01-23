@@ -30,6 +30,10 @@ public class StorageNeedMapper {
         storageNeed.setDuration(dto.getDuration());
         storageNeed.setNumberOfSku(dto.getNumberOfSku());
         storageNeed.setProductType(dto.getProductType());
+        storageNeed.setCreatedAt(dto.getCreatedAt());
+        storageNeed.setCreatedBy(dto.getCreatedBy());
+        storageNeed.setUpdatedAt(dto.getUpdatedAt());
+        storageNeed.setUpdatedBy(dto.getUpdatedBy());
 
         // Set the customer entity by ID (assumes a customer service or repository fetch)
         Customer customer = new Customer();
@@ -55,6 +59,10 @@ public class StorageNeedMapper {
         dto.setDuration(storageNeed.getDuration());
         dto.setNumberOfSku(storageNeed.getNumberOfSku());
         dto.setProductType(storageNeed.getProductType());
+        dto.setCreatedAt(storageNeed.getCreatedAt());
+        dto.setCreatedBy(storageNeed.getCreatedBy());
+        dto.setUpdatedAt(storageNeed.getUpdatedAt());
+        dto.setUpdatedBy(storageNeed.getUpdatedBy());
 
         // Map nested customer details
         if (storageNeed.getCustomer() != null) {

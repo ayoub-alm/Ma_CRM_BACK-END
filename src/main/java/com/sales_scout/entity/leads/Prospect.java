@@ -9,6 +9,7 @@ import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.*;
 
@@ -16,7 +17,7 @@ import java.util.*;
 @Entity
 @Table(name = "prospects")
 @Getter @Setter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Prospect extends BaseEntity {

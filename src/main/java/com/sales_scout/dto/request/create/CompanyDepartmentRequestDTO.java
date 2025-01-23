@@ -1,6 +1,7 @@
 package com.sales_scout.dto.request.create;
 
 
+import com.sales_scout.dto.BaseDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompanyDepartmentRequestDTO {
+public class CompanyDepartmentRequestDTO extends BaseDto {
     private Long id;
     @NotNull
     @NotBlank

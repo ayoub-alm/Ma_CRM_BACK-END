@@ -1,5 +1,6 @@
 package com.sales_scout.dto.request.create;
 
+import com.sales_scout.dto.BaseDto;
 import com.sales_scout.enums.crm.wms.LivreEnum;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
 import com.sales_scout.enums.crm.wms.StorageReasonEnum;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.time.LocalDateTime;
 
-public class StorageNeedCreateDto {
+public class StorageNeedCreateDto extends BaseDto {
 
         @NotNull(message = "Reference UUID is required")
         private UUID ref;

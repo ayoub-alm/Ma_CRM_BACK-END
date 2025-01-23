@@ -1,6 +1,8 @@
 package com.sales_scout.dto.response.crm.wms;
 
-public class CustomerDto {
+import com.sales_scout.dto.BaseDto;
+
+public class CustomerDto extends BaseDto {
     private Long id;
     private String name; // Add more customer fields if needed
 

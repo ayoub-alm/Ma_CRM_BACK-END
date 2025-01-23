@@ -15,6 +15,10 @@ public class ProspectInterestDtoBuilder {
                 .status(prospectInterest.getStatus())
                 .prospectId(prospectInterest.getProspect().getId())
                 .interestId(prospectInterest.getInterest().getId())
+                .createdAt(prospectInterest.getCreatedAt())
+                .createdBy(prospectInterest.getCreatedBy())
+                .updatedAt(prospectInterest.getUpdatedAt())
+                .updatedBy(prospectInterest.getUpdatedBy())
                 .build();
     }
     public static ProspectInterest fromDto(ProspectInterestRequestDto prospectInterestRequestDto){
@@ -23,6 +27,10 @@ public class ProspectInterestDtoBuilder {
                 .status(prospectInterestRequestDto.getStatus())
                 .prospect(Prospect.builder().id(prospectInterestRequestDto.getProspectId()).build())
                 .interest(Interest.builder().id(prospectInterestRequestDto.getInterestId()).build())
+                .createdAt(prospectInterestRequestDto.getCreatedAt())
+                .createdBy(prospectInterestRequestDto.getCreatedBy())
+                .updatedAt(prospectInterestRequestDto.getUpdatedAt())
+                .updatedBy(prospectInterestRequestDto.getUpdatedBy())
                 .build();
     }
 }

@@ -1,14 +1,16 @@
 package com.sales_scout.dto.response;
 
+import com.sales_scout.dto.BaseDto;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-@Builder
-public class JwtResponse {
+@SuperBuilder
+public class JwtResponse extends BaseDto {
     public String token;
     public UserDetails userResponseDto;
 

@@ -1,11 +1,13 @@
 package com.sales_scout.dto.response;
 
+import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -16,8 +18,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class CustomerResponseDto {
+@SuperBuilder
+public class CustomerResponseDto extends BaseDto {
     private Long id;
     private String logo;
     private String name;

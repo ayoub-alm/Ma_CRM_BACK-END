@@ -63,13 +63,16 @@ public class ProspectResponseDtoBuilder {
                 .reprosentaveJobTitle(prospect.getReprosentaveJobTitle()) // Add mapping if needed
                 .logo(prospect.getLogo())
                 .trackingLogs(trackingLogForProspects)
-
                 .interest(
                         prospect.getProspectInterests().stream()
-                                .filter(prospectInterest -> prospectInterest.getInterest() != null) // تأكد من أن الـ Interest ليس null
-                                .map(prospectInterest -> InterestDtoBuilder.fromEntity(prospectInterest.getInterest())) // تحويل Interest إلى InterestDto
+                                .filter(prospectInterest -> prospectInterest.getInterest() != null)
+                                .map(prospectInterest -> InterestDtoBuilder.fromEntity(prospectInterest.getInterest()))
                                 .toList()
                 )
+                .createdAt(prospect.getCreatedAt())
+                .createdBy(prospect.getCreatedBy())
+                .updatedAt(prospect.getUpdatedAt())
+                .updatedBy(prospect.getUpdatedBy())
                 .build();
     }
 }

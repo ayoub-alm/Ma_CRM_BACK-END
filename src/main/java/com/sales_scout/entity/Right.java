@@ -2,13 +2,14 @@ package com.sales_scout.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Getter @Setter
 @Table(name = "rights")
 public class Right extends BaseEntity {

@@ -4,6 +4,7 @@ import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
 import com.sales_scout.dto.response.ProspectResponseDto;
+import com.sales_scout.entity.UserEntity;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.data.Department;
@@ -17,30 +18,32 @@ import com.sales_scout.repository.leads.InterlocutorRepository;
 import com.sales_scout.repository.PhoneNumberRepository;
 import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.data.JobTitleRepository;
+import com.sales_scout.service.AuthenticationService;
 import com.sales_scout.service.data.DepartmentService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class InterlocutorService {
     private final InterlocutorRepository interlocutorRepository;
-    private final ProspectService prospectService;
     private final DepartmentService departmentService;
     final private EmailAddressRepository emailAddressRepository;
     final private PhoneNumberRepository phoneNumberRepository;
     private final JobTitleRepository jobTitleRepository;
     private final ProspectRepository prospectRepository;
-    public InterlocutorService(InterlocutorRepository interlocutorRepository, ProspectService prospectService, DepartmentService departmentService, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, JobTitleRepository jobTitleRepository, ProspectRepository prospectRepository) {
+    private  final AuthenticationService authenticationService;
+    public InterlocutorService(InterlocutorRepository interlocutorRepository, DepartmentService departmentService, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, JobTitleRepository jobTitleRepository, ProspectRepository prospectRepository, AuthenticationService authenticationService) {
         this.interlocutorRepository = interlocutorRepository;
-        this.prospectService = prospectService;
         this.departmentService = departmentService;
         this.emailAddressRepository = emailAddressRepository;
         this.phoneNumberRepository = phoneNumberRepository;
         this.jobTitleRepository = jobTitleRepository;
         this.prospectRepository = prospectRepository;
+        this.authenticationService = authenticationService;
     }
 
     /**
@@ -52,15 +55,19 @@ public class InterlocutorService {
         return  interlocutors.stream().map(interlocutor -> {
             ProspectResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getProspect());
             return InterlocutorResponseDto.builder()
-                     .fullName(interlocutor.getFullName())
-                     .id(interlocutor.getId())
-                     .department(interlocutor.getDepartment())
-                     .phoneNumber(interlocutor.getPhoneNumber())
-                     .emailAddress(interlocutor.getEmailAddress())
-                     .prospect(prospectresponseDto)
-                     .jobTitle(interlocutor.getJobTitle())
-                     .active(interlocutor.getActive())
-                     .build();
+                    .fullName(interlocutor.getFullName())
+                    .id(interlocutor.getId())
+                    .department(interlocutor.getDepartment())
+                    .phoneNumber(interlocutor.getPhoneNumber())
+                    .emailAddress(interlocutor.getEmailAddress())
+                    .prospect(prospectresponseDto)
+                    .jobTitle(interlocutor.getJobTitle())
+                    .active(interlocutor.getActive())
+                    .createdAt(interlocutor.getCreatedAt())
+                    .createdBy(interlocutor.getCreatedBy())
+                    .updatedAt(interlocutor.getUpdatedAt())
+                    .updatedBy(interlocutor.getUpdatedBy())
+                    .build();
         }).collect(Collectors.toList());
     }
 
@@ -71,8 +78,10 @@ public class InterlocutorService {
      */
     public List<InterlocutorResponseDto> getInterlocutorsByProspectId(Long prospectId) {
         List<Interlocutor> interlocutors = this.interlocutorRepository.findAllByProspectId(prospectId);
+
         return  interlocutors.stream().map(interlocutor -> {
             ProspectResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getProspect());
+
             return InterlocutorResponseDto.builder()
                     .fullName(interlocutor.getFullName())
                     .id(interlocutor.getId())
@@ -82,6 +91,10 @@ public class InterlocutorService {
                     .prospect(prospectresponseDto)
                     .jobTitle(interlocutor.getJobTitle())
                     .active(interlocutor.getActive())
+                    .createdAt(interlocutor.getCreatedAt())
+                    .createdBy(interlocutor.getCreatedBy())
+                    .updatedAt(interlocutor.getUpdatedAt())
+                    .updatedBy(interlocutor.getUpdatedBy())
                     .build();
         }).collect(Collectors.toList());
     }
@@ -125,6 +138,8 @@ public class InterlocutorService {
         emailAddress.setAddress(interlocutorDto.getEmailAddress().getAddress()); // Correct field
         emailAddress = this.emailAddressRepository.save(emailAddress);
 
+        UserEntity user = this.authenticationService.getCurrentUser();
+
         // Build Interlocutor
         Interlocutor interlocutor = Interlocutor.builder()
                 .fullName(interlocutorDto.getFullName())
@@ -134,8 +149,9 @@ public class InterlocutorService {
                 .department(department)
                 .jobTitle(jobTitle)
                 .active(ActiveInactiveEnum.ACTIVE)
+                .createdAt(LocalDateTime.now())
+                .createdBy(user.getName())
                 .build();
-
         // Save and return
         return interlocutorRepository.save(interlocutor);
     }
@@ -173,6 +189,7 @@ public class InterlocutorService {
                     return phoneNumberRepository.save(newPhoneNumber);
                 });
 
+        UserEntity user = this.authenticationService.getCurrentUser();
 
         // Fetch existing Interlocutor
         Interlocutor interlocutor = interlocutorRepository.findByDeletedAtIsNullAndId(updateInterlocutorDto.getId())
@@ -185,6 +202,8 @@ public class InterlocutorService {
         interlocutor.setPhoneNumber(phoneNumber); // Use persisted PhoneNumber
         interlocutor.setJobTitle(jobTitle);
         interlocutor.setActive(updateInterlocutorDto.getActive());
+        interlocutor.setUpdatedAt(LocalDateTime.now());
+        interlocutor.setUpdatedBy(user.getName());
 
         // Save and return
         return interlocutorRepository.save(interlocutor);
@@ -205,9 +224,12 @@ public class InterlocutorService {
                 .phoneNumber(interlocutor.getPhoneNumber())
                 .emailAddress(interlocutor.getEmailAddress())
                 .active(interlocutor.getActive())
+                .createdAt(interlocutor.getCreatedAt())
+                .createdBy(interlocutor.getCreatedBy())
+                .updatedAt(interlocutor.getUpdatedAt())
+                .updatedBy(interlocutor.getUpdatedBy())
                 .build();
     }
-
 
     /**
      * Soft delete an interlocutor by ID

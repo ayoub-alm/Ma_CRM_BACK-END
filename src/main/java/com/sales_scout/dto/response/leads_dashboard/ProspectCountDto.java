@@ -1,12 +1,11 @@
 package com.sales_scout.dto.response.leads_dashboard;
 
-import com.sales_scout.dto.BaseDto;
 import com.sales_scout.enums.ProspectStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class ProspectCountDto extends BaseDto {
+public class ProspectCountDto {
     private ProspectStatus status;
     private Long count;
 

@@ -3,7 +3,6 @@ package com.sales_scout.service.leads;
 import com.sales_scout.dto.request.ProspectRequestDto;
 import com.sales_scout.dto.response.ProspectResponseDto;
 import com.sales_scout.entity.Company;
-import com.sales_scout.entity.Customer;
 import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.entity.UserEntity;
@@ -11,7 +10,6 @@ import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import com.sales_scout.mapper.ProspectResponseDtoBuilder;
-import com.sales_scout.repository.crm.CustomerRepository;
 import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.leads.TrackingLogRepository;
 import com.sales_scout.repository.UserRepository;
@@ -74,12 +72,8 @@ public class ProspectService {
     @Autowired
     private UserRepository userRepository;
 
-
-    private final   CustomerRepository customerRepository;
-
-    public ProspectService(ProspectRepository prospectRepository, CustomerRepository customerRepository) {
+    public ProspectService(ProspectRepository prospectRepository) {
         this.prospectRepository = prospectRepository;
-        this.customerRepository = customerRepository;
     }
 
     /**
@@ -112,8 +106,6 @@ public class ProspectService {
             } else if (prospectRequestDto.getLogo() == null) {
                  imagePath = null;
             }
-
-            UserEntity user = this.authenticationService.getCurrentUser();
 
             Prospect prospect;
 
@@ -152,7 +144,6 @@ public class ProspectService {
                     prospect.setReprosentaveJobTitle(prospectRequestDto.getReprosentaveJobTitle());
                     prospect.setLogo(imagePath != null && !imagePath.isEmpty() ? imagePath : "");
                     prospect.setUpdatedAt(LocalDateTime.now());
-                    prospect.setUpdatedBy(user.getName());
                 } else {
                     throw new RuntimeException("Prospect with ID " + prospectRequestDto.getId() + " not found.");
                 }
@@ -190,11 +181,12 @@ public class ProspectService {
                         .logo(imagePath)
                         .active(ActiveInactiveEnum.ACTIVE)
                         .company(Company.builder().id((long)1).build())
-                        .createdAt(LocalDateTime.now())
-                        .createdBy(user.getName())
                         .build();
             }
 
+
+           prospect.setCreatedAt(LocalDateTime.now());
+           prospect.setUpdatedAt(LocalDateTime.now());
 
             // Save the prospect entity
             return prospectRepository.save(prospect);
@@ -291,8 +283,10 @@ public class ProspectService {
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 Prospect prospect = mapRowToProspect(row);
-                if (prospect != null) {
+                if (prospect.getName() != null && !prospect.getName().equals("")) {
                     prospects.add(prospect);
+                }else{
+                    break;
                 }
             }
         }
@@ -333,7 +327,7 @@ public class ProspectService {
         prospect.setLegalRepresentative(getStringCellValue(row, 23));
         prospect.setTitle(getTitleFromExcel(row, 24));
         prospect.setReprosentaveJobTitle(getJobTitleFromExcel(row, 25));
-
+        prospect.setCreatedAt(LocalDateTime.now());
         return prospect;
     }
 
@@ -469,6 +463,8 @@ public class ProspectService {
         Prospect prospect = this.prospectRepository.findByDeletedAtIsNullAndId(prospectId)
                 .orElseThrow(() -> new EntityNotFoundException("The prospect with ID " + prospectId + " was not found."));
 
+
+
         // Fetch the current authenticated user and ensure it's managed
         UserEntity currentUser = authenticationService.getCurrentUser();
         UserEntity managedUser = this.userRepository.findById(currentUser.getId())
@@ -479,83 +475,17 @@ public class ProspectService {
                 .actionType("Changement de statut")
                 .timestamp(LocalDateTime.now())
                 .user(managedUser) // Use the managed user
-                .details(managedUser.getName() + " a changé le statut du prospect du " + prospect.getStatus() + " à " + status)
+                .details(managedUser.getName() +" a changé le statut du prospect du " + prospect.getStatus() +" à " + status)
                 .prospect(prospect)
                 .build();
 
         // Save the tracking log
         trackingLogRepository.save(trackingLog);
-
         // Update the status
-        ProspectStatus oldStatus = prospect.getStatus(); // Save the old status for comparison
         prospect.setStatus(status);
-
-        UserEntity user = this.authenticationService.getCurrentUser();
-
-        // Check if a customer already exists for this prospect
-        Optional<Customer> customer = customerRepository.findByProspectIdAndDeletedAtIsNull(prospectId);
-
-        // Check if the new status is valid and the status has changed
-        if ((status == ProspectStatus.INTERESTED || status == ProspectStatus.CONVERTED || status == ProspectStatus.OPPORTUNITY)
-                && !status.equals(oldStatus)) {
-
-            if (customer.isEmpty()) {
-                    // Create a new customer
-                    Customer addCustomer = new Customer();
-                    addCustomer.setName(prospect.getName());
-                    addCustomer.setSigle(prospect.getSigle());
-                    addCustomer.setCapital(prospect.getCapital());
-                    addCustomer.setHeadOffice(prospect.getHeadOffice());
-                    addCustomer.setLegalRepresentative(prospect.getLegalRepresentative());
-                    addCustomer.setYearOfCreation(prospect.getYearOfCreation());
-                    addCustomer.setDateOfRegistration(prospect.getDateOfRegistration());
-                    addCustomer.setEmail(prospect.getEmail());
-                    addCustomer.setPhone(prospect.getPhone());
-                    addCustomer.setFax(prospect.getFax());
-                    addCustomer.setWebsite(prospect.getWebsite());
-                    addCustomer.setLinkedin(prospect.getLinkedin());
-                    addCustomer.setWhatsapp(prospect.getWhatsapp());
-                    addCustomer.setIce(prospect.getIce());
-                    addCustomer.setRc(prospect.getRc());
-                    addCustomer.setStatus(prospect.getStatus());
-                    addCustomer.setIfm(prospect.getIfm());
-                    addCustomer.setPatent(prospect.getPatent());
-                    addCustomer.setBusinessDescription(prospect.getBusinessDescription());
-                    addCustomer.setActive(prospect.getActive());
-                    addCustomer.setLegalStatus(prospect.getLegalStatus());
-                    addCustomer.setCity(prospect.getCity());
-                    addCustomer.setCourt(prospect.getCourt());
-                    addCustomer.setCompanySize(prospect.getCompanySize());
-                    addCustomer.setIndustry(prospect.getIndustry());
-                    addCustomer.setCountry(prospect.getCountry());
-                    addCustomer.setProprietaryStructure(prospect.getProprietaryStructure());
-                    addCustomer.setTitle(prospect.getTitle());
-                    addCustomer.setReprosentaveJobTitle(prospect.getReprosentaveJobTitle());
-                    addCustomer.setLogo(prospect.getLogo());
-                    addCustomer.setTrackingLogs(new ArrayList<>(prospect.getTrackingLogs()));
-                    addCustomer.setInterest(prospect.getProspectInterests()
-                            .stream()
-                            .map(prospectInterest -> prospectInterest.getInterest())
-                            .collect(Collectors.toList())); // Convertir en List
-                    addCustomer.setProspect(prospect);
-                    addCustomer.setCompany(prospect.getCompany());
-                    addCustomer.setCreatedAt(prospect.getCreatedAt());
-                    addCustomer.setCreatedBy(prospect.getCreatedBy());
-                    // Save the new customer
-                    this.customerRepository.save(addCustomer);
-            }
-        }
-        // Check if the customer exists
-        if (customer.isPresent()) {
-            // update status customer
-            Customer updateCustomer = customer.get();
-            updateCustomer.setStatus(status);
-            updateCustomer.setUpdatedAt(LocalDateTime.now());
-            updateCustomer.setUpdatedBy(user.getName());
-            this.customerRepository.save(updateCustomer);
-        }
         // Save the updated prospect
         Prospect updatedProspect = this.prospectRepository.save(prospect);
+
         return ProspectResponseDtoBuilder.fromEntity(updatedProspect);
     }
 

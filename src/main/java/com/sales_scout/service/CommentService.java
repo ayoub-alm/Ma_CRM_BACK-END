@@ -20,12 +20,10 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
-    private final AuthenticationService authenticationService;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, AuthenticationService authenticationService) {
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
-        this.authenticationService = authenticationService;
     }
 
     /**
@@ -34,7 +32,7 @@ public class CommentService {
      * @return
      */
      public Comment createComment(CommentRequestDto commentRequestDto) {
-         // Fetch the user
+        // Fetch the user
         UserEntity user = userRepository.findById(commentRequestDto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + commentRequestDto.getUserId()));
 
@@ -44,8 +42,6 @@ public class CommentService {
                 .user(user)
                 .entity(commentRequestDto.getEntity())
                 .entityId(commentRequestDto.getEntityId())
-                .createdAt(LocalDateTime.now())
-                .createdBy(user.getName())
                 .build();
 
         return commentRepository.save(comment);
@@ -76,9 +72,6 @@ public class CommentService {
                         .entity(comment.getEntity())
                         .entityId(comment.getEntityId())
                         .createdAt(comment.getCreatedAt())
-                        .updatedAt(comment.getUpdatedAt())
-                        .createdBy(comment.getCreatedBy())
-                        .updatedBy(comment.getUpdatedBy())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -101,13 +94,10 @@ public class CommentService {
      * @return the updated comment
      */
     public Comment updateComment(Long commentId, String newContent) {
-
-        UserEntity user = this.authenticationService.getCurrentUser();
         Comment comment = commentRepository.findByIdAndDeletedAtIsNull(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + commentId));
+
         comment.setCommentTxt(newContent);
-        comment.setUpdatedAt(LocalDateTime.now());
-        comment.setUpdatedBy(user.getName());
         return commentRepository.save(comment);
     }
 

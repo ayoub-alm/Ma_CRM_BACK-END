@@ -6,7 +6,6 @@ import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Interest;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.util.*;
 
@@ -14,7 +13,7 @@ import java.util.*;
 @Entity
 @Table(name = "prospectInterest")
 @Getter @Setter
-@SuperBuilder
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProspectInterest extends BaseEntity {

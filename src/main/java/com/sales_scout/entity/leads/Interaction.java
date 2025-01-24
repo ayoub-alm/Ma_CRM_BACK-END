@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "interactions")
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @Data
 public class Interaction extends BaseEntity {
     @Id

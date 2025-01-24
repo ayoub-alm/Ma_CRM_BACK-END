@@ -1,6 +1,5 @@
 package com.sales_scout.dto.request.create;
 
-import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import jakarta.persistence.Column;
@@ -17,7 +16,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCompanyDTO extends BaseDto {
+public class CreateCompanyDTO  {
     private Long id;
     private String logo;
     private String name;
@@ -41,7 +40,11 @@ public class CreateCompanyDTO extends BaseDto {
     private String certificationText;
     private String businessDescription;
     private ActiveInactiveEnum status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+    private String createdBy;
+    private String updatedBy;
     // Nested DTOs
     private LegalStatus legalStatus;
     private City city;

@@ -1,5 +1,6 @@
 package com.sales_scout.entity.crm.wms;
 
+import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,28 +10,22 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "contract_provision")
+@Table(name = "storage_need_unloading_types")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContractProvision {
+public class StorageNeedUnloadingType extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
 
-    private String notes;
-
-    private double price;
+    @ManyToOne
+    @JoinColumn(name = "unloading_type_id", nullable = false)
+    private UnloadingType unloadingType;
 
     @ManyToOne
-    @JoinColumn(name = "contract_id")
-    private StorageContract contract;
-
-    @ManyToOne
-    @JoinColumn(name = "provision_id")
-    private Provision provision;
+    @JoinColumn(name = "storage_need_id", nullable = false)
+    private StorageNeed storageNeed;
 }

@@ -107,10 +107,6 @@ public class InteractionService {
                 .planningDate(interactionRequestDto.getPlanningDate())
                 .joinFilePath(interactionRequestDto.getJoinFilePath())
                 .address(interactionRequestDto.getAddress())
-                .createdAt(interactionRequestDto.getCreatedAt())
-                .createdBy(interactionRequestDto.getCreatedBy())
-                .updatedAt(interactionRequestDto.getUpdatedAt())
-                .updatedBy(interactionRequestDto.getUpdatedBy())
                 .build();
 
         // Save the interaction entity
@@ -168,9 +164,6 @@ public class InteractionService {
                 .affectedToId(interaction.getAffectedTo() != null  ?  interaction.getAffectedTo().getId() : null)
                 .affectedToName(interaction.getAffectedTo() != null ? interaction.getAffectedTo().getName() : null)
                 .createdAt(interaction.getCreatedAt())
-                .createdBy(interaction.getCreatedBy())
-                .updatedAt(interaction.getUpdatedAt())
-                .updatedBy(interaction.getUpdatedBy())
                 .agentName(interaction.getAgent().getName())
                 .build();
     }

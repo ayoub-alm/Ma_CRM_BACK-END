@@ -1,5 +1,6 @@
 package com.sales_scout.entity.crm.wms;
 
+import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,12 +10,12 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "contract_unloading_type")
+@Table(name = "contract_unloading_types")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContractUnloadingType {
+public class ContractUnloadingType extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,18 +1,17 @@
 package com.sales_scout.dto.response;
 
 
-import com.sales_scout.dto.BaseDto;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 @Getter
 @Setter
-public class InterestResponseDto extends BaseDto {
+public class InterestResponseDto {
     private Long id;
     private String name;
     private Boolean status;

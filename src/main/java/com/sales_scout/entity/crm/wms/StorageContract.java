@@ -1,5 +1,8 @@
 package com.sales_scout.entity.crm.wms;
 
+import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.Company;
+import com.sales_scout.entity.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,12 +13,12 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "storage_contract")
+@Table(name = "storage_contracts")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StorageContract {
+public class StorageContract extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,5 +40,13 @@ public class StorageContract {
     @ManyToOne
     @JoinColumn(name = "offer_id")
     private StorageOffer offer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id",nullable = false)
+    private Customer customer;
 
 }

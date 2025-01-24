@@ -1,11 +1,11 @@
 package com.sales_scout.dto.request;
 
-import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -14,10 +14,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ProspectRequestDto extends BaseDto {
+@Builder
+public class ProspectRequestDto {
     private Long id;
     private String logo;
     private String name;

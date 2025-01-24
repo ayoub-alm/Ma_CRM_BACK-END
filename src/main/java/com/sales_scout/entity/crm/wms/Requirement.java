@@ -3,19 +3,22 @@ package com.sales_scout.entity.crm.wms;
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "temperatures")
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Table(name = "requirements")
 @Data
-public class Temperature extends BaseEntity {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Requirement extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,10 +28,16 @@ public class Temperature extends BaseEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "temperature", cascade = CascadeType.ALL)
-    private Set<StockedItem> stockedItems;
+    private Double initPrice;
+
+    private String unitOfMeasurement;
+
+    private String notes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
+
+    @OneToMany(mappedBy = "requirement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StorageNeedRequirement> storageNeedRequirements;
 }

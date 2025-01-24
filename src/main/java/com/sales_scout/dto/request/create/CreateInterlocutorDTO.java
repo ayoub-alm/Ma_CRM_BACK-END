@@ -2,7 +2,6 @@ package com.sales_scout.dto.request.create;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.sales_scout.deserializer.ActiveInactiveEnumDeserializer;
-import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.data.EmailAddress;
 import com.sales_scout.entity.data.PhoneNumber;
 import com.sales_scout.enums.ActiveInactiveEnum;
@@ -11,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class CreateInterlocutorDTO extends BaseDto {
+public class CreateInterlocutorDTO {
 
     @NotBlank(message = "Full name is required.")
     private String fullName;

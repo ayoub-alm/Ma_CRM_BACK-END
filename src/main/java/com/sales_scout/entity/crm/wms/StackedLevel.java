@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 import java.util.UUID;
@@ -15,7 +14,7 @@ import java.util.UUID;
 @Table(name = "stacked_levels")
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @Data
 public class StackedLevel extends BaseEntity {
     @Id

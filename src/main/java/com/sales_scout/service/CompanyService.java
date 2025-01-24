@@ -23,48 +23,44 @@ import java.util.stream.Collectors;
 
 @Service
 public class CompanyService {
-    private final CompanyRepository companyRepository;
     private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
-
+    private final CompanyRepository companyRepository;
     private final AuthenticationService authenticationService;
     public CompanyService(CompanyRepository companyRepository, AuthenticationService authenticationService) {
         this.companyRepository = companyRepository;
-
         this.authenticationService = authenticationService;
     }
 
     /**
      * This function allows to get companies that are not soft deleted
+     *
      * @return {List<Company>} the list of companies
      */
     public List<CompanyResponseDto> findAllCompanies() {
 
-        return companyRepository.findAllByDeletedAtIsNull()
-                .stream()
-                .map(CompanyDtoBuilder::fromEntity)
-                .collect(Collectors.toList());
+        return companyRepository.findAllByDeletedAtIsNull().stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
     }
 
     /**
      * This function allows to find company with deleted_at is null and ID
+     *
      * @param id the ID of the company to get
      * @return Optional<Company>
      * @throws {EntityNotFoundException}
      */
     public CompanyResponseDto findCompanyById(Long id) {
 
-        return companyRepository.findByDeletedAtIsNullAndId(id)
-                .map(CompanyDtoBuilder::fromEntity)
-                .orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas ou est supprimée"));
+        return companyRepository.findByDeletedAtIsNullAndId(id).map(CompanyDtoBuilder::fromEntity).orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas ou est supprimée"));
     }
+
     /**
      * This function allows to soft delete a company
+     *
      * @param id the ID of the company to delete
      * @throws {EntityNotFoundException}
      */
     public void softDeleteCompany(Long id) throws EntityNotFoundException {
-        Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas"));
+        Company company = companyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas"));
 
         // Set deletedAt to the current time
         company.setDeletedAt(LocalDateTime.now());
@@ -73,7 +69,8 @@ public class CompanyService {
 
     /**
      * This function allows to update a company
-     * @param id the ID of the company to update
+     *
+     * @param id             the ID of the company to update
      * @param companyDetails the new details of the company
      * @return the updated Company
      * @throws {EntityNotFoundException}
@@ -81,11 +78,9 @@ public class CompanyService {
     public CompanyResponseDto updateCompany(Long id, CreateCompanyDTO companyDetails) throws EntityNotFoundException {
 
         Optional<Company> existingCompany = companyRepository.findByDeletedAtIsNullAndId(id);
-        if(existingCompany.isEmpty()){
-            throw  new RuntimeException("Entreprise n'existe pas ou est supprimée");
+        if (existingCompany.isEmpty()) {
+            throw new RuntimeException("Entreprise n'existe pas ou est supprimée");
         }
-
-        UserEntity user = this.authenticationService.getCurrentUser();
 
         String imagePath = existingCompany.get().getLogo();
         if (companyDetails.getLogo() != null && !companyDetails.getLogo().isEmpty()) {
@@ -125,8 +120,8 @@ public class CompanyService {
         company.setProprietaryStructure(companyDetails.getProprietaryStructure());
         company.setTitle(companyDetails.getTitle());
         company.setReprosentaveJobTitle(companyDetails.getReprosentaveJobTitle());
-        company.setUpdatedAt(LocalDateTime.now());
-        company.setUpdatedBy(user.getName());
+
+
         Company updatedCompany = companyRepository.save(company);
 
         return CompanyDtoBuilder.fromEntity(updatedCompany);
@@ -134,24 +129,22 @@ public class CompanyService {
 
     /**
      * This function allows to get all companies including soft deleted ones
+     *
      * @return {List<Company>} the list of all companies
      */
     public List<CompanyResponseDto> findAllCompaniesIncludingDeleted() {
-        return companyRepository.findAll()
-                .stream()
-                .map(CompanyDtoBuilder::fromEntity)
-                .collect(Collectors.toList());
+        return companyRepository.findAll().stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
     }
 
 
     /**
      * This function allows to restore a soft deleted company
+     *
      * @param id the ID of the company to restore
      * @throws {EntityNotFoundException}
      */
     public Company restoreCompany(Long id) throws EntityNotFoundException {
-        Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas"));
+        Company company = companyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas"));
         // Check if the company is soft deleted
         if (company.getDeletedAt() == null) {
             throw new RuntimeException("L'entreprise n'est pas supprimée.");
@@ -186,74 +179,82 @@ public class CompanyService {
 //    }
 
 
-/**
- * Add a new company to the system.
- * @param companyDTO The DTO containing company details.
- * @return The saved Company object.
- */
-public CompanyResponseDto addCompany(CreateCompanyDTO companyDTO) {
-    // Set the deletedAt to null to ensure the company isn’t marked as deleted
-    companyDTO.setDeletedAt(null);
+    /**
+     * Add a new company to the system.
+     *
+     * @param companyDTO The DTO containing company details.
+     * @return The saved Company object.
+     */
+    public CompanyResponseDto addCompany(CreateCompanyDTO companyDTO) {
+        // Set the deletedAt to null to ensure the company isn’t marked as deleted
+        companyDTO.setDeletedAt(null);
 
-    UserEntity user = this.authenticationService.getCurrentUser();
+        try {
+            // Save the Base64-encoded image to the local file system if the logo is present
+            String imagePath = null;
+            if (companyDTO.getLogo() != null && !companyDTO.getLogo().isEmpty()) {
+                imagePath = saveImageFromBase64(companyDTO.getLogo());
+            }
 
-    try {
-        // Save the Base64-encoded image to the local file system if the logo is present
-        String imagePath = null;
-        if (companyDTO.getLogo() != null && !companyDTO.getLogo().isEmpty()) {
-            imagePath = saveImageFromBase64(companyDTO.getLogo());
+            // Create a new Company entity from the DTO
+            Company newCompany = CompanyDtoBuilder.fromDto(companyDTO, imagePath);
+
+            newCompany.setCreatedAt(LocalDateTime.now());
+            newCompany.setUpdatedAt(LocalDateTime.now());
+            newCompany.setStatus(ActiveInactiveEnum.ACTIVE);
+            Company savedCompany = companyRepository.save(newCompany);
+
+            return CompanyDtoBuilder.fromEntity(savedCompany);
+
+        } catch (IOException e) {
+            // Log the exception
+            System.err.println("Error while saving image: " + e.getMessage());
+            throw new RuntimeException("Failed to save company logo for: " + companyDTO.getName(), e);
+        } catch (Exception e) {
+            // Log the exception
+            System.err.println("Error while saving company: " + e.getMessage());
+            throw new RuntimeException("Failed to save company: " + companyDTO.getName(), e);
+        }
+    }
+
+    /**
+     * Save the Base64-encoded image to the local file system and return the image path.
+     *
+     * @param base64Image The Base64-encoded image string.
+     * @return The path of the saved image.
+     * @throws IOException If an error occurs while saving the image.
+     */
+    private String saveImageFromBase64(String base64Image) throws IOException {
+        if (base64Image == null || base64Image.isEmpty()) {
+            return null;
         }
 
-        // Create a new Company entity from the DTO
-        Company newCompany = CompanyDtoBuilder.fromDto(companyDTO,imagePath);
+        String[] parts = base64Image.split(",");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid Base64 image format");
+        }
+        byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
 
-        newCompany.setCreatedAt(LocalDateTime.now());
-        newCompany.setCreatedBy(user.getName());
-        newCompany.setStatus(ActiveInactiveEnum.ACTIVE);
-        Company savedCompany = companyRepository.save(newCompany);
+        String fileName = "company_logo_" + System.currentTimeMillis() + ".png"; // Adjust extension if needed
+        Path imagePath = Paths.get(IMAGE_DIRECTORY, fileName); // Use the constant defined above
 
-        return CompanyDtoBuilder.fromEntity(savedCompany);
+        // Ensure the directory exists
+        Files.createDirectories(imagePath.getParent());
 
-    } catch (IOException e) {
-        // Log the exception
-        System.err.println("Error while saving image: " + e.getMessage());
-        throw new RuntimeException("Failed to save company logo for: " + companyDTO.getName(), e);
-    } catch (Exception e) {
-        // Log the exception
-        System.err.println("Error while saving company: " + e.getMessage());
-        throw new RuntimeException("Failed to save company: " + companyDTO.getName(), e);
-    }
-}
+        try (FileOutputStream fos = new FileOutputStream(imagePath.toFile())) {
+            fos.write(decodedBytes);
+        }
 
-/**
- * Save the Base64-encoded image to the local file system and return the image path.
- * @param base64Image The Base64-encoded image string.
- * @return The path of the saved image.
- * @throws IOException If an error occurs while saving the image.
- */
-private String saveImageFromBase64(String base64Image) throws IOException {
-    if (base64Image == null || base64Image.isEmpty()) {
-        return null;
+        return fileName; // Return only the name of the image
     }
 
-    String[] parts = base64Image.split(",");
-    if (parts.length != 2) {
-        throw new IllegalArgumentException("Invalid Base64 image format");
+    /**
+     * This function allows to get all companies for the current authenticated user
+     * @return List<CompanyResponseDto> list of companies
+     */
+    public List<CompanyResponseDto> getCompaniesByCurrentUser(){
+        UserEntity currentUser = authenticationService.getCurrentUser();
+        return currentUser.getCompanies().stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
     }
-    byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
-
-    String fileName = "company_logo_" + System.currentTimeMillis() + ".png"; // Adjust extension if needed
-    Path imagePath = Paths.get(IMAGE_DIRECTORY, fileName); // Use the constant defined above
-
-    // Ensure the directory exists
-    Files.createDirectories(imagePath.getParent());
-
-    try (FileOutputStream fos = new FileOutputStream(imagePath.toFile())) {
-        fos.write(decodedBytes);
-    }
-
-    return fileName; // Return only the name of the image
-}
-
 
 }

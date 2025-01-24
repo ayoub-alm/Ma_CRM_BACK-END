@@ -3,14 +3,13 @@ package com.sales_scout.entity;
 import com.sales_scout.enums.EntityEnum;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 @Table(name = "comments")
 public class Comment extends BaseEntity {
     @Id

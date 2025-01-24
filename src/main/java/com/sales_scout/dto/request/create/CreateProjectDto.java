@@ -1,13 +1,12 @@
 package com.sales_scout.dto.request.create;
 
-import com.sales_scout.dto.BaseDto;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class CreateProjectDto extends BaseDto {
+public class CreateProjectDto {
 
     @NotBlank(message = "Le nom ne doit pas être vide")
     @Size(max = 100, message = "Le nom du projet ne peut pas dépasser 100 caractères.")

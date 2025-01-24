@@ -3,8 +3,9 @@ package com.sales_scout.entity.crm.wms;
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Table(name = "stocked_items")
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @Data
 public class StockedItem extends BaseEntity {
     @Id
@@ -30,9 +31,8 @@ public class StockedItem extends BaseEntity {
     @JoinColumn(name = "structure_id")
     private Structure structure;
 
-    @ManyToOne
-    @JoinColumn(name = "stacked_level_id")
-    private StackedLevel stackedLevel;
+
+    private Long stackedLevel;
 
     @ManyToOne
     @JoinColumn(name = "temperature_id")
@@ -41,16 +41,26 @@ public class StockedItem extends BaseEntity {
     private Boolean isFragile;
 
     private Integer uvc;
+    private Integer uc;
 
     private Integer numberOfPackages;
 
     @ManyToOne
     @JoinColumn(name = "dimension_id")
     private Dimension dimension;
+    private Double weight;
 
     private Double price;
 
     @ManyToOne
     @JoinColumn(name = "storage_offer_id") // Reference to the StorageOffer entity
     private StorageOffer storageOffer;
+
+
+    @ManyToOne
+    @JoinColumn(name = "storage_need_id") // Reference to the StorageOffer entity
+    private StorageNeed storageNeed;
+
+    @OneToMany(mappedBy = "stockedItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StockedItemProvision> stockedItemProvisions;
 }

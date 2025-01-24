@@ -14,6 +14,10 @@ public class InterestDtoBuilder {
                 .name(interest.getName())
                 .status(interest.getStatus())
                 .companyId(interest.getCompany().getId())
+                .createdAt(interest.getCreatedAt())
+                .createdBy(interest.getCreatedBy())
+                .updatedAt(interest.getUpdatedAt())
+                .updatedBy(interest.getUpdatedBy())
                 .build();
     }
 

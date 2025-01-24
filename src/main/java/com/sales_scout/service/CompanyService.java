@@ -3,6 +3,7 @@ package com.sales_scout.service;
 import com.sales_scout.dto.request.create.CreateCompanyDTO;
 import com.sales_scout.dto.response.CompanyResponseDto;
 import com.sales_scout.entity.Company;
+import com.sales_scout.entity.UserEntity;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.mapper.CompanyDtoBuilder;
 import com.sales_scout.repository.CompanyRepository;
@@ -25,9 +26,11 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
 
-    public CompanyService(CompanyRepository companyRepository) {
+    private final AuthenticationService authenticationService;
+    public CompanyService(CompanyRepository companyRepository, AuthenticationService authenticationService) {
         this.companyRepository = companyRepository;
 
+        this.authenticationService = authenticationService;
     }
 
     /**
@@ -82,6 +85,8 @@ public class CompanyService {
             throw  new RuntimeException("Entreprise n'existe pas ou est supprimée");
         }
 
+        UserEntity user = this.authenticationService.getCurrentUser();
+
         String imagePath = existingCompany.get().getLogo();
         if (companyDetails.getLogo() != null && !companyDetails.getLogo().isEmpty()) {
             try {
@@ -120,7 +125,8 @@ public class CompanyService {
         company.setProprietaryStructure(companyDetails.getProprietaryStructure());
         company.setTitle(companyDetails.getTitle());
         company.setReprosentaveJobTitle(companyDetails.getReprosentaveJobTitle());
-
+        company.setUpdatedAt(LocalDateTime.now());
+        company.setUpdatedBy(user.getName());
         Company updatedCompany = companyRepository.save(company);
 
         return CompanyDtoBuilder.fromEntity(updatedCompany);
@@ -189,6 +195,8 @@ public CompanyResponseDto addCompany(CreateCompanyDTO companyDTO) {
     // Set the deletedAt to null to ensure the company isn’t marked as deleted
     companyDTO.setDeletedAt(null);
 
+    UserEntity user = this.authenticationService.getCurrentUser();
+
     try {
         // Save the Base64-encoded image to the local file system if the logo is present
         String imagePath = null;
@@ -200,7 +208,7 @@ public CompanyResponseDto addCompany(CreateCompanyDTO companyDTO) {
         Company newCompany = CompanyDtoBuilder.fromDto(companyDTO,imagePath);
 
         newCompany.setCreatedAt(LocalDateTime.now());
-        newCompany.setUpdatedAt(LocalDateTime.now());
+        newCompany.setCreatedBy(user.getName());
         newCompany.setStatus(ActiveInactiveEnum.ACTIVE);
         Company savedCompany = companyRepository.save(newCompany);
 

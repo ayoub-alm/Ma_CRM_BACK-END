@@ -3,6 +3,7 @@ package com.sales_scout.entity.crm.wms;
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
@@ -11,7 +12,7 @@ import java.util.Set;
 @Table(name = "dimensions")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Data
 public class Dimension extends BaseEntity {
     @Id

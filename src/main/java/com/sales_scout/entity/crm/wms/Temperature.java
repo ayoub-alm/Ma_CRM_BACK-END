@@ -3,6 +3,7 @@ package com.sales_scout.entity.crm.wms;
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 import java.util.UUID;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Table(name = "temperatures")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Data
 public class Temperature extends BaseEntity {
     @Id

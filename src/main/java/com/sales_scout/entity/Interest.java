@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +16,8 @@ import java.util.List;
 @Entity
 @Table(name = "interests")
 @AllArgsConstructor @NoArgsConstructor
-@Builder @Data
+@SuperBuilder
+@Data
 public class Interest extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

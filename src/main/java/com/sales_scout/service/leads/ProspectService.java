@@ -113,6 +113,8 @@ public class ProspectService {
                  imagePath = null;
             }
 
+            UserEntity user = this.authenticationService.getCurrentUser();
+
             Prospect prospect;
 
             if (prospectRequestDto.getId() != null) {
@@ -150,6 +152,7 @@ public class ProspectService {
                     prospect.setReprosentaveJobTitle(prospectRequestDto.getReprosentaveJobTitle());
                     prospect.setLogo(imagePath != null && !imagePath.isEmpty() ? imagePath : "");
                     prospect.setUpdatedAt(LocalDateTime.now());
+                    prospect.setUpdatedBy(user.getName());
                 } else {
                     throw new RuntimeException("Prospect with ID " + prospectRequestDto.getId() + " not found.");
                 }
@@ -187,12 +190,11 @@ public class ProspectService {
                         .logo(imagePath)
                         .active(ActiveInactiveEnum.ACTIVE)
                         .company(Company.builder().id((long)1).build())
+                        .createdAt(LocalDateTime.now())
+                        .createdBy(user.getName())
                         .build();
             }
 
-
-           prospect.setCreatedAt(LocalDateTime.now());
-           prospect.setUpdatedAt(LocalDateTime.now());
 
             // Save the prospect entity
             return prospectRepository.save(prospect);
@@ -488,6 +490,8 @@ public class ProspectService {
         ProspectStatus oldStatus = prospect.getStatus(); // Save the old status for comparison
         prospect.setStatus(status);
 
+        UserEntity user = this.authenticationService.getCurrentUser();
+
         // Check if a customer already exists for this prospect
         Optional<Customer> customer = customerRepository.findByProspectIdAndDeletedAtIsNull(prospectId);
 
@@ -536,6 +540,7 @@ public class ProspectService {
                     addCustomer.setProspect(prospect);
                     addCustomer.setCompany(prospect.getCompany());
                     addCustomer.setCreatedAt(prospect.getCreatedAt());
+                    addCustomer.setCreatedBy(prospect.getCreatedBy());
                     // Save the new customer
                     this.customerRepository.save(addCustomer);
             }
@@ -545,6 +550,8 @@ public class ProspectService {
             // update status customer
             Customer updateCustomer = customer.get();
             updateCustomer.setStatus(status);
+            updateCustomer.setUpdatedAt(LocalDateTime.now());
+            updateCustomer.setUpdatedBy(user.getName());
             this.customerRepository.save(updateCustomer);
         }
         // Save the updated prospect

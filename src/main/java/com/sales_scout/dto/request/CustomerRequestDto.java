@@ -1,6 +1,7 @@
 package com.sales_scout.dto.request;
 
 
+import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.entity.leads.Prospect;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -19,8 +21,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class CustomerRequestDto {
+@SuperBuilder
+public class CustomerRequestDto extends BaseDto {
     private Long id;
     private String logo;
     private String name;

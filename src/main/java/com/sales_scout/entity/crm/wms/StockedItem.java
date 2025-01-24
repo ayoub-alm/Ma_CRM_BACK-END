@@ -3,6 +3,7 @@ package com.sales_scout.entity.crm.wms;
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Table(name = "stocked_items")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Data
 public class StockedItem extends BaseEntity {
     @Id

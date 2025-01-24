@@ -49,6 +49,10 @@ public class CustomerMapper {
                 .interest(customer.getInterest())
                 .prospectId(customer.getProspect().getId())
                 .companyId(customer.getCompany().getId())
+                .createdAt(customer.getCreatedAt())
+                .createdBy(customer.getCreatedBy())
+                .updatedAt(customer.getUpdatedAt())
+                .updatedBy(customer.getUpdatedBy())
                 .build();
     }
 
@@ -93,6 +97,10 @@ public class CustomerMapper {
                 .trackingLogs(customerDetails.getTrackingLogs())
                 .interest(customerDetails.getInterest())
                 .prospect(Prospect.builder().id(customerDetails.getProspectId()).build())
+                .createdAt(customerDetails.getCreatedAt())
+                .createdBy(customerDetails.getCreatedBy())
+                .updatedAt(customerDetails.getUpdatedAt())
+                .updatedBy(customerDetails.getUpdatedBy())
                 .build();
     }
 }

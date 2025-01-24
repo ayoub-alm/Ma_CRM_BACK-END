@@ -11,12 +11,13 @@ import com.sales_scout.enums.ActiveInactiveEnum;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "interlocutors")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Getter @Setter
 public class Interlocutor extends BaseEntity {
     @Id

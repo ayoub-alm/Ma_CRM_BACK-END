@@ -3,16 +3,18 @@ package com.sales_scout.service.leads;
 import com.sales_scout.dto.request.ProspectInterestRequestDto;
 import com.sales_scout.dto.response.ProspectInterestResponseDto;
 import com.sales_scout.entity.Interest;
+import com.sales_scout.entity.UserEntity;
 import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.leads.ProspectInterest;
 import com.sales_scout.mapper.ProspectInterestDtoBuilder;
 import com.sales_scout.repository.InterestRepository;
 import com.sales_scout.repository.leads.ProspectInterestRepository;
 import com.sales_scout.repository.leads.ProspectRepository;
+import com.sales_scout.service.AuthenticationService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -20,11 +22,12 @@ public class ProspectInterestService {
     private final ProspectInterestRepository prospectInterestRepository;
     private final ProspectRepository prospectRepository;
     private final InterestRepository interestRepository;
-
-    public ProspectInterestService(ProspectInterestRepository prospectInterestRepository, ProspectRepository prospectRepository, InterestRepository interestRepository) {
+    private final AuthenticationService authenticationService;
+    public ProspectInterestService(ProspectInterestRepository prospectInterestRepository, ProspectRepository prospectRepository, InterestRepository interestRepository, AuthenticationService authenticationService) {
         this.prospectInterestRepository = prospectInterestRepository;
         this.prospectRepository = prospectRepository;
         this.interestRepository = interestRepository;
+        this.authenticationService = authenticationService;
     }
 
 
@@ -45,11 +48,14 @@ public class ProspectInterestService {
                 .stream()
                 .filter(prospectInterest -> prospectInterest.getInterest().getId().equals(prospectInterestDetails.getInterestId()))
                 .findFirst();
+        UserEntity user = this.authenticationService.getCurrentUser();
 
         if (matchingProspectInterest.isPresent()) {
             // Update the existing ProspectInterest
             ProspectInterest prospectInterest = matchingProspectInterest.get();
             prospectInterest.setStatus(prospectInterestDetails.getStatus());
+            prospectInterest.setUpdatedAt(LocalDateTime.now());
+            prospectInterest.setUpdatedBy(user.getName());
             prospectRepository.save(prospect); // Save the updated Prospect entity
             return ProspectInterestDtoBuilder.fromEntity(prospectInterest);
         } else {
@@ -62,6 +68,8 @@ public class ProspectInterestService {
                     .name(newInterest.getName())
                     .prospect(prospect) // Use the existing Prospect entity
                     .status(prospectInterestDetails.getStatus())
+                    .createdAt(LocalDateTime.now())
+                    .createdBy(user.getName())
                     .build();
 
             // Save the new ProspectInterest and return it as a DTO

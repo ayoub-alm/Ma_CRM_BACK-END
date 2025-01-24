@@ -7,6 +7,7 @@ import com.sales_scout.enums.crm.wms.NeedStatusEnum;
 import com.sales_scout.enums.crm.wms.StorageReasonEnum;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Table(name = "storage_needs")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class StorageNeed extends BaseEntity {

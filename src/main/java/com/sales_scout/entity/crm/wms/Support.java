@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 import java.util.UUID;
@@ -15,7 +16,8 @@ import java.util.UUID;
 @Table(name = "supports")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder @Data
+@SuperBuilder
+@Data
 public class Support  extends BaseEntity {
 
     @Id

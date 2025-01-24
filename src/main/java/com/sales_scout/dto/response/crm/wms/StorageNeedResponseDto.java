@@ -1,9 +1,11 @@
 package com.sales_scout.dto.response.crm.wms;
 
+import com.sales_scout.dto.BaseDto;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class StorageNeedResponseDto {
+public class StorageNeedResponseDto extends BaseDto {
     private Long id;
     private UUID ref;
     private String liverStatus;  // LivreEnum as String

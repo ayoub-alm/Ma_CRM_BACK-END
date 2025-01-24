@@ -1,12 +1,12 @@
 package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.Company;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 import java.util.UUID;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Table(name = "structures")
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @Data
 public class Structure extends BaseEntity {
     @Id
@@ -27,11 +27,10 @@ public class Structure extends BaseEntity {
 
     private String name;
 
-    private Double increase;
-
-    private Double decrease;
-
     @OneToMany(mappedBy = "structure", cascade = CascadeType.ALL)
     private Set<StockedItem> stockedItems;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 }

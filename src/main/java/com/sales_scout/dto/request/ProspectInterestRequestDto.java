@@ -1,19 +1,17 @@
 package com.sales_scout.dto.request;
 
-import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.leads.Prospect;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@SuperBuilder
-public class ProspectInterestRequestDto extends BaseDto {
+@Builder
+public class ProspectInterestRequestDto {
 
 
     private String name;

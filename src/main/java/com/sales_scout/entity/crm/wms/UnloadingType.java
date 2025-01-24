@@ -1,6 +1,8 @@
 package com.sales_scout.entity.crm.wms;
 
 
+import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.Company;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +18,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UnloadingType {
+public class UnloadingType extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +35,11 @@ public class UnloadingType {
 
     private Boolean status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
     @OneToMany(mappedBy = "unloadingType", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<StorageOfferUnloadType> offerUnloadTypes;
+    private Set<StorageNeedUnloadingType> storageNeedUnloadingTypes;
+
 }

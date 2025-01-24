@@ -4,9 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum StorageReasonEnum {
-    TEMPORARY("Temporary storage for short term use"),
-    PERMANENT("Permanent storage for long term use"),
-    SEASONAL("Storage for seasonal items");
+    OVERFLOW("Débord"),
+    OUTSOURCING("Externalisation");
 
     private final String description;
 

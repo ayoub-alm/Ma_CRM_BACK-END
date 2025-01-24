@@ -2,7 +2,6 @@ package com.sales_scout.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -10,7 +9,7 @@ import java.util.List;
 @Table(name = "workspaces")
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Workspace extends BaseEntity {

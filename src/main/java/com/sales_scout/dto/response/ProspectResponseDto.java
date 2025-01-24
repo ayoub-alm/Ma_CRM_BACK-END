@@ -1,6 +1,5 @@
 package com.sales_scout.dto.response;
 
-import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.entity.leads.ProspectInterest;
@@ -9,7 +8,6 @@ import com.sales_scout.enums.ProspectStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -18,8 +16,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@SuperBuilder
-public class ProspectResponseDto extends BaseDto {
+@Builder
+public class ProspectResponseDto {
     private Long id;
     private String logo;
     private String name;

@@ -1,6 +1,5 @@
 package com.sales_scout.dto.response;
 
-import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.data.Department;
 import com.sales_scout.entity.data.EmailAddress;
 import com.sales_scout.entity.data.JobTitle;
@@ -9,12 +8,11 @@ import com.sales_scout.enums.ActiveInactiveEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@Builder
 @Data
 @AllArgsConstructor
-public class InterlocutorResponseDto extends BaseDto {
+public class InterlocutorResponseDto {
     private Long id;
     private String fullName;
 

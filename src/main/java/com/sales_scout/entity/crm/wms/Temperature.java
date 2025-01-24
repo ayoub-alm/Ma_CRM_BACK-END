@@ -1,9 +1,9 @@
 package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.Company;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 import java.util.UUID;
@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "temperatures")
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @Data
 public class Temperature extends BaseEntity {
     @Id
@@ -25,10 +25,10 @@ public class Temperature extends BaseEntity {
 
     private String name;
 
-    private Double increase;
-
-    private Double decrease;
-
     @OneToMany(mappedBy = "temperature", cascade = CascadeType.ALL)
     private Set<StockedItem> stockedItems;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 }

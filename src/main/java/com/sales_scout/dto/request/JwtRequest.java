@@ -1,17 +1,15 @@
 package com.sales_scout.dto.request;
 
 
-import com.sales_scout.dto.BaseDto;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 @ToString
-public class JwtRequest extends BaseDto {
+public class JwtRequest {
     private String email;
     private String password;
 

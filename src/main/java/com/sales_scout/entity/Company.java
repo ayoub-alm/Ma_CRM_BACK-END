@@ -6,7 +6,6 @@ import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.util.*;
 
@@ -15,7 +14,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
-@SuperBuilder
+@Builder
 @Table(name = "companies")
 public class Company extends BaseEntity {
     @Id

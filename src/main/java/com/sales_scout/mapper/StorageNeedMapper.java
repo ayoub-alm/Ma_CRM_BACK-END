@@ -1,8 +1,9 @@
 package com.sales_scout.mapper;
 
-import com.sales_scout.dto.request.create.StorageNeedCreateDto;
+import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
 import com.sales_scout.dto.response.crm.wms.CustomerDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
+import com.sales_scout.entity.Company;
 import com.sales_scout.entity.Customer;
 import com.sales_scout.entity.crm.wms.StorageNeed;
 import org.springframework.stereotype.Component;
@@ -30,21 +31,20 @@ public class StorageNeedMapper {
         storageNeed.setDuration(dto.getDuration());
         storageNeed.setNumberOfSku(dto.getNumberOfSku());
         storageNeed.setProductType(dto.getProductType());
-        storageNeed.setCreatedAt(dto.getCreatedAt());
-        storageNeed.setCreatedBy(dto.getCreatedBy());
-        storageNeed.setUpdatedAt(dto.getUpdatedAt());
-        storageNeed.setUpdatedBy(dto.getUpdatedBy());
 
         // Set the customer entity by ID (assumes a customer service or repository fetch)
         Customer customer = new Customer();
         customer.setId(dto.getCustomerId());
         storageNeed.setCustomer(customer);
 
+        Company company = new Company();
+        company.setId(dto.getCompanyId());
+        storageNeed.setCompany(company);
         return storageNeed;
     }
 
 
-    public StorageNeedResponseDto toResponseDto(StorageNeed storageNeed) {
+    public static StorageNeedResponseDto toResponseDto(StorageNeed storageNeed) {
         if (storageNeed == null) {
             return null;
         }
@@ -59,10 +59,6 @@ public class StorageNeedMapper {
         dto.setDuration(storageNeed.getDuration());
         dto.setNumberOfSku(storageNeed.getNumberOfSku());
         dto.setProductType(storageNeed.getProductType());
-        dto.setCreatedAt(storageNeed.getCreatedAt());
-        dto.setCreatedBy(storageNeed.getCreatedBy());
-        dto.setUpdatedAt(storageNeed.getUpdatedAt());
-        dto.setUpdatedBy(storageNeed.getUpdatedBy());
 
         // Map nested customer details
         if (storageNeed.getCustomer() != null) {

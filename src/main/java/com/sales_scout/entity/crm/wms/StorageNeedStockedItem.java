@@ -6,27 +6,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "storage_insurance")
+@Table(name = "storage_need_stocked_items")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StorageInsurance {
+public class StorageNeedStockedItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
 
-    private Double price;
+    @ManyToOne
+    @JoinColumn(name = "stocked_item_id", nullable = false)
+    private StockedItem stockedItem;
 
-    private String notes;
-
-    @OneToMany(mappedBy = "insurance", cascade = CascadeType.ALL)
-    private Set<StorageOfferInsurance> offerInsurances;
+    @ManyToOne
+    @JoinColumn(name = "storage_need_id", nullable = false)
+    private StorageNeed storageNeed;
 }

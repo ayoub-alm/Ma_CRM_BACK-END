@@ -1,5 +1,6 @@
 package com.sales_scout.entity.crm.wms;
 
+import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,12 +10,12 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "storage_offer_insurance")
+@Table(name = "storage_offer_insurances")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StorageOfferRequirement {
+public class StorageOfferRequirement extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,5 +33,5 @@ public class StorageOfferRequirement {
 
     @ManyToOne
     @JoinColumn(name = "requirement_id")
-    private StorageRequirement requirement;
+    private Requirement requirement;
 }

@@ -5,8 +5,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
+
 import com.sales_scout.entity.leads.Interaction;
+
+import com.sales_scout.enums.InteractionSubject;
+import com.sales_scout.enums.InteractionType;
+
 import com.sales_scout.service.leads.InteractionService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/interaction")
+@RequestMapping("/api/interactions")
 public class InteractionController {
     private final InteractionService interactionService;
 
@@ -24,8 +31,11 @@ public class InteractionController {
     }
 
     @GetMapping("")
-    ResponseEntity<List<InteractionResponseDto>> getAllInteractions(){
-        List<InteractionResponseDto> interactions = this.interactionService.getAllInteractions();
+    ResponseEntity<List<InteractionResponseDto>> getAllInteractions(
+            @RequestParam(required = false) InteractionType type,
+            @RequestParam(required = false)InteractionSubject subject
+    ){
+        List<InteractionResponseDto> interactions = this.interactionService.getAllInteractions(type,subject);
         return new ResponseEntity<>(interactions, HttpStatus.OK);
     }
 
@@ -63,6 +73,31 @@ public class InteractionController {
             return ResponseEntity.ok("Excel File exported successfuly: Interactions_file.xlsx");
         }catch (IOException e){
             return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to export Excel file " + e.getMessage());
+
+    /**
+     * Soft Delete Interaction By Id
+     * @param id
+     */
+    @DeleteMapping("/soft-delete/{id}")
+    ResponseEntity<Boolean>  softDeleteInteraction(@PathVariable Long id)throws EntityNotFoundException{
+       try{
+           return ResponseEntity.ok().body(interactionService.softDeleteInteraction(id));
+       }catch(EntityNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+       }
+
+    }
+
+    /**
+     * Restore Interaction By Id
+     * @param id
+     */
+    @PutMapping("/restore/{id}")
+    ResponseEntity<Boolean> restoreInteraction(@PathVariable Long id) throws EntityNotFoundException{
+        try {
+            return ResponseEntity.ok().body(interactionService.restoreInteraction(id));
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         }
     }
 }

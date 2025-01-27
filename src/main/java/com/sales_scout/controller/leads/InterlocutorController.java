@@ -7,6 +7,8 @@ import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.service.leads.InterlocutorService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -115,5 +117,31 @@ public class InterlocutorController {
     public ResponseEntity<Void> bulkRestore(@RequestBody List<Long> ids) {
         interlocutorService.bulkRestore(ids);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * Soft Delete By Interlocutor Id
+     * @param id
+     */
+    @DeleteMapping("/soft-delete/{id}")
+    public ResponseEntity<Boolean> softDeleteInterlocutor(@PathVariable Long id){
+        try {
+            return ResponseEntity.ok().body(interlocutorService.softDeleteInterlocutor(id));
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+        }
+    }
+
+    /**
+     * Restore Interlocutor By Id
+     * @param id
+     */
+    @PutMapping("/restore/{id}")
+    public ResponseEntity<Boolean> restoreInterlocutor(@PathVariable Long id){
+       try {
+           return ResponseEntity.ok().body(interlocutorService.restoreInterlocutor(id));
+       } catch (EntityNotFoundException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+       }
     }
 }

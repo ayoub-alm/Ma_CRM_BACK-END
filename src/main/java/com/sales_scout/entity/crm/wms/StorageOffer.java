@@ -1,5 +1,7 @@
 package com.sales_scout.entity.crm.wms;
 
+import com.sales_scout.entity.Company;
+import com.sales_scout.entity.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "storage_offer")
+@Table(name = "storage_offers")
 @Data
 @Builder
 @NoArgsConstructor
@@ -36,4 +38,11 @@ public class StorageOffer {
     @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL)
     private Set<StorageContract> contracts;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id",nullable = false)
+    private Customer customer;
 }

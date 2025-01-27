@@ -1,7 +1,9 @@
 package com.sales_scout.repository.leads;
 
 import com.sales_scout.entity.leads.Prospect;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,11 +21,18 @@ public interface ProspectRepository extends JpaRepository<Prospect, Long> {
      */
     List<Prospect> findAllByDeletedAtIsNullAndCompanyIdIn(List<Long> companyIds);
     /**
-     * get prospect by id and where deleted at is null
+     * Get non-Soft-deleted prospect by ID
      * @return {Optional<Prospect>}
      * @param id {Long}
      */
     Optional<Prospect> findByDeletedAtIsNullAndId(Long id);
+
+    /**
+     * Get Soft-deleted prospect by ID
+     * @param id
+     * @return
+     */
+    Optional<Prospect> findByDeletedAtIsNotNullAndId(Long id);
 
     /**
      * This function allows to get count of prospects per status

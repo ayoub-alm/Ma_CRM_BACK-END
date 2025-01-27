@@ -1,6 +1,7 @@
 package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.Company;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,10 +25,10 @@ public class Temperature extends BaseEntity {
 
     private String name;
 
-    private Double increase;
-
-    private Double decrease;
-
     @OneToMany(mappedBy = "temperature", cascade = CascadeType.ALL)
     private Set<StockedItem> stockedItems;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 }

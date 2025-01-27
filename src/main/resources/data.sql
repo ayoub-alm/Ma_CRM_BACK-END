@@ -406,3 +406,37 @@ VALUES (CURRENT_TIMESTAMP(6), 'user1', NULL, NULL, b'1', 'M');
 -- Inserting a record for 'Mem'
 INSERT INTO titles (created_at, created_by, deleted_at, updated_at, active, title)
 VALUES (CURRENT_TIMESTAMP(6), 'user2', NULL, NULL, b'1', 'Mem');
+
+
+INSERT INTO `users` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `email`, `name`, `password`, `phone`, `refresh_token`, `role_id`) VALUES
+(0, '2024-11-20 09:51:08.000000', NULL, NULL, NULL, 'alayoub33@gmail.com', 'ayoub', '$2a$12$QizMzonMA2.z9nSvkvmqLOVlBzGB3owV2j8TVE0EFzudK35WeaWcC', NULL, NULL, NULL),
+(2, '2024-11-20 09:51:08.000000', 'ayoub', NULL, NULL, 'alayoub44@gmail.com', 'Admin', '$2a$12$QizMzonMA2.z9nSvkvmqLOVlBzGB3owV2j8TVE0EFzudK35WeaWcCd', '0619903092', NULL, NULL),
+(3, '2024-11-20 09:51:08.000000', NULL, NULL, NULL, 'test@3abc.com', 'test', '$2a$12$.l8b515xr2SP1JjUYhEDFeCqxVvUKpmXFD.akLSLNLcv/Tp5shv8i', NULL, NULL, NULL);
+
+INSERT INTO provision (id, created_at, created_by, deleted_at, updated_at, last_updated_by, init_price, name, notes, ref, unit_of_measurement, company_id)
+VALUES
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 17.00, 'Réception', 'Prix pour réception', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Contrôle qualité en', 'Prix pour contrôle qualité', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 51.00, 'Cross-docking', 'Prix pour cross-docking', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Tri de marchandises en', 'Prix pour tri de marchandises', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Kitting', 'Prix pour kitting', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Emballage primaire', 'Prix pour emballage primaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Emballage secondaire', 'Prix pour emballage secondaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Emballage tertiaire', 'Prix pour emballage tertiaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Étiquetage primaire', 'Prix pour étiquetage primaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Étiquetage secondaire', 'Prix pour étiquetage secondaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Étiquetage tertiaire', 'Prix pour étiquetage tertiaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Palettisation', 'Prix pour palettisation', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 3.12, 'Stockage', 'Prix pour stockage', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 1.25, 'Picking', 'Prix pour picking', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 17.00, 'Expédition', 'Prix pour expédition', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.50, 'Mise en stock', 'Prix pour mise en stock', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Forfait mensuel (IN/STORAGE/OUT)', 'Prix pour forfait mensuel', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Forfait mensuel (stockage, manutention et assurance inclus)', 'Prix pour forfait mensuel stockage', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Préparation commande', 'Prix pour préparation commande', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Étiquetage promotionnelles', 'Prix pour étiquetage promotionnelles', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Forfait Stockage Mensuel (Chambre 70 m³)', 'Prix pour forfait stockage mensuel', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Forfait mensuel Zone de TRI et de stockage (externe)', 'Prix pour forfait stockage externe', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Mise en palette', 'Prix pour mise en palette', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'TRI et lavage', 'Prix pour TRI et lavage', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1);
+

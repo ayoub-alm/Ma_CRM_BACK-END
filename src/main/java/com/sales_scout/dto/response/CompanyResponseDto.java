@@ -1,8 +1,10 @@
 package com.sales_scout.dto.response;
 
 
+import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.data.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 
@@ -11,8 +13,8 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class CompanyResponseDto {
+@SuperBuilder
+public class CompanyResponseDto extends BaseDto {
     private Long id;
     private String logo;
     private String name;

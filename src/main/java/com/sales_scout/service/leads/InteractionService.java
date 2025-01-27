@@ -6,12 +6,17 @@ import com.sales_scout.entity.leads.Interaction;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.UserEntity;
+import com.sales_scout.enums.InteractionSubject;
+import com.sales_scout.enums.InteractionType;
+import com.sales_scout.specification.InteractionSpecification;
 import com.sales_scout.repository.leads.InteractionRepository;
 import com.sales_scout.repository.leads.InterlocutorRepository;
 import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.UserRepository;
 import com.sales_scout.service.AuthenticationService;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,11 +40,11 @@ public class InteractionService {
 
     /**
      * Get all non-soft-deleted interactions.
-     *
      * @return List of InteractionResponseDto.
      */
-    public List<InteractionResponseDto> getAllInteractions() {
-        return interactionRepository.findAllByDeletedAtIsNull().stream()
+    public List<InteractionResponseDto> getAllInteractions(InteractionType type, InteractionSubject subject) {
+        Specification<Interaction> specification =  InteractionSpecification.hasInteractionTypeAndReport(type,subject);
+        return interactionRepository.findAll(specification).stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
     }

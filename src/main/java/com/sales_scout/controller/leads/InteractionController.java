@@ -3,6 +3,8 @@ package com.sales_scout.controller.leads;
 
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
+import com.sales_scout.enums.InteractionSubject;
+import com.sales_scout.enums.InteractionType;
 import com.sales_scout.service.leads.InteractionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,11 @@ public class InteractionController {
     }
 
     @GetMapping("")
-    ResponseEntity<List<InteractionResponseDto>> getAllInteractions(){
-        List<InteractionResponseDto> interactions = this.interactionService.getAllInteractions();
+    ResponseEntity<List<InteractionResponseDto>> getAllInteractions(
+            @RequestParam(required = false) InteractionType type,
+            @RequestParam(required = false)InteractionSubject subject
+    ){
+        List<InteractionResponseDto> interactions = this.interactionService.getAllInteractions(type,subject);
         return new ResponseEntity<>(interactions, HttpStatus.OK);
     }
 

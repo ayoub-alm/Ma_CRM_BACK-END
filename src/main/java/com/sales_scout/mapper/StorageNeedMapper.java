@@ -6,10 +6,19 @@ import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
 import com.sales_scout.entity.Company;
 import com.sales_scout.entity.Customer;
 import com.sales_scout.entity.crm.wms.StorageNeed;
+import com.sales_scout.repository.crm.CustomerRepository;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class StorageNeedMapper {
+
+    private final CustomerRepository customerRepository;
+
+    public StorageNeedMapper(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
 
     /**
      * Maps a CreateStorageNeedDto to a StorageNeed entity.
@@ -33,10 +42,14 @@ public class StorageNeedMapper {
         storageNeed.setProductType(dto.getProductType());
 
         // Set the customer entity by ID (assumes a customer service or repository fetch)
-        Customer customer = new Customer();
-        customer.setId(dto.getCustomerId());
-        storageNeed.setCustomer(customer);
-
+        Optional<Customer> customer = customerRepository.findById(dto.getCustomerId());
+        if(customer.isPresent()){
+            storageNeed.setCustomer(customer.get());
+        }
+        else {
+            Customer customer2 = Customer.builder().id(dto.getCustomerId()).build();
+            storageNeed.setCustomer(customer2);
+        }
         Company company = new Company();
         company.setId(dto.getCompanyId());
         storageNeed.setCompany(company);

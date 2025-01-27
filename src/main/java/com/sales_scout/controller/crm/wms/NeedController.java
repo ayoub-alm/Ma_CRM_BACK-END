@@ -5,6 +5,8 @@ import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
 import com.sales_scout.entity.crm.wms.StorageNeed;
 import com.sales_scout.service.crm.wms.StorageNeedService;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/wms/needs")
 public class NeedController {
+    private static final Logger log = LogManager.getLogger(NeedController.class);
     private final StorageNeedService storageNeedService;
 
     public NeedController(StorageNeedService storageNeedService) {
@@ -44,7 +47,7 @@ public class NeedController {
                 try {
                     return ResponseEntity.ok(this.storageNeedService.createStorageNeed(storageNeedCreateDto));
                 }catch (Exception e){
-                    System.out.println(e.getMessage());
+                    log.error(String.valueOf(e.getCause()));
                     return ResponseEntity.status(500).body(null);
                 }
     }

@@ -85,10 +85,6 @@ public class CompanyDtoBuilder {
                 .proprietaryStructure(createCompanyDTO.getProprietaryStructure())
                 .title(createCompanyDTO.getTitle())
                 .reprosentaveJobTitle(createCompanyDTO.getReprosentaveJobTitle())
-                .createdAt(createCompanyDTO.getCreatedAt())
-                .createdBy(createCompanyDTO.getCreatedBy())
-                .updatedAt(createCompanyDTO.getUpdatedAt())
-                .updatedBy(createCompanyDTO.getUpdatedBy())
                 .build();
     }
 }

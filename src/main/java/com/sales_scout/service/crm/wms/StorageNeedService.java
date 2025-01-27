@@ -1,6 +1,8 @@
 package com.sales_scout.service.crm.wms;
 
 
+import com.sales_scout.dto.request.create.wms.ProvisionRequestDto;
+import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
 import com.sales_scout.entity.Customer;
@@ -24,18 +26,24 @@ public class StorageNeedService {
     private final StorageRequirementRepository storageRequirementRepository;
     private final StorageNeedRequirementRepository storageNeedRequirementRepository;
     private final StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository;
+    private final StockedItemRepository stockedItemRepository;
     private final CustomerRepository customerRepository;
     private final DimensionRepository dimensionRepository;
     private final StockedItemProvisionRepository stockedItemProvisionRepository;
-    public StorageNeedService(StorageNeedRepository storageNeedRepository, StorageNeedMapper storageNeedMapper, StorageRequirementRepository storageRequirementRepository, StorageNeedRequirementRepository storageNeedRequirementRepository, StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository, CustomerRepository customerRepository, DimensionRepository dimensionRepository, StockedItemProvisionRepository stockedItemProvisionRepository) {
+    private final StructureRepository structureRepository;
+    private final StorageNeedStockedItemRepository storageNeedStockedItemRepository;
+    public StorageNeedService(StorageNeedRepository storageNeedRepository, StorageNeedMapper storageNeedMapper, StorageRequirementRepository storageRequirementRepository, StorageNeedRequirementRepository storageNeedRequirementRepository, StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository, StockedItemRepository stockedItemRepository, CustomerRepository customerRepository, DimensionRepository dimensionRepository, StockedItemProvisionRepository stockedItemProvisionRepository, StructureRepository structureRepository, StorageNeedStockedItemRepository storageNeedStockedItemRepository) {
         this.storageNeedRepository = storageNeedRepository;
         this.storageNeedMapper = storageNeedMapper;
         this.storageRequirementRepository = storageRequirementRepository;
         this.storageNeedRequirementRepository = storageNeedRequirementRepository;
         this.storageNeedUnloadingTypeRepository = storageNeedUnloadingTypeRepository;
+        this.stockedItemRepository = stockedItemRepository;
         this.customerRepository = customerRepository;
         this.dimensionRepository = dimensionRepository;
         this.stockedItemProvisionRepository = stockedItemProvisionRepository;
+        this.structureRepository = structureRepository;
+        this.storageNeedStockedItemRepository = storageNeedStockedItemRepository;
     }
 
     /**
@@ -46,84 +54,104 @@ public class StorageNeedService {
      */
     @Transactional
     public StorageNeedResponseDto createStorageNeed(StorageNeedCreateDto storageNeedDto) throws EntityNotFoundException {
-        // Ensure customer exists
-        Customer customer = customerRepository.findById(storageNeedDto.getCustomerId())
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
-
         // Set the customer and company information
-        storageNeedDto.setCustomerId(customer.getId());
-        storageNeedDto.setCompanyId(storageNeedDto.getCompanyId()); 
-        // Set the initial status
-        storageNeedDto.setStatus(NeedStatusEnum.CREATION);
-        // Save the StorageNeed entity
+        storageNeedDto.setCustomerId(3L);  // Customer is hardcoded as 3L for now
+        storageNeedDto.setStatus(NeedStatusEnum.CREATION);  // Set initial status
+
+        // Convert StorageNeedCreateDto to StorageNeed entity and save
         StorageNeed storageNeed = storageNeedMapper.toEntity(storageNeedDto);
         StorageNeed savedStorageNeed = storageNeedRepository.save(storageNeed);
 
+        // Process and save StockedItems
+        List<StockedItem> stockedItems = storageNeedDto.getStockedItemsRequestDto().stream()
+                .map(stockedItemDto -> createStockedItem(stockedItemDto, savedStorageNeed))
+                .collect(Collectors.toList());
 
-        List<StockedItem> stockedItems = storageNeedDto.getStockedItemsRequestDto().stream().map((stockedItemitration) ->
-                {
-                    Dimension dimension = this.dimensionRepository.save( Dimension.builder()
-                            .lang(stockedItemitration.getLength())
-                            .large(stockedItemitration.getLarger())
-                            .height(stockedItemitration.getHeight())
-                            .volume(stockedItemitration.getLength() * stockedItemitration.getLarger() *stockedItemitration.getHeight())
-                            .build());
+        // Save StockedItems in bulk
+        stockedItemRepository.saveAll(stockedItems);
 
-                   StockedItem stockedItem =  StockedItem.builder()
-                            .ref(UUID.randomUUID())
-                            .price(stockedItemitration.getPrice())
-                            .support(Support.builder().id(stockedItemitration.getSupportId()).build())
-                            .structure(Structure.builder().id(stockedItemitration.getStructureId()).build())
-                            .uvc(stockedItemitration.getUvc())
-                            .dimension(dimension)
-                            .uc(stockedItemitration.getUc())
-                            .weight(stockedItemitration.getWeight())
-                            .stackedLevel(stockedItemitration.getStackedLevel())
-                            .numberOfPackages(stockedItemitration.getNumberOfPackages())
-                            .temperature(Temperature.builder().id(stockedItemitration.getTemperatureId()).build())
-                            .build();
+        // Create and save StorageNeedRequirements
+        createStorageNeedRequirements(storageNeedDto.getRequirements(), savedStorageNeed);
 
-                   stockedItemitration.getProvisions().stream().map(sip -> {
-                       StockedItemProvision stockedItemProvision = StockedItemProvision.builder()
-                               .stockedItem(stockedItem)
-                               .provision(Provision.builder()
-                                       .id(sip.getId())
-                                       .build())
-                               .build();
-                      return stockedItemProvisionRepository.save(stockedItemProvision);
-                   });
+        // Create and save StorageNeedUnloadingTypes
+        createStorageNeedUnloadingTypes(storageNeedDto.getUnloadingTypes(), savedStorageNeed);
 
-                   return stockedItem;
-                }).toList();
+        // Return the mapped response DTO
+        return StorageNeedMapper.toResponseDto(savedStorageNeed);
+    }
+
+    private StockedItem createStockedItem(StockedItemRequestDto stockedItemDto, StorageNeed savedStorageNeed) {
+        // Save related Dimension
+        Dimension dimension = dimensionRepository.save(Dimension.builder()
+                .lang(stockedItemDto.getLength())
+                .large(stockedItemDto.getLarger())
+                .height(stockedItemDto.getHeight())
+                .volume(stockedItemDto.getLength() * stockedItemDto.getLarger() * stockedItemDto.getHeight())
+                .build());
 
 
+        // Find the related Structure
+        Structure structure = structureRepository.findById(stockedItemDto.getStructureId())
+                .orElseThrow(() -> new EntityNotFoundException("Structure not found"));
 
-        // create StorageNeedRequirements
-        List<StorageNeedRequirement> requirements =
-                storageNeedDto.getRequirements().stream()
-                .map((requirementId) ->
-                {
-//                    StorageRequirement requirement = storageRequirementRepository.findById(requirementId)
-//                            .orElseThrow(() -> new EntityNotFoundException("Requirement not found"));
-                   return StorageNeedRequirement.builder()
-                            .requirement(Requirement.builder().id(requirementId).build())
-                            .storageNeed(savedStorageNeed)
-                            .build();
-                })
+        // Create and save the StockedItem
+        StockedItem stockedItem = StockedItem.builder()
+                .ref(UUID.randomUUID())
+                .price(stockedItemDto.getPrice())
+                .support(Support.builder().id(stockedItemDto.getSupportId()).build())
+                .structure(structure)
+                .uvc(stockedItemDto.getUvc())
+                .dimension(dimension)
+                .uc(stockedItemDto.getUc())
+                .weight(stockedItemDto.getWeight())
+                .stackedLevel(stockedItemDto.getStackedLevel())
+                .numberOfPackages(stockedItemDto.getNumberOfPackages())
+                .temperature(Temperature.builder().id(stockedItemDto.getTemperatureId()).build())
+                .build();
+
+        // Save StockedItem
+        StockedItem savedStockedItem = stockedItemRepository.save(stockedItem);
+
+        // Create and save provisions and the relationship between StockedItem and StorageNeed
+        saveStockedItemProvisions(stockedItemDto.getProvisions(), savedStockedItem, savedStorageNeed);
+
+        return savedStockedItem;
+    }
+
+    private void saveStockedItemProvisions(List<ProvisionRequestDto> provisions, StockedItem savedStockedItem, StorageNeed savedStorageNeed) {
+        provisions.forEach(provisionDto -> {
+            StockedItemProvision provision = StockedItemProvision.builder()
+                    .stockedItem(savedStockedItem)
+                    .provision(Provision.builder().id(provisionDto.getId()).build())
+                    .build();
+            stockedItemProvisionRepository.save(provision);
+        });
+        // Save relationship between StockedItem and StorageNeed
+        StorageNeedStockedItem storageNeedStockedItem = StorageNeedStockedItem.builder()
+                .stockedItem(savedStockedItem)
+                .storageNeed(savedStorageNeed)
+                .build();
+        storageNeedStockedItemRepository.save(storageNeedStockedItem);
+    }
+
+    private void createStorageNeedRequirements(List<Long> requirementIds, StorageNeed savedStorageNeed) {
+        List<StorageNeedRequirement> requirements = requirementIds.stream()
+                .map(requirementId -> StorageNeedRequirement.builder()
+                        .requirement(Requirement.builder().id(requirementId).build())
+                        .storageNeed(savedStorageNeed)
+                        .build())
                 .collect(Collectors.toList());
         storageNeedRequirementRepository.saveAll(requirements);
+    }
 
-        // create unloading types
-        List<StorageNeedUnloadingType> storageNeedUnloadingTypes = storageNeedDto.getUnloadingTypes().stream().map((unloadingTypeId) -> {
-            return StorageNeedUnloadingType.builder()
-                    .storageNeed(savedStorageNeed)
-                    .unloadingType(UnloadingType.builder().id(unloadingTypeId).build())
-                    .build();
-        }).toList();
-        this.storageNeedUnloadingTypeRepository.saveAll(storageNeedUnloadingTypes);
-
-        // Map the saved entity to the response DTO
-        return storageNeedMapper.toResponseDto(savedStorageNeed);
+    private void createStorageNeedUnloadingTypes(List<Long> unloadingTypeIds, StorageNeed savedStorageNeed) {
+        List<StorageNeedUnloadingType> unloadingTypes = unloadingTypeIds.stream()
+                .map(unloadingTypeId -> StorageNeedUnloadingType.builder()
+                        .storageNeed(savedStorageNeed)
+                        .unloadingType(UnloadingType.builder().id(unloadingTypeId).build())
+                        .build())
+                .collect(Collectors.toList());
+        storageNeedUnloadingTypeRepository.saveAll(unloadingTypes);
     }
 
     /**

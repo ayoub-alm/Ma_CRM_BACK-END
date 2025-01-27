@@ -15,13 +15,20 @@ public interface InteractionRepository extends JpaRepository<Interaction, Long>,
      */
     List<Interaction> findAllByDeletedAtIsNull();
 
+
     /**
-     * Get non-Soft-deleted prospect by ID
+     * Get non-Soft-deleted interaction by ID
       * @param id {Long} id of Interaction
      * @return {Optional<Prospect>}
      */
     Optional<Interaction> findByDeletedAtIsNullAndId(Long id);
 
+    /**
+     *Get Soft-deleted interaction by ID
+     * @param id
+     * @return
+     */
+    Optional<Interaction> findByDeletedAtIsNotNullAndId(Long id);
     /**
      * This function allows to get all interactions by prospect ID
      * @param interlocutorId the id of the interlocutor

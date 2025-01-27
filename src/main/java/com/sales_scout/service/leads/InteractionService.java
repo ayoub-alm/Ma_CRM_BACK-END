@@ -14,11 +14,19 @@ import com.sales_scout.repository.leads.InterlocutorRepository;
 import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.UserRepository;
 import com.sales_scout.service.AuthenticationService;
+
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -125,26 +133,34 @@ public class InteractionService {
 
     /**
      * Soft delete an interaction by ID.
-     *
      * @param id Interaction ID.
+     * @return true if Interaction exsist else @return false
      */
-    public void softDeleteInteraction(Long id) {
-        Interaction interaction = interactionRepository.findByDeletedAtIsNullAndId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Interaction not found."));
-        interaction.setDeletedAt(java.time.LocalDateTime.now());
-        interactionRepository.save(interaction);
+    public boolean softDeleteInteraction(Long id) throws EntityNotFoundException {
+            Optional<Interaction> interaction = interactionRepository.findByDeletedAtIsNullAndId(id);
+            if (interaction.isPresent()) {
+                interaction.get().setDeletedAt(LocalDateTime.now());
+                interactionRepository.save(interaction.get());
+                return true;
+            }else {
+                throw new EntityNotFoundException("Interaction with ID " + id + " not found or already deleted.");
+            }
     }
 
     /**
      * Restore a soft-deleted interaction by ID.
-     *
      * @param id Interaction ID.
+     * @return true if Interaction exsist else @return false
      */
-    public void restoreInteraction(Long id) {
-        Interaction interaction = interactionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Interaction not found."));
-        interaction.setDeletedAt(null);
-        interactionRepository.save(interaction);
+    public boolean restoreInteraction(Long id) throws EntityNotFoundException {
+        Optional<Interaction> interaction = interactionRepository.findByDeletedAtIsNotNullAndId(id);
+        if (interaction.isPresent()) {
+            interaction.get().setDeletedAt(null);
+            interactionRepository.save(interaction.get());
+            return true;
+        }else {
+            throw new EntityNotFoundException("Interaction with ID " + id + " not found or already restored.");
+        }
     }
 
     /**

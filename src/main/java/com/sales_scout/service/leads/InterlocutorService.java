@@ -21,7 +21,9 @@ import com.sales_scout.service.data.DepartmentService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -208,29 +210,6 @@ public class InterlocutorService {
                 .build();
     }
 
-
-    /**
-     * Soft delete an interlocutor by ID
-     * @param id Interlocutor ID
-     */
-    public void softDelete(Long id) {
-        interlocutorRepository.findById(id).ifPresent(interlocutor -> {
-            interlocutor.setDeletedAt(java.time.LocalDateTime.now());
-            interlocutorRepository.save(interlocutor);
-        });
-    }
-
-    /**
-     * Restore a soft-deleted interlocutor by ID
-     * @param id Interlocutor ID
-     */
-    public void restore(Long id) {
-        interlocutorRepository.findById(id).ifPresent(interlocutor -> {
-            interlocutor.setDeletedAt(null);
-            interlocutorRepository.save(interlocutor);
-        });
-    }
-
     /**
      * Bulk soft delete for a list of interlocutor IDs
      * @param ids List of IDs to soft-delete
@@ -252,5 +231,42 @@ public class InterlocutorService {
             interlocutorRepository.save(interlocutor);
         });
     }
+
+    /**
+     * Soft Delete By Interlocutor Id
+     * @param id
+     * @return true if Interlocutor exsist else @return false
+     */
+    public boolean softDeleteInterlocutor(Long id)throws EntityNotFoundException{
+        Optional<Interlocutor> interlocutor = interlocutorRepository.findByDeletedAtIsNullAndId(id);
+
+        if (interlocutor.isPresent()){
+            interlocutor.get().setDeletedAt(LocalDateTime.now());
+            interlocutorRepository.save(interlocutor.get());
+            return true;
+        }else {
+            throw new EntityNotFoundException("Interlocutor with ID " + id + " not found or already deleted.");
+        }
+
+    }
+
+    /**
+     * Restore Interlocutore By Id
+     * @param id
+     *  @return true if Interlocutor exsist else @return false
+     */
+    public boolean restoreInterlocutor(Long id) throws EntityNotFoundException{
+        Optional<Interlocutor> interlocutor = interlocutorRepository.findByDeletedAtIsNotNullAndId(id);
+
+        if (interlocutor.isPresent()) {
+        interlocutor.get().setDeletedAt(null);
+            interlocutorRepository.save(interlocutor.get());
+            return true;
+        }else {
+            throw new EntityNotFoundException("Interlocutor with ID " + id + " not found or already restored.");
+        }
+        }
+
 }
+
 

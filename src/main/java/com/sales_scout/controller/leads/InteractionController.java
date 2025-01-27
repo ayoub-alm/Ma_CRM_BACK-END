@@ -3,30 +3,64 @@ package com.sales_scout.controller.leads;
 
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
+import com.sales_scout.entity.EntityFilters.InteractionFilter;
 import com.sales_scout.enums.InteractionSubject;
 import com.sales_scout.enums.InteractionType;
+import com.sales_scout.service.UserAgentService;
 import com.sales_scout.service.leads.InteractionService;
+import com.sales_scout.service.leads.InterlocutorService;
+import com.sales_scout.service.leads.ProspectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/interaction")
 public class InteractionController {
     private final InteractionService interactionService;
+    private final ProspectService prospectService;
+    private final UserAgentService userAgentService;
+    private final InterlocutorService interlocutorService;
 
-    public InteractionController(InteractionService interactionService) {
+    public InteractionController(InteractionService interactionService, ProspectService prospectService, UserAgentService userAgentService, InterlocutorService interlocutorService) {
         this.interactionService = interactionService;
+        this.prospectService = prospectService;
+        this.userAgentService = userAgentService;
+        this.interlocutorService = interlocutorService;
     }
 
     @GetMapping("")
     ResponseEntity<List<InteractionResponseDto>> getAllInteractions(
-            @RequestParam(required = false) InteractionType type,
-            @RequestParam(required = false)InteractionSubject subject
+            @RequestParam(required = false) InteractionSubject interactionSubject,
+            @RequestParam(required = false) InteractionType interactionType,
+            @RequestParam(required = false) Date createdAtFrom,
+            @RequestParam(required = false) Date createdAtTo,
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) Long prospectId,
+            @RequestParam(required = false) Long interlocutorId,
+            @RequestParam(required = false) Date planningDate,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) Long agentId,
+            @RequestParam(required = false) Long affectedToId,
+            @RequestParam(required = false) String report
     ){
-        List<InteractionResponseDto> interactions = this.interactionService.getAllInteractions(type,subject);
+        InteractionFilter interactionFilter = new InteractionFilter();
+        interactionFilter.setInteractionSubject(interactionSubject);
+        interactionFilter.setInteractionType(interactionType);
+        interactionFilter.setCreatedAtFrom(createdAtFrom);
+        interactionFilter.setCreatedAtTo(createdAtTo);
+        interactionFilter.setId(id);
+        interactionFilter.setProspect(prospectService.getProspectById(prospectId).isPresent() ? prospectService.getProspectById(prospectId) :null);
+        interactionFilter.setInterlocutor(interlocutorService.getInterlocutorById(interlocutorId).isPresent() ? );
+        interactionFilter.setPlanningDate(planningDate);
+        interactionFilter.setAddress(address);
+        interactionFilter.setAgent(userAgentService.findById(agentId));
+        interactionFilter.setAffectedTo(userAgentService.findById(affectedToId));
+        interactionFilter.setReport(report);
+        List<InteractionResponseDto> interactions = this.interactionService.getAllInteractions(interactionFilter);
         return new ResponseEntity<>(interactions, HttpStatus.OK);
     }
 

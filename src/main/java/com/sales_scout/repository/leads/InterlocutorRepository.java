@@ -2,6 +2,7 @@ package com.sales_scout.repository.leads;
 
 import com.sales_scout.entity.leads.Interlocutor;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface InterlocutorRepository extends JpaRepository<Interlocutor, Long> {
+public interface InterlocutorRepository extends JpaRepository<Interlocutor, Long>, JpaSpecificationExecutor<Interlocutor> {
 
     List<Interlocutor> findAllByDeletedAtIsNull();
 

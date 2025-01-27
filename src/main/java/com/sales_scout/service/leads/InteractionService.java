@@ -2,6 +2,7 @@ package com.sales_scout.service.leads;
 
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
+import com.sales_scout.entity.EntityFilters.InteractionFilter;
 import com.sales_scout.entity.leads.Interaction;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.entity.leads.Prospect;
@@ -42,8 +43,8 @@ public class InteractionService {
      * Get all non-soft-deleted interactions.
      * @return List of InteractionResponseDto.
      */
-    public List<InteractionResponseDto> getAllInteractions(InteractionType type, InteractionSubject subject) {
-        Specification<Interaction> specification =  InteractionSpecification.hasInteractionTypeAndReport(type,subject);
+    public List<InteractionResponseDto> getAllInteractions(InteractionFilter interactionFilter) {
+        Specification<Interaction> specification =  InteractionSpecification.hasInteractionFilter(interactionFilter);
         return interactionRepository.findAll(specification).stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());

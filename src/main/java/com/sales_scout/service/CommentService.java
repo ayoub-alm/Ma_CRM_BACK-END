@@ -107,16 +107,15 @@ public class CommentService {
      *
      * @param commentId the ID of the comment
      */
-    public String softDeleteComment(Long commentId) {
+    public boolean softDeleteComment(Long commentId) throws EntityNotFoundException{
         Optional<Comment> comment = commentRepository.findByIdAndDeletedAtIsNull(commentId);
         if(comment.isPresent()){
             comment.get().setDeletedAt(LocalDateTime.now());
             commentRepository.save(comment.get());
-        return "Comment deleted successfully";
+        return true;
         }else {
             throw  new EntityNotFoundException("Comment with ID " + commentId + " not found or already deleted.");
         }
-
     }
 
     /**
@@ -124,12 +123,12 @@ public class CommentService {
      *
      * @param commentId  the ID of the comment
      */
-    public String restoreComment(Long commentId){
+    public boolean restoreComment(Long commentId)throws EntityNotFoundException{
         Optional<Comment> comment = commentRepository.findByIdAndDeletedAtIsNotNull(commentId);
         if(comment.isPresent()){
             comment.get().setDeletedAt(null);
             commentRepository.save(comment.get());
-            return "Comment restored successfully";
+            return true;
         }else {
             throw new EntityNotFoundException("Comment with Id "+ commentId + " not found or already restored");
         }

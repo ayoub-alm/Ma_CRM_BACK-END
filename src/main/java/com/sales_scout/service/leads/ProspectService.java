@@ -7,18 +7,18 @@ import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.entity.UserEntity;
 import com.sales_scout.entity.data.*;
-        import com.sales_scout.enums.ActiveInactiveEnum;
+import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import com.sales_scout.mapper.ProspectResponseDtoBuilder;
 import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.leads.TrackingLogRepository;
 import com.sales_scout.repository.UserRepository;
 import com.sales_scout.repository.data.*;
-        import com.sales_scout.service.AuthenticationService;
+import com.sales_scout.service.AuthenticationService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.*;
-        import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -492,13 +492,13 @@ public class ProspectService {
       * @param id
      * @return true if prospect exsist else @return false
      */
-    public String restoreProspectById(Long id) throws EntityNotFoundException {
+    public boolean restoreProspectById(Long id) throws EntityNotFoundException {
         // Restore the prospect
         Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNotNullAndId(id);
         if (prospect.isPresent()){
             prospect.get().setDeletedAt(null);
             prospectRepository.save(prospect.get());
-            return "Prospect restored successfully";
+            return true;
         }else{
             throw new EntityNotFoundException("Prospect with ID " + id + " not found or already restored.");
         }
@@ -509,13 +509,13 @@ public class ProspectService {
      * @param id
      * @return true if prospect exsist else @return false
      */
-    public String softDeleteById(Long id)throws EntityNotFoundException {
+    public boolean softDeleteById(Long id)throws EntityNotFoundException {
         // Restore the prospect
         Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNullAndId(id);
         if (prospect.isPresent()){
             prospect.get().setDeletedAt(LocalDateTime.now());
             prospectRepository.save(prospect.get());
-            return "Prospect deleted successfully";
+            return true;
         }else{
             throw new EntityNotFoundException("Prospect with ID " + id + " not found or already deleted.");
         }

@@ -127,13 +127,12 @@ public class InteractionService {
      * @param id Interaction ID.
      * @return true if Interaction exsist else @return false
      */
-    public String softDeleteInteraction(Long id) throws EntityNotFoundException {
-
+    public boolean softDeleteInteraction(Long id) throws EntityNotFoundException {
             Optional<Interaction> interaction = interactionRepository.findByDeletedAtIsNullAndId(id);
             if (interaction.isPresent()) {
                 interaction.get().setDeletedAt(LocalDateTime.now());
                 interactionRepository.save(interaction.get());
-                return "Interaction deleted successfully";
+                return true;
             }else {
                 throw new EntityNotFoundException("Interaction with ID " + id + " not found or already deleted.");
             }
@@ -144,17 +143,15 @@ public class InteractionService {
      * @param id Interaction ID.
      * @return true if Interaction exsist else @return false
      */
-    public String restoreInteraction(Long id) throws EntityNotFoundException, EntityExistsException {
+    public boolean restoreInteraction(Long id) throws EntityNotFoundException {
         Optional<Interaction> interaction = interactionRepository.findByDeletedAtIsNotNullAndId(id);
-
         if (interaction.isPresent()) {
             interaction.get().setDeletedAt(null);
             interactionRepository.save(interaction.get());
-            throw new EntityExistsException("Interaction restored successfully");
+            return true;
         }else {
             throw new EntityNotFoundException("Interaction with ID " + id + " not found or already restored.");
         }
-
     }
 
     /**

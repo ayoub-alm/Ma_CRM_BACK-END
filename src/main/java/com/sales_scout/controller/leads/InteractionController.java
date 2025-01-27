@@ -53,11 +53,11 @@ public class InteractionController {
      * @param id
      */
     @DeleteMapping("/soft-delete/{id}")
-    ResponseEntity<?>  softDeleteInteraction(@PathVariable Long id)throws EntityNotFoundException{
+    ResponseEntity<Boolean>  softDeleteInteraction(@PathVariable Long id)throws EntityNotFoundException{
        try{
            return ResponseEntity.ok().body(interactionService.softDeleteInteraction(id));
        }catch(EntityNotFoundException e){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error soft deleting interaction: "+e.getMessage() );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
        }
 
     }
@@ -67,11 +67,11 @@ public class InteractionController {
      * @param id
      */
     @PutMapping("/restore/{id}")
-    ResponseEntity<?> restoreInteraction(@PathVariable Long id) throws EntityNotFoundException{
+    ResponseEntity<Boolean> restoreInteraction(@PathVariable Long id) throws EntityNotFoundException{
         try {
             return ResponseEntity.ok().body(interactionService.restoreInteraction(id));
         }catch (EntityNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error restore interaction : "+e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         }
     }
 }

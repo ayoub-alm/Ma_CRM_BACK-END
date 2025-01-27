@@ -85,12 +85,11 @@ public class CommentController {
      * @return a response indicating the result
      */
     @DeleteMapping("/soft-delete/{commentId}")
-    public ResponseEntity<?> softDeleteComment(@PathVariable Long commentId)throws EntityNotFoundException {
-
+    public ResponseEntity<Boolean> softDeleteComment(@PathVariable Long commentId)throws EntityNotFoundException {
         try{
         return  ResponseEntity.ok().body(commentService.softDeleteComment(commentId));
         } catch (EntityNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error soft delete comment : "+ e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         }
     }
 
@@ -101,11 +100,11 @@ public class CommentController {
      * @return a response indicating the result
      */
     @PutMapping("/restore/{commentId}")
-    public ResponseEntity<?> restoreComment(@PathVariable Long commentId)throws EntityNotFoundException {
+    public ResponseEntity<Boolean> restoreComment(@PathVariable Long commentId)throws EntityNotFoundException {
         try{
             return  ResponseEntity.ok().body(commentService.restoreComment(commentId));
         } catch (EntityNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error restore comment : "+ e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         }
     }
 }

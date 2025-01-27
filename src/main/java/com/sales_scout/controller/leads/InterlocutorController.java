@@ -88,11 +88,11 @@ public class InterlocutorController {
      * @param id
      */
     @DeleteMapping("/soft-delete/{id}")
-    public ResponseEntity<?> softDeleteInterlocutor(@PathVariable Long id){
+    public ResponseEntity<Boolean> softDeleteInterlocutor(@PathVariable Long id){
         try {
             return ResponseEntity.ok().body(interlocutorService.softDeleteInterlocutor(id));
         }catch (EntityNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error  soft delete interlocutor : "+ e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         }
     }
 
@@ -101,11 +101,11 @@ public class InterlocutorController {
      * @param id
      */
     @PutMapping("/restore/{id}")
-    public ResponseEntity<?> restoreInterlocutor(@PathVariable Long id){
+    public ResponseEntity<Boolean> restoreInterlocutor(@PathVariable Long id){
        try {
            return ResponseEntity.ok().body(interlocutorService.restoreInterlocutor(id));
        } catch (EntityNotFoundException e) {
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error restore interlocutor : "+ e.getMessage());
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
        }
     }
 }

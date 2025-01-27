@@ -30,6 +30,10 @@ public class InteractionController {
         this.interactionService = interactionService;
     }
 
+    /**
+     * get all interactions
+     * @return
+     */
     @GetMapping("")
     ResponseEntity<List<InteractionResponseDto>> getAllInteractions(
             @RequestParam(required = false) InteractionType type,
@@ -39,23 +43,36 @@ public class InteractionController {
         return new ResponseEntity<>(interactions, HttpStatus.OK);
     }
 
+    /**
+     * get Interactions By Id
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     ResponseEntity<InteractionResponseDto> getInteractionById(@PathVariable Long id){
         InteractionResponseDto interactions = this.interactionService.getInteractionById(id);
         return new ResponseEntity<>(interactions, HttpStatus.OK);
     }
 
-
-
+    /**
+     * get all Interaction By interlocutor Id
+     * @param interlocutorId
+     * @return
+     */
     @GetMapping("/interlocutor/{interlocutorId}")
     ResponseEntity<List<InteractionResponseDto>> getAllInteractionsByInterlocutorId(@PathVariable Long interlocutorId){
         List<InteractionResponseDto> interactions = this.interactionService.getInteractionByInterlocutorId(interlocutorId);
         return new ResponseEntity<>(interactions, HttpStatus.OK);
     }
 
-
+    /**
+     * create interaction
+     * @param interactionRequestDto
+     * @return interactionRequestDto
+     * @throws IOException
+     */
     @PostMapping("/create")
-    ResponseEntity<InteractionResponseDto> createInteraction(@RequestBody InteractionRequestDto interactionRequestDto){
+    ResponseEntity<InteractionResponseDto> createInteraction(@RequestBody InteractionRequestDto interactionRequestDto) throws IOException {
         InteractionResponseDto interaction = this.interactionService.saveOrUpdateInteraction(interactionRequestDto);
         return new ResponseEntity<>(interaction, HttpStatus.OK);
     }

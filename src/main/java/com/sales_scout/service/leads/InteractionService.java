@@ -21,22 +21,19 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.time.LocalDateTime;
-
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,6 +41,7 @@ import java.util.stream.Collectors;
 @Service
 public class InteractionService {
     private final InteractionRepository interactionRepository;
+    private static final String File_DIRECTORY = "src/main/resources/static/files/";
     private final ProspectRepository prospectRepository;
     private final InterlocutorRepository interlocutorRepository;
     private final UserRepository userRepository;
@@ -92,7 +90,7 @@ public class InteractionService {
      * @param interactionRequestDto InteractionRequestDto.
      * @return InteractionResponseDto.
      */
-    public InteractionResponseDto saveOrUpdateInteraction(InteractionRequestDto interactionRequestDto) {
+    public InteractionResponseDto saveOrUpdateInteraction(InteractionRequestDto interactionRequestDto) throws IOException {
         // Validate required fields in InteractionRequestDto
         if (interactionRequestDto == null) {
             throw new IllegalArgumentException("InteractionRequestDto cannot be null.");
@@ -120,6 +118,12 @@ public class InteractionService {
                     .orElseThrow(() -> new IllegalArgumentException("AffectedTo user not found for ID: " + interactionRequestDto.getAffectedToId()));
         }
 
+        // save path file form interaction request dto
+        String filePath = null;
+        if (interactionRequestDto.getJoinFilePath()!= null || !interactionRequestDto.getJoinFilePath().isEmpty()){
+            filePath = saveFile(interactionRequestDto.getJoinFilePath());
+        }
+
         // Build the Interaction entity
         Interaction interaction = Interaction.builder()
                 .prospect(prospect)
@@ -130,7 +134,7 @@ public class InteractionService {
                 .interactionSubject(interactionRequestDto.getInteractionSubject())
                 .interactionType(interactionRequestDto.getInteractionType())
                 .planningDate(interactionRequestDto.getPlanningDate())
-                .joinFilePath(interactionRequestDto.getJoinFilePath())
+                .joinFilePath(filePath)
                 .address(interactionRequestDto.getAddress())
                 .build();
 
@@ -139,6 +143,33 @@ public class InteractionService {
 
         // Convert and return the response DTO
         return convertToResponseDto(interaction);
+    }
+
+    /**
+     * check the file and size is good and return file path
+     * @param base64File
+     * @return file path
+     * @throws IOException
+     * @throws IllegalArgumentException
+     */
+    public String saveFile(String base64File) throws IOException, IllegalArgumentException {
+
+        byte[] fileBytes = Base64.getDecoder().decode(base64File);
+        // check file size
+        long maxFileSize = 10*1024*1024;
+        if(fileBytes.length > maxFileSize){
+            throw new IllegalArgumentException("La taille du fichier dépasse la limite de 10 Mo");
+        }
+        //check directory is existed
+        File directory = new File(File_DIRECTORY);
+        if(!directory.exists()){
+            directory.mkdirs();
+        }
+
+        String fileName = "interaction_report"+ System.currentTimeMillis()+".pdf";
+        Path filePath = Paths.get(File_DIRECTORY+fileName);
+
+        return fileName;
     }
 
 

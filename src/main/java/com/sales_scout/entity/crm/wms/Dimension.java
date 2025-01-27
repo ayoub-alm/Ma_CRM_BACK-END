@@ -24,10 +24,9 @@ public class Dimension extends BaseEntity {
 
     private Double height;
 
-    private Double weight;
-
     private Double volume;
 
     @OneToMany(mappedBy = "dimension", cascade = CascadeType.ALL)
     private Set<StockedItem> stockedItems;
+
 }

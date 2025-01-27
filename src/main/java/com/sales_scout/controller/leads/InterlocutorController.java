@@ -1,14 +1,19 @@
 package com.sales_scout.controller.leads;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.service.leads.InterlocutorService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -82,6 +87,22 @@ public class InterlocutorController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/export")
+    public ResponseEntity<String> exportInterlocutorToExcel(@RequestParam(required = false) String interlocutorsJson){
+        try {
+            List<Interlocutor> interlocutors = null;
+            if (interlocutorsJson != null && !interlocutorsJson.isEmpty()) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                interlocutors = objectMapper.readValue(interlocutorsJson, new TypeReference<List<Interlocutor>>() {}
+                );
+            }
+            interlocutorService.exportFileExcel(interlocutors,"Interlocutor_file.xlsx");
+            return ResponseEntity.ok("Excel File exported successfuly : Interlocutors_file");
+        }catch (IOException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to export Excel File "+e.getMessage());
+        }
+    }
+
     /**
      * Restore a soft-deleted interlocutor by ID
      */
@@ -107,5 +128,31 @@ public class InterlocutorController {
     public ResponseEntity<Void> bulkRestore(@RequestBody List<Long> ids) {
         interlocutorService.bulkRestore(ids);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * Soft Delete By Interlocutor Id
+     * @param id
+     */
+    @DeleteMapping("/soft-delete/{id}")
+    public ResponseEntity<Boolean> softDeleteInterlocutor(@PathVariable Long id){
+        try {
+            return ResponseEntity.ok().body(interlocutorService.softDeleteInterlocutor(id));
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+        }
+    }
+
+    /**
+     * Restore Interlocutor By Id
+     * @param id
+     */
+    @PutMapping("/restore/{id}")
+    public ResponseEntity<Boolean> restoreInterlocutor(@PathVariable Long id){
+       try {
+           return ResponseEntity.ok().body(interlocutorService.restoreInterlocutor(id));
+       } catch (EntityNotFoundException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+       }
     }
 }

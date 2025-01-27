@@ -3,7 +3,6 @@ package com.sales_scout.service.leads;
 import com.sales_scout.dto.request.ProspectRequestDto;
 import com.sales_scout.dto.response.ProspectResponseDto;
 import com.sales_scout.entity.Company;
-import com.sales_scout.entity.Customer;
 import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.entity.UserEntity;
@@ -11,7 +10,6 @@ import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import com.sales_scout.mapper.ProspectResponseDtoBuilder;
-import com.sales_scout.repository.crm.CustomerRepository;
 import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.leads.TrackingLogRepository;
 import com.sales_scout.repository.UserRepository;
@@ -32,7 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
+        import java.util.stream.Collectors;
 
 @Service
 public class ProspectService {
@@ -74,12 +72,8 @@ public class ProspectService {
     @Autowired
     private UserRepository userRepository;
 
-
-    private final   CustomerRepository customerRepository;
-
-    public ProspectService(ProspectRepository prospectRepository, CustomerRepository customerRepository) {
+    public ProspectService(ProspectRepository prospectRepository) {
         this.prospectRepository = prospectRepository;
-        this.customerRepository = customerRepository;
     }
 
     /**
@@ -110,7 +104,7 @@ public class ProspectService {
             if (prospectRequestDto.getLogo() != null && !prospectRequestDto.getLogo().isEmpty()) {
                 imagePath = saveImageFromBase64(prospectRequestDto.getLogo());
             } else if (prospectRequestDto.getLogo() == null) {
-                 imagePath = null;
+                imagePath = null;
             }
 
             Prospect prospect;
@@ -191,8 +185,8 @@ public class ProspectService {
             }
 
 
-           prospect.setCreatedAt(LocalDateTime.now());
-           prospect.setUpdatedAt(LocalDateTime.now());
+            prospect.setCreatedAt(LocalDateTime.now());
+            prospect.setUpdatedAt(LocalDateTime.now());
 
             // Save the prospect entity
             return prospectRepository.save(prospect);
@@ -289,8 +283,10 @@ public class ProspectService {
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 Prospect prospect = mapRowToProspect(row);
-                if (prospect != null) {
+                if (prospect.getName() != null && !prospect.getName().equals("")) {
                     prospects.add(prospect);
+                }else{
+                    break;
                 }
             }
         }
@@ -331,7 +327,7 @@ public class ProspectService {
         prospect.setLegalRepresentative(getStringCellValue(row, 23));
         prospect.setTitle(getTitleFromExcel(row, 24));
         prospect.setReprosentaveJobTitle(getJobTitleFromExcel(row, 25));
-
+        prospect.setCreatedAt(LocalDateTime.now());
         return prospect;
     }
 
@@ -462,10 +458,74 @@ public class ProspectService {
         }
     }
 
+    public void exportFileExcel(List<Prospect> prospects , String filePath)throws IOException{
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Prospects");
+            Row headerRow = sheet.createRow(0);
+            String[] colmuns = {"Id","Name","Email" , "Active" , "Business Description " , "Capital" ,"Date of Registration"
+                    ,"Phone","Fax","Head Office" , "Ice", "Ifm" , "Legal Representative" ,"Whatsapp", "Linkedin" ,"WebSite" ,"Patent"
+                    ,"Rc" , "Sigle" ,"Status" , "Year of Creation" , "City" , "Company","Company Size","Country","Court","Industry"
+                    ,"Legal Status" , "Proprietary Structure" , "Job Title" , "Title Id"};
+            for (int i= 0 ; i < colmuns.length ; i++ ){
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(colmuns[i]);
+            }
+
+            int rowNum = 1;
+            if (prospects == null) {
+                prospects = prospectRepository.findAll();
+            }
+
+            for(Prospect prospect : prospects){
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(prospect.getId());
+                    row.createCell(1).setCellValue(prospect.getName());
+                    row.createCell(2).setCellValue(prospect.getEmail());
+                    row.createCell(3).setCellValue(prospect.getActive().name());
+                    row.createCell(4).setCellValue(prospect.getBusinessDescription());
+                    row.createCell(5).setCellValue(prospect.getCapital());
+                    row.createCell(6).setCellValue(prospect.getDateOfRegistration());
+                    row.createCell(7).setCellValue(prospect.getPhone());
+                    row.createCell(8).setCellValue(prospect.getFax());
+                    row.createCell(9).setCellValue(prospect.getHeadOffice());
+                    row.createCell(10).setCellValue(prospect.getIce());
+                    row.createCell(11).setCellValue(prospect.getIfm());
+                    row.createCell(12).setCellValue(prospect.getLegalRepresentative());
+                    row.createCell(13).setCellValue(prospect.getWhatsapp());
+                    row.createCell(14).setCellValue(prospect.getLinkedin());
+                    row.createCell(15).setCellValue(prospect.getWebsite());
+                    row.createCell(16).setCellValue(prospect.getPatent());
+                    row.createCell(17).setCellValue(prospect.getRc());
+                    row.createCell(18).setCellValue(prospect.getSigle());
+                    row.createCell(19).setCellValue(prospect.getStatus().name());
+                    row.createCell(20).setCellValue(prospect.getYearOfCreation());
+                    row.createCell(21).setCellValue(prospect.getCity().getName());
+                    row.createCell(22).setCellValue(prospect.getCompany().getName());
+                    row.createCell(23).setCellValue(prospect.getCompanySize().getName());
+                    row.createCell(24).setCellValue(prospect.getCountry().getName());
+                    row.createCell(25).setCellValue(prospect.getCourt().getName());
+                    row.createCell(26).setCellValue(prospect.getIndustry().getName());
+                    row.createCell(27).setCellValue(prospect.getLegalStatus().getName());
+                    row.createCell(28).setCellValue(prospect.getProprietaryStructure().getName());
+                    row.createCell(29).setCellValue(prospect.getReprosentaveJobTitle().getName());
+                    row.createCell(30).setCellValue(prospect.getTitle().getTitle());
+            }
+
+            for (int i = 0 ; i <colmuns.length ; i++){
+                sheet.autoSizeColumn(i);
+            }
+            try(FileOutputStream fileOut = new FileOutputStream(filePath)) {
+                workbook.write(fileOut);
+            }
+        }
+    }
+
     public ProspectResponseDto updateProspectStatus(ProspectStatus status, Long prospectId) throws EntityNotFoundException {
         // Fetch the prospect or throw an exception if not found
         Prospect prospect = this.prospectRepository.findByDeletedAtIsNullAndId(prospectId)
                 .orElseThrow(() -> new EntityNotFoundException("The prospect with ID " + prospectId + " was not found."));
+
+
 
         // Fetch the current authenticated user and ensure it's managed
         UserEntity currentUser = authenticationService.getCurrentUser();
@@ -477,80 +537,51 @@ public class ProspectService {
                 .actionType("Changement de statut")
                 .timestamp(LocalDateTime.now())
                 .user(managedUser) // Use the managed user
-                .details(managedUser.getName() + " a changé le statut du prospect du " + prospect.getStatus() + " à " + status)
+                .details(managedUser.getName() +" a changé le statut du prospect du " + prospect.getStatus() +" à " + status)
                 .prospect(prospect)
                 .build();
 
         // Save the tracking log
         trackingLogRepository.save(trackingLog);
-
         // Update the status
-        ProspectStatus oldStatus = prospect.getStatus(); // Save the old status for comparison
         prospect.setStatus(status);
-
-        // Check if a customer already exists for this prospect
-        Optional<Customer> customer = customerRepository.findByProspectIdAndDeletedAtIsNull(prospectId);
-
-        // Check if the new status is valid and the status has changed
-        if ((status == ProspectStatus.INTERESTED || status == ProspectStatus.CONVERTED || status == ProspectStatus.OPPORTUNITY)
-                && !status.equals(oldStatus)) {
-
-            if (customer.isEmpty()) {
-                    // Create a new customer
-                    Customer addCustomer = new Customer();
-                    addCustomer.setName(prospect.getName());
-                    addCustomer.setSigle(prospect.getSigle());
-                    addCustomer.setCapital(prospect.getCapital());
-                    addCustomer.setHeadOffice(prospect.getHeadOffice());
-                    addCustomer.setLegalRepresentative(prospect.getLegalRepresentative());
-                    addCustomer.setYearOfCreation(prospect.getYearOfCreation());
-                    addCustomer.setDateOfRegistration(prospect.getDateOfRegistration());
-                    addCustomer.setEmail(prospect.getEmail());
-                    addCustomer.setPhone(prospect.getPhone());
-                    addCustomer.setFax(prospect.getFax());
-                    addCustomer.setWebsite(prospect.getWebsite());
-                    addCustomer.setLinkedin(prospect.getLinkedin());
-                    addCustomer.setWhatsapp(prospect.getWhatsapp());
-                    addCustomer.setIce(prospect.getIce());
-                    addCustomer.setRc(prospect.getRc());
-                    addCustomer.setStatus(prospect.getStatus());
-                    addCustomer.setIfm(prospect.getIfm());
-                    addCustomer.setPatent(prospect.getPatent());
-                    addCustomer.setBusinessDescription(prospect.getBusinessDescription());
-                    addCustomer.setActive(prospect.getActive());
-                    addCustomer.setLegalStatus(prospect.getLegalStatus());
-                    addCustomer.setCity(prospect.getCity());
-                    addCustomer.setCourt(prospect.getCourt());
-                    addCustomer.setCompanySize(prospect.getCompanySize());
-                    addCustomer.setIndustry(prospect.getIndustry());
-                    addCustomer.setCountry(prospect.getCountry());
-                    addCustomer.setProprietaryStructure(prospect.getProprietaryStructure());
-                    addCustomer.setTitle(prospect.getTitle());
-                    addCustomer.setReprosentaveJobTitle(prospect.getReprosentaveJobTitle());
-                    addCustomer.setLogo(prospect.getLogo());
-                    addCustomer.setTrackingLogs(new ArrayList<>(prospect.getTrackingLogs()));
-                    addCustomer.setInterest(prospect.getProspectInterests()
-                            .stream()
-                            .map(prospectInterest -> prospectInterest.getInterest())
-                            .collect(Collectors.toList())); // Convertir en List
-                    addCustomer.setProspect(prospect);
-                    addCustomer.setCompany(prospect.getCompany());
-                    addCustomer.setCreatedAt(prospect.getCreatedAt());
-                    // Save the new customer
-                    this.customerRepository.save(addCustomer);
-            }
-        }
-        // Check if the customer exists
-        if (customer.isPresent()) {
-            // update status customer
-            Customer updateCustomer = customer.get();
-            updateCustomer.setStatus(status);
-            this.customerRepository.save(updateCustomer);
-        }
         // Save the updated prospect
         Prospect updatedProspect = this.prospectRepository.save(prospect);
+
         return ProspectResponseDtoBuilder.fromEntity(updatedProspect);
     }
 
+    /**
+     * Restore Prospect By Id
+      * @param id
+     * @return true if prospect exsist else @return false
+     */
+    public boolean restoreProspectById(Long id) throws EntityNotFoundException {
+        // Restore the prospect
+        Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNotNullAndId(id);
+        if (prospect.isPresent()){
+            prospect.get().setDeletedAt(null);
+            prospectRepository.save(prospect.get());
+            return true;
+        }else{
+            throw new EntityNotFoundException("Prospect with ID " + id + " not found or already restored.");
+        }
+    }
 
+    /**
+     * Soft Delete Prospect By Id
+     * @param id
+     * @return true if prospect exsist else @return false
+     */
+    public boolean softDeleteById(Long id)throws EntityNotFoundException {
+        // Restore the prospect
+        Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNullAndId(id);
+        if (prospect.isPresent()){
+            prospect.get().setDeletedAt(LocalDateTime.now());
+            prospectRepository.save(prospect.get());
+            return true;
+        }else{
+            throw new EntityNotFoundException("Prospect with ID " + id + " not found or already deleted.");
+        }
+    }
 }

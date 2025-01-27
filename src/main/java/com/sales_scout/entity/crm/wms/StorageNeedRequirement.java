@@ -1,32 +1,31 @@
 package com.sales_scout.entity.crm.wms;
 
+import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "storage_insurance")
+@Table(name = "storage_need_requirements")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StorageInsurance {
+public class StorageNeedRequirement extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
 
-    private Double price;
+    @ManyToOne
+    @JoinColumn(name = "requirement_id", nullable = false)
+    private Requirement requirement;
 
-    private String notes;
-
-    @OneToMany(mappedBy = "insurance", cascade = CascadeType.ALL)
-    private Set<StorageOfferInsurance> offerInsurances;
+    @ManyToOne
+    @JoinColumn(name = "storage_need_id", nullable = false)
+    private StorageNeed storageNeed;
 }

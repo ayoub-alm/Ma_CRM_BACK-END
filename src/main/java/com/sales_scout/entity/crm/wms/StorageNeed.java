@@ -1,6 +1,7 @@
 package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.Company;
 import com.sales_scout.entity.Customer;
 import com.sales_scout.enums.crm.wms.LivreEnum;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -43,6 +45,13 @@ public class StorageNeed extends BaseEntity {
     private String productType;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id",nullable = false)
     private Customer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
+    @OneToMany(mappedBy = "storageNeed", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StorageNeedRequirement> storageNeedRequirements;
 }

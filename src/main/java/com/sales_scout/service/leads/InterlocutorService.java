@@ -19,9 +19,17 @@ import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.data.JobTitleRepository;
 import com.sales_scout.service.data.DepartmentService;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import java.io.IOException;
+import java.time.LocalDateTime;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -209,6 +217,38 @@ public class InterlocutorService {
     }
 
 
+    public void exportFileExcel(List<Interlocutor> interlocutors, String filePath)throws IOException {
+        try(Workbook workbook = new XSSFWorkbook()){
+            Sheet sheet = workbook.createSheet("Interlocutor");
+            Row headerRow = sheet.createRow(0);
+            String[] colmuns = {"Id","Full Name" , "Active","Email" , "Phone Number"
+                    , "Department","Job Title"  , "Prospect"};
+
+            for (int i = 0; i < colmuns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(colmuns[i]);
+            }
+
+            int rowNum=1;
+            if( interlocutors == null){
+                 interlocutors = interlocutorRepository.findAll();
+            }
+
+            for (Interlocutor interlocutor : interlocutors){
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(interlocutor.getId());
+                row.createCell(1).setCellValue(interlocutor.getFullName());
+                row.createCell(2).setCellValue(interlocutor.getActive().name());
+                row.createCell(3).setCellValue(interlocutor.getEmailAddress().getAddress());
+                row.createCell(4).setCellValue(interlocutor.getPhoneNumber().getNumber());
+                row.createCell(5).setCellValue(interlocutor.getDepartment().getName());
+                row.createCell(6).setCellValue(interlocutor.getJobTitle().getName());
+                row.createCell(7).setCellValue(interlocutor.getProspect().getName());
+            }
+        }
+
+    }
+
     /**
      * Soft delete an interlocutor by ID
      * @param id Interlocutor ID
@@ -231,6 +271,7 @@ public class InterlocutorService {
         });
     }
 
+
     /**
      * Bulk soft delete for a list of interlocutor IDs
      * @param ids List of IDs to soft-delete
@@ -252,5 +293,42 @@ public class InterlocutorService {
             interlocutorRepository.save(interlocutor);
         });
     }
+
+    /**
+     * Soft Delete By Interlocutor Id
+     * @param id
+     * @return true if Interlocutor exsist else @return false
+     */
+    public boolean softDeleteInterlocutor(Long id)throws EntityNotFoundException{
+        Optional<Interlocutor> interlocutor = interlocutorRepository.findByDeletedAtIsNullAndId(id);
+
+        if (interlocutor.isPresent()){
+            interlocutor.get().setDeletedAt(LocalDateTime.now());
+            interlocutorRepository.save(interlocutor.get());
+            return true;
+        }else {
+            throw new EntityNotFoundException("Interlocutor with ID " + id + " not found or already deleted.");
+        }
+
+    }
+
+    /**
+     * Restore Interlocutore By Id
+     * @param id
+     *  @return true if Interlocutor exsist else @return false
+     */
+    public boolean restoreInterlocutor(Long id) throws EntityNotFoundException{
+        Optional<Interlocutor> interlocutor = interlocutorRepository.findByDeletedAtIsNotNullAndId(id);
+
+        if (interlocutor.isPresent()) {
+        interlocutor.get().setDeletedAt(null);
+            interlocutorRepository.save(interlocutor.get());
+            return true;
+        }else {
+            throw new EntityNotFoundException("Interlocutor with ID " + id + " not found or already restored.");
+        }
+        }
+
 }
+
 

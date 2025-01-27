@@ -6,6 +6,7 @@ import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.*;
 

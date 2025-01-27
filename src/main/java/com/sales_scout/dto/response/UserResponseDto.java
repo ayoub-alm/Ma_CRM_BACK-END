@@ -1,17 +1,19 @@
 package com.sales_scout.dto.response;
 
+import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.Right;
 import com.sales_scout.entity.Role;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponseDto {
+public class UserResponseDto extends BaseDto {
     private String name;
     private String email;
 //    private String password;

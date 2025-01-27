@@ -26,9 +26,10 @@ public class CompanyController {
      */
     @GetMapping
     public ResponseEntity<List<CompanyResponseDto>> getAllCompanies() {
-        List<CompanyResponseDto> companies = companyService.findAllCompanies();
+        List<CompanyResponseDto> companies = companyService.getCompaniesByCurrentUser();
         return ResponseEntity.ok(companies);
     }
+
 
     /**
      * Get a company by ID
@@ -81,7 +82,9 @@ public class CompanyController {
      */
     @PostMapping
     public ResponseEntity<CompanyResponseDto> addCompany(@RequestBody CreateCompanyDTO company) {
-        CompanyResponseDto newCompany = companyService.addCompany(company);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newCompany);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.addCompany(company));
     }
+
+
+
 }

@@ -5,7 +5,6 @@ import com.sales_scout.dto.request.create.CreateCompanyDTO;
 import com.sales_scout.dto.response.CompanyResponseDto;
 import com.sales_scout.entity.Company;
 
-import java.util.List;
 
 public class CompanyDtoBuilder {
 
@@ -45,6 +44,10 @@ public class CompanyDtoBuilder {
                 .proprietaryStructure(company.getProprietaryStructure())
                 .title(company.getTitle())
                 .reprosentaveJobTitle(company.getReprosentaveJobTitle())
+                .createdAt(company.getCreatedAt())
+                .createdBy(company.getCreatedBy())
+                .updatedAt(company.getUpdatedAt())
+                .updatedBy(company.getUpdatedBy())
                 .build();
     }
 
@@ -52,9 +55,6 @@ public class CompanyDtoBuilder {
         if(createCompanyDTO == null){
             return null;
         }
-
-
-
         return Company.builder()
                 .logo(imagePath)
                 .name(createCompanyDTO.getName())
@@ -86,6 +86,5 @@ public class CompanyDtoBuilder {
                 .title(createCompanyDTO.getTitle())
                 .reprosentaveJobTitle(createCompanyDTO.getReprosentaveJobTitle())
                 .build();
-
     }
 }

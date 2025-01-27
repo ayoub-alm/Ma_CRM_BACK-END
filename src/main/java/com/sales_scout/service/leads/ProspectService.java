@@ -283,8 +283,10 @@ public class ProspectService {
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 Prospect prospect = mapRowToProspect(row);
-                if (prospect != null) {
+                if (prospect.getName() != null && !prospect.getName().equals("")) {
                     prospects.add(prospect);
+                }else{
+                    break;
                 }
             }
         }
@@ -325,7 +327,7 @@ public class ProspectService {
         prospect.setLegalRepresentative(getStringCellValue(row, 23));
         prospect.setTitle(getTitleFromExcel(row, 24));
         prospect.setReprosentaveJobTitle(getJobTitleFromExcel(row, 25));
-
+        prospect.setCreatedAt(LocalDateTime.now());
         return prospect;
     }
 

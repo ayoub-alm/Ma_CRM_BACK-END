@@ -6,11 +6,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Builder
 public class JwtResponse {
     public String token;
     public UserDetails userResponseDto;
+    public UserResponseDto user;
 
     JwtResponse( String token){
         this.token = token;

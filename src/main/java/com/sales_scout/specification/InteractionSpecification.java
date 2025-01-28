@@ -24,17 +24,14 @@ public class InteractionSpecification {
             if (interactionFilter.getId() != null){
                 predicate = builder.and(predicate, builder.equal(root.get("id"), interactionFilter.getId()));
             }
-            if (interactionFilter.getProspect() != null){
-                predicate = builder.and(predicate, builder.equal(root.get("prospectId"), interactionFilter.getProspect()));
-            }
             if (interactionFilter.getInterlocutor() != null){
-                predicate = builder.and(predicate, builder.equal(root.get("interlocutorId"), interactionFilter.getInterlocutor()));
+                predicate = builder.and(predicate, builder.equal(root.get("interlocutor").get("id"), interactionFilter.getInterlocutor().getId()));
             }
             if (interactionFilter.getPlanningDate() != null){
                 predicate = builder.and(predicate, builder.equal(root.get("planningDate"), interactionFilter.getPlanningDate()));
             }
             if (interactionFilter.getAddress() != null){
-                predicate = builder.and(predicate, builder.like(root.get("id"), interactionFilter.getAddress()));
+                predicate = builder.and(predicate, builder.like(root.get("address"), "%"+interactionFilter.getAddress()+"%"));
             }
             if (interactionFilter.getAgent() != null){
                 predicate = builder.and(predicate, builder.equal(root.get("agent"),  interactionFilter.getAgent()));
@@ -43,7 +40,7 @@ public class InteractionSpecification {
                 predicate = builder.and(predicate, builder.equal(root.get("affectedTo"), interactionFilter.getAffectedTo()));
             }
             if (interactionFilter.getReport() != null){
-                predicate = builder.and(predicate, builder.like(root.get("report"), interactionFilter.getReport()));
+                predicate = builder.and(predicate, builder.like(root.get("report"),"%"+interactionFilter.getReport()+"%"));
             }
 
             // Always add condition for deletedAt IS NULL (soft-delete check)

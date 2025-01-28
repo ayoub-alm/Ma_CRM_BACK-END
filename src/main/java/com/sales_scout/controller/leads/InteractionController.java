@@ -4,6 +4,7 @@ package com.sales_scout.controller.leads;
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
 import com.sales_scout.entity.EntityFilters.InteractionFilter;
+import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.enums.InteractionSubject;
 import com.sales_scout.enums.InteractionType;
 import com.sales_scout.service.UserAgentService;
@@ -39,7 +40,6 @@ public class InteractionController {
             @RequestParam(required = false) Date createdAtFrom,
             @RequestParam(required = false) Date createdAtTo,
             @RequestParam(required = false) Long id,
-            @RequestParam(required = false) Long prospectId,
             @RequestParam(required = false) Long interlocutorId,
             @RequestParam(required = false) Date planningDate,
             @RequestParam(required = false) String address,
@@ -53,13 +53,25 @@ public class InteractionController {
         interactionFilter.setCreatedAtFrom(createdAtFrom);
         interactionFilter.setCreatedAtTo(createdAtTo);
         interactionFilter.setId(id);
-        interactionFilter.setProspect(prospectService.getProspectById(prospectId).isPresent() ? prospectService.getProspectById(prospectId) :null);
-        interactionFilter.setInterlocutor(interlocutorService.getInterlocutorById(interlocutorId).isPresent() ? );
+        // Handle interlocutorId
+        if (interlocutorId != null) {
+            Interlocutor interlocutor = new Interlocutor();
+            interlocutor.setId(interlocutorId);
+            interactionFilter.setInterlocutor(interlocutor);
+        }
+
         interactionFilter.setPlanningDate(planningDate);
         interactionFilter.setAddress(address);
-        interactionFilter.setAgent(userAgentService.findById(agentId));
-        interactionFilter.setAffectedTo(userAgentService.findById(affectedToId));
-        interactionFilter.setReport(report);
+
+        // Handle agentId
+        if (agentId != null) {
+            interactionFilter.setAgent(userAgentService.findById(agentId));
+        }
+
+        // Handle affectedToId
+        if (affectedToId != null) {
+            interactionFilter.setAffectedTo(userAgentService.findById(affectedToId));
+        }interactionFilter.setReport(report);
         List<InteractionResponseDto> interactions = this.interactionService.getAllInteractions(interactionFilter);
         return new ResponseEntity<>(interactions, HttpStatus.OK);
     }

@@ -4,6 +4,7 @@ import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
 import com.sales_scout.dto.response.ProspectResponseDto;
+import com.sales_scout.entity.EntityFilters.InterlocutorFilter;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.data.Department;
@@ -18,10 +19,13 @@ import com.sales_scout.repository.PhoneNumberRepository;
 import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.data.JobTitleRepository;
 import com.sales_scout.service.data.DepartmentService;
+import com.sales_scout.specification.InterlocutorSpecification;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,8 +51,9 @@ public class InterlocutorService {
      * Get all non-soft-deleted interlocutors
      * @return List<Interlocutor> list of interlocutors
      */
-    public List<InterlocutorResponseDto> getAllInterlocutors() {
-        List<Interlocutor> interlocutors = this.interlocutorRepository.findAllByDeletedAtIsNull();
+    public List<InterlocutorResponseDto> getAllInterlocutors(InterlocutorFilter interlocutorFilter) {
+        Specification<Interlocutor> specification = InterlocutorSpecification.hasInterlocutorFilter(interlocutorFilter);
+        List<Interlocutor> interlocutors = this.interlocutorRepository.findAll(specification);
         return  interlocutors.stream().map(interlocutor -> {
             ProspectResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getProspect());
             return InterlocutorResponseDto.builder()

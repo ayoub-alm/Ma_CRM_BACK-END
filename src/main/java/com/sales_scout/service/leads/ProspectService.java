@@ -256,7 +256,6 @@ public class ProspectService {
     public Optional<ProspectResponseDto> getProspectById(Long id) throws EntityNotFoundException{
         Optional<Prospect> prospectOptional =  this.prospectRepository.findByDeletedAtIsNullAndId(id);
         if (prospectOptional.isPresent()) {
-
             return Optional.ofNullable(ProspectResponseDtoBuilder.fromEntity(prospectOptional.get()));
         } else {
             throw new EntityNotFoundException("Prospect not found or already deleted.");

@@ -1,15 +1,16 @@
 package com.sales_scout.mapper;
 
-import com.sales_scout.dto.response.ProspectResponseDto;
+import com.sales_scout.dto.response.CustomerResponseDto;
+
 import com.sales_scout.dto.response.TrackingLogForProspect;
 import com.sales_scout.dto.response.UserResponseDto;
-import com.sales_scout.entity.leads.Prospect;
+import com.sales_scout.entity.leads.Customer;
 
 import java.util.List;
 
 public class ProspectResponseDtoBuilder {
 
-    public static ProspectResponseDto fromEntity(Prospect prospect) {
+    public static CustomerResponseDto fromEntity(Customer prospect) {
         if (prospect == null) {
             return null;
         }
@@ -30,7 +31,7 @@ public class ProspectResponseDtoBuilder {
                     .build();
         }).toList();
 
-        return ProspectResponseDto.builder()
+        return CustomerResponseDto.builder()
                 .id(prospect.getId())
                 .name(prospect.getName())
                 .sigle(prospect.getSigle())

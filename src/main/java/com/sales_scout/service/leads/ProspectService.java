@@ -1,16 +1,18 @@
 package com.sales_scout.service.leads;
 
 import com.sales_scout.dto.request.ProspectRequestDto;
-import com.sales_scout.dto.response.ProspectResponseDto;
+
+import com.sales_scout.dto.response.CustomerResponseDto;
 import com.sales_scout.entity.Company;
-import com.sales_scout.entity.leads.Prospect;
+
+import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.entity.UserEntity;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import com.sales_scout.mapper.ProspectResponseDtoBuilder;
-import com.sales_scout.repository.leads.ProspectRepository;
+import com.sales_scout.repository.leads.CustomerRepository;
 import com.sales_scout.repository.leads.TrackingLogRepository;
 import com.sales_scout.repository.UserRepository;
 import com.sales_scout.repository.data.*;
@@ -34,7 +36,7 @@ import java.util.*;
 
 @Service
 public class ProspectService {
-    private final ProspectRepository prospectRepository;
+    private final CustomerRepository prospectRepository;
 
     private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
     @Autowired
@@ -72,7 +74,7 @@ public class ProspectService {
     @Autowired
     private UserRepository userRepository;
 
-    public ProspectService(ProspectRepository prospectRepository) {
+    public ProspectService(CustomerRepository prospectRepository) {
         this.prospectRepository = prospectRepository;
     }
 
@@ -80,7 +82,7 @@ public class ProspectService {
      * This function allows us to get all prospect within Soft-deleted
      * @return { List<Prospect> }
      */
-    public List<ProspectResponseDto> getAllProspects() {
+    public List<CustomerResponseDto> getAllProspects() {
         UserEntity CurrentUser = this.authenticationService.getCurrentUser();
         List<Long> companiesIds =  CurrentUser.getCompanies().stream().map(Company::getId).toList();
         return this.prospectRepository.findAllByDeletedAtIsNullAndCompanyIdIn(companiesIds)
@@ -94,7 +96,7 @@ public class ProspectService {
      * @param prospectRequestDto DTO containing prospect details
      * @return Prospect created or updated Prospect
      */
-    public Prospect saveOrUpdateProspect(ProspectRequestDto prospectRequestDto) {
+    public Customer saveOrUpdateProspect(ProspectRequestDto prospectRequestDto) {
         // Ensure `deletedAt` is null to mark the prospect as active
         prospectRequestDto.setDeletedAt(null);
 
@@ -107,11 +109,11 @@ public class ProspectService {
                 imagePath = null;
             }
 
-            Prospect prospect;
+            Customer prospect;
 
             if (prospectRequestDto.getId() != null) {
                 // If the ID is present, check if the prospect exists
-                Optional<Prospect> existingProspect = prospectRepository.findById(prospectRequestDto.getId());
+                Optional<Customer> existingProspect = prospectRepository.findById(prospectRequestDto.getId());
                 if (existingProspect.isPresent()) {
                     // Update the existing prospect
                     prospect = existingProspect.get();
@@ -149,7 +151,7 @@ public class ProspectService {
                 }
             } else {
                 // Create a new Prospect
-                prospect = Prospect.builder()
+                prospect = Customer.builder()
 
                         .name(prospectRequestDto.getName())
                         .sigle(prospectRequestDto.getSigle())
@@ -237,9 +239,9 @@ public class ProspectService {
      * @param id {Long} id if prospect to be soft-deleted
      */
     public void softDeleteProspect(Long id) {
-        Optional<Prospect> prospectOptional = prospectRepository.findByDeletedAtIsNullAndId(id);
+        Optional<Customer> prospectOptional = prospectRepository.findByDeletedAtIsNullAndId(id);
         if (prospectOptional.isPresent()) {
-            Prospect prospect = prospectOptional.get();
+            Customer prospect = prospectOptional.get();
             prospect.setDeletedAt(LocalDateTime.now());
             prospectRepository.save(prospect);
         } else {
@@ -253,8 +255,8 @@ public class ProspectService {
      * @return Optional<Prospect>
      * @throws EntityNotFoundException exception
      */
-    public Optional<ProspectResponseDto> getProspectById(Long id) throws EntityNotFoundException{
-        Optional<Prospect> prospectOptional =  this.prospectRepository.findByDeletedAtIsNullAndId(id);
+    public Optional<CustomerResponseDto> getProspectById(Long id) throws EntityNotFoundException{
+        Optional<Customer> prospectOptional =  this.prospectRepository.findByDeletedAtIsNullAndId(id);
         if (prospectOptional.isPresent()) {
 
             return Optional.ofNullable(ProspectResponseDtoBuilder.fromEntity(prospectOptional.get()));
@@ -265,8 +267,8 @@ public class ProspectService {
 
 
     @Transactional
-    public List<Prospect> uploadProspectsFromFile(MultipartFile excelFile) throws IOException {
-        List<Prospect> prospects = new ArrayList<>();
+    public List<Customer> uploadProspectsFromFile(MultipartFile excelFile) throws IOException {
+        List<Customer> prospects = new ArrayList<>();
 
         // Open the Excel file from MultipartFile
         try (Workbook workbook = new XSSFWorkbook(excelFile.getInputStream())) {
@@ -282,7 +284,7 @@ public class ProspectService {
 
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
-                Prospect prospect = mapRowToProspect(row);
+                Customer prospect = mapRowToProspect(row);
                 if (prospect.getName() != null && !prospect.getName().equals("")) {
                     prospects.add(prospect);
                 }else{
@@ -295,8 +297,8 @@ public class ProspectService {
         return prospectRepository.saveAll(prospects);
     }
 
-    private Prospect mapRowToProspect(Row row) {
-        Prospect prospect = new Prospect();
+    private Customer mapRowToProspect(Row row) {
+        Customer prospect = new Customer();
 
         // Map row data to Prospect object
         prospect.setName(getStringCellValue(row, 0));
@@ -458,7 +460,7 @@ public class ProspectService {
         }
     }
 
-    public void exportFileExcel(List<Prospect> prospects , String filePath)throws IOException{
+    public void exportFileExcel(List<Customer> prospects , String filePath)throws IOException{
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Prospects");
             Row headerRow = sheet.createRow(0);
@@ -476,7 +478,7 @@ public class ProspectService {
                 prospects = prospectRepository.findAll();
             }
 
-            for(Prospect prospect : prospects){
+            for(Customer prospect : prospects){
                     Row row = sheet.createRow(rowNum++);
                     row.createCell(0).setCellValue(prospect.getId());
                     row.createCell(1).setCellValue(prospect.getName());
@@ -520,9 +522,9 @@ public class ProspectService {
         }
     }
 
-    public ProspectResponseDto updateProspectStatus(ProspectStatus status, Long prospectId) throws EntityNotFoundException {
+    public CustomerResponseDto updateProspectStatus(ProspectStatus status, Long prospectId) throws EntityNotFoundException {
         // Fetch the prospect or throw an exception if not found
-        Prospect prospect = this.prospectRepository.findByDeletedAtIsNullAndId(prospectId)
+        Customer prospect = this.prospectRepository.findByDeletedAtIsNullAndId(prospectId)
                 .orElseThrow(() -> new EntityNotFoundException("The prospect with ID " + prospectId + " was not found."));
 
 
@@ -538,7 +540,7 @@ public class ProspectService {
                 .timestamp(LocalDateTime.now())
                 .user(managedUser) // Use the managed user
                 .details(managedUser.getName() +" a changé le statut du prospect du " + prospect.getStatus() +" à " + status)
-                .prospect(prospect)
+                .customer(prospect)
                 .build();
 
         // Save the tracking log
@@ -546,7 +548,7 @@ public class ProspectService {
         // Update the status
         prospect.setStatus(status);
         // Save the updated prospect
-        Prospect updatedProspect = this.prospectRepository.save(prospect);
+        Customer updatedProspect = this.prospectRepository.save(prospect);
 
         return ProspectResponseDtoBuilder.fromEntity(updatedProspect);
     }
@@ -558,7 +560,7 @@ public class ProspectService {
      */
     public boolean restoreProspectById(Long id) throws EntityNotFoundException {
         // Restore the prospect
-        Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNotNullAndId(id);
+        Optional<Customer> prospect = prospectRepository.findByDeletedAtIsNotNullAndId(id);
         if (prospect.isPresent()){
             prospect.get().setDeletedAt(null);
             prospectRepository.save(prospect.get());
@@ -575,7 +577,7 @@ public class ProspectService {
      */
     public boolean softDeleteById(Long id)throws EntityNotFoundException {
         // Restore the prospect
-        Optional<Prospect> prospect = prospectRepository.findByDeletedAtIsNullAndId(id);
+        Optional<Customer> prospect = prospectRepository.findByDeletedAtIsNullAndId(id);
         if (prospect.isPresent()){
             prospect.get().setDeletedAt(LocalDateTime.now());
             prospectRepository.save(prospect.get());

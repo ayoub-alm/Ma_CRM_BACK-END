@@ -5,12 +5,11 @@ import com.sales_scout.dto.request.create.wms.ProvisionRequestDto;
 import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
-import com.sales_scout.entity.Customer;
 import com.sales_scout.entity.crm.wms.*;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
 import com.sales_scout.mapper.StorageNeedMapper;
-import com.sales_scout.repository.crm.CustomerRepository;
 import com.sales_scout.repository.crm.wms.*;
+import com.sales_scout.repository.leads.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 
 @Service
 public class StorageNeedService {
@@ -27,7 +27,6 @@ public class StorageNeedService {
     private final StorageNeedRequirementRepository storageNeedRequirementRepository;
     private final StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository;
     private final StockedItemRepository stockedItemRepository;
-    private final CustomerRepository customerRepository;
     private final DimensionRepository dimensionRepository;
     private final StockedItemProvisionRepository stockedItemProvisionRepository;
     private final StructureRepository structureRepository;
@@ -39,7 +38,6 @@ public class StorageNeedService {
         this.storageNeedRequirementRepository = storageNeedRequirementRepository;
         this.storageNeedUnloadingTypeRepository = storageNeedUnloadingTypeRepository;
         this.stockedItemRepository = stockedItemRepository;
-        this.customerRepository = customerRepository;
         this.dimensionRepository = dimensionRepository;
         this.stockedItemProvisionRepository = stockedItemProvisionRepository;
         this.structureRepository = structureRepository;
@@ -49,13 +47,13 @@ public class StorageNeedService {
     /**
      * this function allow to create and save a new storage need
      * @param storageNeedDto item to store
-     * @return StorageNeedResponseDto the created storage need
+     * @return {StorageNeedResponseDto} the created storage need
      * @throws {EntityNotFoundException} if one of the elements ids not found
      */
     @Transactional
     public StorageNeedResponseDto createStorageNeed(StorageNeedCreateDto storageNeedDto) throws EntityNotFoundException {
         // Set the customer and company information
-        storageNeedDto.setCustomerId(3L);  // Customer is hardcoded as 3L for now
+        storageNeedDto.setCustomerId(storageNeedDto.getCustomerId());
         storageNeedDto.setStatus(NeedStatusEnum.CREATION);  // Set initial status
 
         // Convert StorageNeedCreateDto to StorageNeed entity and save
@@ -77,7 +75,7 @@ public class StorageNeedService {
         createStorageNeedUnloadingTypes(storageNeedDto.getUnloadingTypes(), savedStorageNeed);
 
         // Return the mapped response DTO
-        return StorageNeedMapper.toResponseDto(savedStorageNeed);
+        return this.storageNeedMapper.toResponseDto(savedStorageNeed);
     }
 
     private StockedItem createStockedItem(StockedItemRequestDto stockedItemDto, StorageNeed savedStorageNeed) {
@@ -154,32 +152,25 @@ public class StorageNeedService {
         storageNeedUnloadingTypeRepository.saveAll(unloadingTypes);
     }
 
+
     /**
      * This function allows you to get all storage needs by company id
+     *
      * @param companyId the id of the selected company
      * @return List<StorageNeedResponseDto> List of needs
      * @throws EntityNotFoundException if no storage needs are found for the provided companyId
      */
-    public List<StorageNeedResponseDto> getStorageNeedsByCompanyId(Long companyId) throws EntityNotFoundException {
-        try {
-            List<StorageNeed> storageNeeds = storageNeedRepository.findByCompanyIdAndDeletedAtIsNull(companyId);
+    public List<StorageNeedResponseDto> getStorageNeedsByCompanyId(Long companyId) {
+        // Fetch all storage needs by company ID
+        List<StorageNeed> storageNeeds = storageNeedRepository.findByCompanyIdAndDeletedAtIsNull(companyId);
 
-            if (storageNeeds.isEmpty()) {
-                throw new EntityNotFoundException("No storage needs found for company ID: " + companyId);
-            }
-
-            // Map the storage needs to response DTOs
-            return storageNeeds.stream()
-                    .map(StorageNeedMapper::toResponseDto)
-                    .collect(Collectors.toList());
-
-        } catch (EntityNotFoundException e) {
-            // Log and rethrow the exception for higher-level handling
-            throw e; // Rethrow the exception to propagate it to the controller layer
-        } catch (Exception e) {
-            // Handle any other unexpected errors
-            throw new RuntimeException("An unexpected error occurred while processing the request.", e);
+        if (storageNeeds.isEmpty()) {
+            throw new EntityNotFoundException("No storage needs found for company ID: " + companyId);
         }
-    }
 
+        // Map the storage needs to response DTOs
+        return storageNeeds.stream()
+                .map(storageNeedMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
 }

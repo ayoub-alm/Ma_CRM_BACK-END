@@ -2,20 +2,21 @@ package com.sales_scout.service.leads;
 
 import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
+import com.sales_scout.dto.response.CustomerResponseDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
-import com.sales_scout.dto.response.ProspectResponseDto;
+import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interlocutor;
-import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.data.Department;
 import com.sales_scout.entity.data.EmailAddress;
 import com.sales_scout.entity.data.JobTitle;
 import com.sales_scout.entity.data.PhoneNumber;
 import com.sales_scout.enums.ActiveInactiveEnum;
+import com.sales_scout.mapper.InterlocutorMapper;
 import com.sales_scout.mapper.ProspectResponseDtoBuilder;
 import com.sales_scout.repository.EmailAddressRepository;
+import com.sales_scout.repository.leads.CustomerRepository;
 import com.sales_scout.repository.leads.InterlocutorRepository;
 import com.sales_scout.repository.PhoneNumberRepository;
-import com.sales_scout.repository.leads.ProspectRepository;
 import com.sales_scout.repository.data.JobTitleRepository;
 import com.sales_scout.service.data.DepartmentService;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,15 +41,17 @@ public class InterlocutorService {
     final private EmailAddressRepository emailAddressRepository;
     final private PhoneNumberRepository phoneNumberRepository;
     private final JobTitleRepository jobTitleRepository;
-    private final ProspectRepository prospectRepository;
-    public InterlocutorService(InterlocutorRepository interlocutorRepository, ProspectService prospectService, DepartmentService departmentService, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, JobTitleRepository jobTitleRepository, ProspectRepository prospectRepository) {
+    private final CustomerRepository customerRepository;
+    private final InterlocutorMapper interlocutorMapper;
+    public InterlocutorService(InterlocutorRepository interlocutorRepository, ProspectService prospectService, DepartmentService departmentService, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, JobTitleRepository jobTitleRepository, CustomerRepository prospectRepository, CustomerRepository customerRepository, InterlocutorMapper interlocutorMapper) {
         this.interlocutorRepository = interlocutorRepository;
         this.prospectService = prospectService;
         this.departmentService = departmentService;
         this.emailAddressRepository = emailAddressRepository;
         this.phoneNumberRepository = phoneNumberRepository;
         this.jobTitleRepository = jobTitleRepository;
-        this.prospectRepository = prospectRepository;
+        this.customerRepository = customerRepository;
+        this.interlocutorMapper = interlocutorMapper;
     }
 
     /**
@@ -58,15 +61,18 @@ public class InterlocutorService {
     public List<InterlocutorResponseDto> getAllInterlocutors() {
         List<Interlocutor> interlocutors = this.interlocutorRepository.findAllByDeletedAtIsNull();
         return  interlocutors.stream().map(interlocutor -> {
-            ProspectResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getProspect());
+            CustomerResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getCustomer());
             return InterlocutorResponseDto.builder()
                      .fullName(interlocutor.getFullName())
                      .id(interlocutor.getId())
                      .department(interlocutor.getDepartment())
                      .phoneNumber(interlocutor.getPhoneNumber())
                      .emailAddress(interlocutor.getEmailAddress())
-                     .prospect(prospectresponseDto)
                      .jobTitle(interlocutor.getJobTitle())
+                    .customer(CustomerResponseDto.builder()
+                            .id(interlocutor.getCustomer().getId())
+                            .name(interlocutor.getCustomer().getName())
+                            .build())
                      .active(interlocutor.getActive())
                      .build();
         }).collect(Collectors.toList());
@@ -78,16 +84,16 @@ public class InterlocutorService {
      * @return List<InterlocutorResponseDto> list of prospects
      */
     public List<InterlocutorResponseDto> getInterlocutorsByProspectId(Long prospectId) {
-        List<Interlocutor> interlocutors = this.interlocutorRepository.findAllByProspectId(prospectId);
+        List<Interlocutor> interlocutors = this.interlocutorRepository.findAllByCustomerId(prospectId);
         return  interlocutors.stream().map(interlocutor -> {
-            ProspectResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getProspect());
+            CustomerResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getCustomer());
             return InterlocutorResponseDto.builder()
                     .fullName(interlocutor.getFullName())
                     .id(interlocutor.getId())
                     .department(interlocutor.getDepartment())
                     .phoneNumber(interlocutor.getPhoneNumber())
                     .emailAddress(interlocutor.getEmailAddress())
-                    .prospect(prospectresponseDto)
+                    .customer(prospectresponseDto)
                     .jobTitle(interlocutor.getJobTitle())
                     .active(interlocutor.getActive())
                     .build();
@@ -103,7 +109,7 @@ public class InterlocutorService {
     public Interlocutor saveOrUpdate(CreateInterlocutorDTO interlocutorDto) {
 
         // Fetch Prospect
-        Prospect prospect = this.prospectRepository.findByDeletedAtIsNullAndId(interlocutorDto.getProspectId())
+        Customer prospect = this.customerRepository.findByDeletedAtIsNullAndId(interlocutorDto.getProspectId())
                 .orElseThrow(() -> new IllegalArgumentException("Prospect not found with ID: " + interlocutorDto.getProspectId()));
 
         // Fetch Department
@@ -136,7 +142,7 @@ public class InterlocutorService {
         // Build Interlocutor
         Interlocutor interlocutor = Interlocutor.builder()
                 .fullName(interlocutorDto.getFullName())
-                .prospect(prospect)
+                .customer(prospect)
                 .phoneNumber(phoneNumber)
                 .emailAddress(emailAddress)
                 .department(department)
@@ -155,10 +161,10 @@ public class InterlocutorService {
      * @param updateInterlocutorDto Interlocutor object to update
      * @return Interlocutor saved object
      */
-    public Interlocutor update(UpdateInterlocutorDto updateInterlocutorDto) {
+    public InterlocutorResponseDto update(UpdateInterlocutorDto updateInterlocutorDto) throws EntityNotFoundException {
 
         // Fetch Prospect
-        Prospect prospect = this.prospectRepository.findByDeletedAtIsNullAndId(updateInterlocutorDto.getProspectId())
+        Customer customer = this.customerRepository.findByDeletedAtIsNullAndId(updateInterlocutorDto.getProspectId())
                 .orElseThrow(() -> new EntityNotFoundException("Prospect with id " + updateInterlocutorDto.getProspectId() + " not found"));
 
         // Fetch Department
@@ -188,26 +194,25 @@ public class InterlocutorService {
 
         // Update fields
         interlocutor.setFullName(updateInterlocutorDto.getFullName());
-        interlocutor.setProspect(prospect);
+        interlocutor.setCustomer(customer);
         interlocutor.setDepartment(department);
         interlocutor.setPhoneNumber(phoneNumber); // Use persisted PhoneNumber
         interlocutor.setJobTitle(jobTitle);
         interlocutor.setActive(updateInterlocutorDto.getActive());
-
         // Save and return
-        return interlocutorRepository.save(interlocutor);
+        return interlocutorMapper.toResponseDto(interlocutorRepository.save(interlocutor));
     }
 
     public InterlocutorResponseDto getInterlocutorById(Long id){
         Interlocutor interlocutor = this.interlocutorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Interlocutor with id " + id.toString() + " not found"));
 
-        ProspectResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getProspect());
+        CustomerResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getCustomer());
 
         return InterlocutorResponseDto.builder()
                 .id(interlocutor.getId())
                 .fullName(interlocutor.getFullName())
-                .prospect(prospectresponseDto)
+                .customer(prospectresponseDto)
                 .jobTitle(interlocutor.getJobTitle())
                 .department(interlocutor.getDepartment())
                 .phoneNumber(interlocutor.getPhoneNumber())
@@ -243,7 +248,7 @@ public class InterlocutorService {
                 row.createCell(4).setCellValue(interlocutor.getPhoneNumber().getNumber());
                 row.createCell(5).setCellValue(interlocutor.getDepartment().getName());
                 row.createCell(6).setCellValue(interlocutor.getJobTitle().getName());
-                row.createCell(7).setCellValue(interlocutor.getProspect().getName());
+                row.createCell(7).setCellValue(interlocutor.getCustomer().getName());
             }
         }
 

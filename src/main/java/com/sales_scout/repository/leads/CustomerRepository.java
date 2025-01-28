@@ -1,6 +1,6 @@
 package com.sales_scout.repository.leads;
 
-import com.sales_scout.entity.leads.Prospect;
+import com.sales_scout.entity.leads.Customer;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,25 +14,25 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProspectRepository extends JpaRepository<Prospect, Long> {
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
     /**
      * get prospects where deleted at is null
      * @return {List<Prospect>}
      */
-    List<Prospect> findAllByDeletedAtIsNullAndCompanyIdIn(List<Long> companyIds);
+    List<Customer> findAllByDeletedAtIsNullAndCompanyIdIn(List<Long> companyIds);
     /**
      * Get non-Soft-deleted prospect by ID
      * @return {Optional<Prospect>}
      * @param id {Long}
      */
-    Optional<Prospect> findByDeletedAtIsNullAndId(Long id);
+    Optional<Customer> findByDeletedAtIsNullAndId(Long id);
 
     /**
      * Get Soft-deleted prospect by ID
      * @param id
      * @return
      */
-    Optional<Prospect> findByDeletedAtIsNotNullAndId(Long id);
+    Optional<Customer> findByDeletedAtIsNotNullAndId(Long id);
 
     /**
      * This function allows to get count of prospects per status
@@ -40,14 +40,14 @@ public interface ProspectRepository extends JpaRepository<Prospect, Long> {
      * @param endDate Filter end date
      * @return {List<Object[]> } return array of prospects count by status
      */
-    @Query("SELECT  p.status, COUNT(p.id) " +
-            "FROM Prospect p " +
-            "WHERE (:startDate IS NULL OR p.createdAt >= :startDate) " +
-            "AND (:endDate IS NULL OR p.createdAt <= :endDate) " +
-            "GROUP BY p.status")
-    List<Object[]> getCountOfProspectsByStatusBetweenOptionalDates(
+    @Query("SELECT  c.status, COUNT(c.id) " +
+            "FROM Customer c " +
+            "WHERE (:startDate IS NULL OR c.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR c.createdAt <= :endDate) " +
+            "GROUP BY c.status")
+    List<Object[]> getCountOfCustomersByStatusBetweenOptionalDates(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
 
-    Collection<Prospect> findByDeletedAtIsNull();
+    Collection<Customer> findByDeletedAtIsNull();
 }

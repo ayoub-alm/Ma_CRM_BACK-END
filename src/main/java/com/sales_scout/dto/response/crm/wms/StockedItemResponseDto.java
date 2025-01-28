@@ -26,4 +26,5 @@ public class StockedItemResponseDto {
     private Double price;
     private StorageOffer storageOffer;
     private StorageNeed storageNeed;
+    private ProvisionResponseDto provisionResponseDto;
 }

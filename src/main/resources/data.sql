@@ -413,7 +413,15 @@ INSERT INTO `users` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at
 (2, '2024-11-20 09:51:08.000000', 'ayoub', NULL, NULL, 'alayoub44@gmail.com', 'Admin', '$2a$12$QizMzonMA2.z9nSvkvmqLOVlBzGB3owV2j8TVE0EFzudK35WeaWcCd', '0619903092', NULL, NULL),
 (3, '2024-11-20 09:51:08.000000', NULL, NULL, NULL, 'test@3abc.com', 'test', '$2a$12$.l8b515xr2SP1JjUYhEDFeCqxVvUKpmXFD.akLSLNLcv/Tp5shv8i', NULL, NULL, NULL);
 
-INSERT INTO provision (id, created_at, created_by, deleted_at, updated_at, last_updated_by, init_price, name, notes, ref, unit_of_measurement, company_id)
+
+INSERT INTO `companies` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `last_updated_by`, `business_description`, `capital`, `certification_text`, `cnss`, `date_of_registration`, `email`, `fax`, `head_office`, `ice`, `ifm`, `legal_representative`, `linkedin`, `logo`, `name`, `patent`, `phone`, `rc`, `sigle`, `status`, `website`, `whatsapp`, `year_of_creation`, `city_id`, `company_size_id`, `country_id`, `court_id`, `indusrty_id`, `legal_status_id`, `proprietary_structure_id`, `job_title_id`, `title_id`, `workspace_id`) VALUES
+(1, '2024-11-20 11:30:18.000000', NULL, NULL, '2024-11-20 11:30:18.000000', NULL, 'test de creation de prospect', 2000, '', '', '2024-11-20 11:30:18.000000', 'alayoub33@gmail.com', '', 'test 123', '123456', '1333', 'Ma Logistics', '', 'company_logo_1732098618812.png', 'ayoub', '3333', '0619903092', '123456', 'test', 0, '', '', '2020', 1, 1, 1, 1, 5, 1, 1, 1, 1, NULL),
+(2, '2024-11-20 11:30:18.000000', NULL, NULL, '2024-11-20 11:30:18.000000', NULL, 'test de creation de prospect', 2000, '', '', '2024-11-20 11:30:18.000000', 'alayoub3@gmail.com', '', 'test 123', '123456', '1333', 'Ma Logistics', '', 'company_logo_1732098618812.png', 'Ma Logistics', '3333', '0689903092', '123456', 'test', 0, '', '', '2020', 1, 1, 1, 1, 5, 1, 1, 1, 1, NULL),
+(3, '2024-11-20 11:30:18.000000', NULL, NULL, '2024-11-20 11:30:18.000000', NULL, 'test de creation de prospect', 2000, '', '', '2024-11-20 11:30:18.000000', 'alayoub23@gmail.com', '', 'test 123', '123456', '1333', 'Ma Logistics', '', 'company_logo_1732098618812.png', 'ARKiDA', '3333', '0619903072', '123456', 'test', 0, '', '', '2020', 1, 1, 1, 1, 5, 1, 1, 1, 1, NULL),
+(4, '2024-11-20 11:30:18.000000', NULL, NULL, '2024-11-20 11:30:18.000000', NULL, 'test de creation de prospect', 2000, '', '', '2024-11-20 11:30:18.000000', 'alayoub43@gmail.com', '', 'test 123', '123456', '1333', 'Ma Logistics', '', 'company_logo_1732098618812.png', '3ABC', '3333', '0619903093', '123456', 'test', 0, '', '', '2020', 1, 1, 1, 1, 5, 1, 1, 1, 1, NULL);
+
+
+INSERT INTO provisions (id, created_at, created_by, deleted_at, updated_at, last_updated_by, init_price, name, notes, ref, unit_of_measurement, company_id)
 VALUES
     (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 17.00, 'Réception', 'Prix pour réception', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
     (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Contrôle qualité en', 'Prix pour contrôle qualité', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),

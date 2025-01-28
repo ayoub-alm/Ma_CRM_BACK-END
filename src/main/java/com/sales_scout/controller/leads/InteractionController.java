@@ -55,9 +55,9 @@ public class InteractionController {
     }
 
     /**
-     * get all Interaction By interlocutor Id
-     * @param interlocutorId
-     * @return
+     * get all Interaction By interlocutor ID
+     * @param interlocutorId the ID of interlocutor
+     * @return ResponseEntity<List<InteractionResponseDto>>
      */
     @GetMapping("/interlocutor/{interlocutorId}")
     ResponseEntity<List<InteractionResponseDto>> getAllInteractionsByInterlocutorId(@PathVariable Long interlocutorId){
@@ -67,11 +67,11 @@ public class InteractionController {
 
     /**
      * create interaction
-     * @param interactionRequestDto
+     * @param interactionRequestDto the interaction to create
      * @return interactionRequestDto
      * @throws IOException
      */
-    @PostMapping("/create")
+    @PostMapping("")
     ResponseEntity<InteractionResponseDto> createInteraction(@RequestBody InteractionRequestDto interactionRequestDto) throws IOException {
         InteractionResponseDto interaction = this.interactionService.saveOrUpdateInteraction(interactionRequestDto);
         return new ResponseEntity<>(interaction, HttpStatus.OK);
@@ -88,9 +88,10 @@ public class InteractionController {
             }
             interactionService.exportFileExcel(interactions , "Interaction_File.xlsx");
             return ResponseEntity.ok("Excel File exported successfuly: Interactions_file.xlsx");
-        }catch (IOException e){
-            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to export Excel file " + e.getMessage());
-
+        }catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to export Excel file " + e.getMessage());
+        }
+    }
     /**
      * Soft Delete Interaction By Id
      * @param id

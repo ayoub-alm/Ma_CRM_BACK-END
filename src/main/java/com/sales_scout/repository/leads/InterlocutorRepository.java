@@ -13,7 +13,7 @@ public interface InterlocutorRepository extends JpaRepository<Interlocutor, Long
 
     List<Interlocutor> findAllByDeletedAtIsNull();
 
-    List<Interlocutor> findAllByProspectId(Long prospectId);
+    List<Interlocutor> findAllByCustomerId(Long prospectId);
 
     /**
      * Get non-Soft-deleted interlocutor by ID

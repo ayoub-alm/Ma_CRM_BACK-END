@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-public class ProspectResponseDto extends BaseDto {
+public class CustomerResponseDto extends BaseDto {
     private Long id;
     private String logo;
     private String name;

@@ -2,22 +2,41 @@ package com.sales_scout.mapper;
 
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
 import com.sales_scout.dto.response.crm.wms.CustomerDto;
+import com.sales_scout.dto.response.crm.wms.StockedItemResponseDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
 import com.sales_scout.entity.Company;
-import com.sales_scout.entity.Customer;
-import com.sales_scout.entity.crm.wms.StorageNeed;
-import com.sales_scout.repository.crm.CustomerRepository;
+import com.sales_scout.entity.crm.wms.*;
+import com.sales_scout.entity.leads.Customer;
+import com.sales_scout.mapper.wms.RequirementMapper;
+import com.sales_scout.mapper.wms.StockedItemMapper;
+import com.sales_scout.repository.crm.wms.StockedItemRepository;
+import com.sales_scout.repository.crm.wms.StorageNeedRequirementRepository;
+import com.sales_scout.repository.crm.wms.StorageNeedStockedItemRepository;
+import com.sales_scout.repository.crm.wms.StorageNeedUnloadingTypeRepository;
+import com.sales_scout.repository.leads.CustomerRepository;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.stylesheets.LinkStyle;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class StorageNeedMapper {
 
     private final CustomerRepository customerRepository;
+    private final StockedItemRepository stockedItemRepository;
+    private final StorageNeedStockedItemRepository storageNeedStockedItemRepository;
+    private final StorageNeedRequirementRepository storageNeedRequirementRepository;
+    private final StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository;
 
-    public StorageNeedMapper(CustomerRepository customerRepository) {
+    public StorageNeedMapper(CustomerRepository customerRepository, StockedItemRepository stockedItemRepository, StockedItemRepository stockedItemRepository1, StorageNeedStockedItemRepository storageNeedStockedItemRepository, StorageNeedRequirementRepository storageNeedRequirementRepository, StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository) {
         this.customerRepository = customerRepository;
+        this.stockedItemRepository = stockedItemRepository1;
+        this.storageNeedStockedItemRepository = storageNeedStockedItemRepository;
+        this.storageNeedRequirementRepository = storageNeedRequirementRepository;
+        this.storageNeedUnloadingTypeRepository = storageNeedUnloadingTypeRepository;
     }
 
     /**
@@ -56,12 +75,30 @@ public class StorageNeedMapper {
         return storageNeed;
     }
 
-
-    public static StorageNeedResponseDto toResponseDto(StorageNeed storageNeed) {
+    public StorageNeedResponseDto toResponseDto(StorageNeed storageNeed) {
         if (storageNeed == null) {
             return null;
         }
 
+        // Get all stocked items
+        List<StockedItem> stockedItems = storageNeedStockedItemRepository.findAllByStorageNeedId(storageNeed.getId())
+                .stream()
+                .map(storageNeedStockedItem -> storageNeedStockedItem.getStockedItem())
+                .collect(Collectors.toList());
+
+        // Get all requirements
+        List<Requirement> requirements = storageNeedRequirementRepository.findAllByStorageNeedId(storageNeed.getId())
+                .stream()
+                .map(storageNeedRequirement -> storageNeedRequirement.getRequirement())
+                .collect(Collectors.toList());
+
+        // Get all unloading types
+        List<UnloadingType> unloadingTypes = storageNeedUnloadingTypeRepository.findAllByStorageNeedId(storageNeed.getId())
+                .stream()
+                .map(storageNeedUnloadingType -> storageNeedUnloadingType.getUnloadingType())
+                .collect(Collectors.toList());
+
+        // Create DTO and set properties
         StorageNeedResponseDto dto = new StorageNeedResponseDto();
         dto.setId(storageNeed.getId());
         dto.setRef(storageNeed.getRef());
@@ -72,15 +109,20 @@ public class StorageNeedMapper {
         dto.setDuration(storageNeed.getDuration());
         dto.setNumberOfSku(storageNeed.getNumberOfSku());
         dto.setProductType(storageNeed.getProductType());
+        dto.setStockedItems(stockedItems.stream().map(StockedItemMapper::toResponseDto).collect(Collectors.toList()));
+        dto.setUnloadingTypes(unloadingTypes.stream().map(UnloadingTypeMapper::toResponseDto).collect(Collectors.toList()));
+        dto.setRequirements(requirements.stream().map(RequirementMapper::toResponseDto).collect(Collectors.toList()));
 
-        // Map nested customer details
+        // Map nested customer details if present
         if (storageNeed.getCustomer() != null) {
-            CustomerDto customerDto = new CustomerDto();
-            customerDto.setId(storageNeed.getCustomer().getId());
-            customerDto.setName(storageNeed.getCustomer().getName());
+            CustomerDto customerDto = CustomerDto.builder()
+                    .id(storageNeed.getCustomer().getId())
+                    .name(storageNeed.getCustomer().getName())
+                    .build();
             dto.setCustomer(customerDto);
         }
 
         return dto;
     }
+
 }

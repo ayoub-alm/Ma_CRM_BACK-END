@@ -1,7 +1,7 @@
 package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.Company;
-import com.sales_scout.entity.Customer;
+import com.sales_scout.entity.leads.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

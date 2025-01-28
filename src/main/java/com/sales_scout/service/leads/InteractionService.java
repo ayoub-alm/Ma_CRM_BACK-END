@@ -2,16 +2,17 @@ package com.sales_scout.service.leads;
 
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
+import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interaction;
 import com.sales_scout.entity.leads.Interlocutor;
-import com.sales_scout.entity.leads.Prospect;
 import com.sales_scout.entity.UserEntity;
 import com.sales_scout.enums.InteractionSubject;
 import com.sales_scout.enums.InteractionType;
+import com.sales_scout.repository.leads.CustomerRepository;
 import com.sales_scout.specification.InteractionSpecification;
 import com.sales_scout.repository.leads.InteractionRepository;
 import com.sales_scout.repository.leads.InterlocutorRepository;
-import com.sales_scout.repository.leads.ProspectRepository;
+
 import com.sales_scout.repository.UserRepository;
 import com.sales_scout.service.AuthenticationService;
 
@@ -42,12 +43,12 @@ import java.util.stream.Collectors;
 public class InteractionService {
     private final InteractionRepository interactionRepository;
     private static final String File_DIRECTORY = "src/main/resources/static/files/";
-    private final ProspectRepository prospectRepository;
+    private final CustomerRepository prospectRepository;
     private final InterlocutorRepository interlocutorRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
     public InteractionService(InteractionRepository interactionRepository,
-                              ProspectRepository prospectRepository,
+                              CustomerRepository prospectRepository,
                               InterlocutorRepository interlocutorRepository, UserRepository userRepository, AuthenticationService authenticationService) {
         this.interactionRepository = interactionRepository;
         this.prospectRepository = prospectRepository;
@@ -95,13 +96,13 @@ public class InteractionService {
         if (interactionRequestDto == null) {
             throw new IllegalArgumentException("InteractionRequestDto cannot be null.");
         }
-        if (interactionRequestDto.getProspectId() == null) {
+        if (interactionRequestDto.getCustomerId() == null) {
             throw new IllegalArgumentException("Prospect ID is required.");
         }
 
         // Fetch the associated Prospect
-        Prospect prospect = prospectRepository.findById(interactionRequestDto.getProspectId())
-                .orElseThrow(() -> new IllegalArgumentException("Prospect not found for ID: " + interactionRequestDto.getProspectId()));
+        Customer prospect = prospectRepository.findById(interactionRequestDto.getCustomerId())
+                .orElseThrow(() -> new IllegalArgumentException("Prospect not found for ID: " + interactionRequestDto.getCustomerId()));
 
         // Fetch the associated Interlocutor, if provided
         Interlocutor interlocutor = null;
@@ -120,13 +121,13 @@ public class InteractionService {
 
         // save path file form interaction request dto
         String filePath = null;
-        if (interactionRequestDto.getJoinFilePath()!= null || !interactionRequestDto.getJoinFilePath().isEmpty()){
+        if (interactionRequestDto.getJoinFilePath()!= null ){
             filePath = saveFile(interactionRequestDto.getJoinFilePath());
         }
 
         // Build the Interaction entity
         Interaction interaction = Interaction.builder()
-                .prospect(prospect)
+                .customer(prospect)
                 .interlocutor(interlocutor)
                 .agent(user)
                 .affectedTo(affectedTo)
@@ -235,7 +236,7 @@ public class InteractionService {
                     row.createCell(6).setCellValue(interaction.getAffectedTo().getName());
                     row.createCell(7).setCellValue(interaction.getAgent().getName());
                     row.createCell(8).setCellValue(interaction.getInterlocutor().getFullName());
-                    row.createCell(9).setCellValue(interaction.getProspect().getName());
+                    row.createCell(9).setCellValue(interaction.getCustomer().getName());
             }
 
             for(int i = 0 ; i < colmuns.length;i++){
@@ -256,8 +257,8 @@ public class InteractionService {
     private InteractionResponseDto convertToResponseDto(Interaction interaction) {
         return InteractionResponseDto.builder()
                 .id(interaction.getId())
-                .prospectId(interaction.getProspect().getId())
-                .prospectName(interaction.getProspect().getName())
+                .customerId(interaction.getCustomer().getId())
+                .prospectName(interaction.getCustomer().getName())
                 .interlocutorId(interaction.getInterlocutor() != null ? interaction.getInterlocutor().getId() : null)
                 .interlocutorName(interaction.getInterlocutor() != null ? interaction.getInterlocutor().getFullName() : null)
                 .report(interaction.getReport())

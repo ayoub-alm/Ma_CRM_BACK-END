@@ -1,9 +1,10 @@
-package com.sales_scout.entity;
+package com.sales_scout.entity.leads;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.Company;
+import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.data.*;
-import com.sales_scout.entity.leads.Interlocutor;
-import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import jakarta.persistence.*;
@@ -11,10 +12,10 @@ import lombok.*;
 
 import java.util.*;
 
+
 @Entity
 @Table(name = "customers")
-@Getter
-@Setter
+@Getter @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -50,7 +51,7 @@ public class Customer extends BaseEntity {
     @Column(nullable = false)
     private String patent;
     @Enumerated(EnumType.STRING)
-    @Builder.Default
+     @Builder.Default
     private ActiveInactiveEnum active = ActiveInactiveEnum.ACTIVE;
 
     @Enumerated(EnumType.STRING)
@@ -111,16 +112,18 @@ public class Customer extends BaseEntity {
 
     private String logo;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Interlocutor> interlocutors = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<TrackingLog> trackingLogs =  new ArrayList<>();
 
 
-
-    @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Interlocutor> interlocutors = new ArrayList<>();
+    private List<ProspectInterest> prospectInterests =  new ArrayList<>();
+
 
 }

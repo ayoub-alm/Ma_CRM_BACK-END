@@ -3,8 +3,9 @@ package com.sales_scout.controller.leads;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sales_scout.dto.request.ProspectRequestDto;
-import com.sales_scout.dto.response.ProspectResponseDto;
-import com.sales_scout.entity.leads.Prospect;
+import com.sales_scout.dto.response.CustomerResponseDto;
+import com.sales_scout.dto.response.CustomerResponseDto;
+import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.enums.ProspectStatus;
 import com.sales_scout.service.leads.ProspectService;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,8 +34,8 @@ public class ProspectController {
      * @return
      */
     @GetMapping("")
-    public ResponseEntity<List<ProspectResponseDto>> getAllProspect(){
-        List<ProspectResponseDto> prospects = this.prospectService.getAllProspects();
+    public ResponseEntity<List<CustomerResponseDto>> getAllProspect(){
+        List<CustomerResponseDto> prospects = this.prospectService.getAllProspects();
         return new ResponseEntity<>(prospects, HttpStatus.OK);
     }
 
@@ -44,8 +45,8 @@ public class ProspectController {
      * @return
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<ProspectResponseDto>> getProspectById(@PathVariable Long id){
-        Optional<ProspectResponseDto> prospect = this.prospectService.getProspectById(id);
+    public ResponseEntity<Optional<CustomerResponseDto>> getProspectById(@PathVariable Long id){
+        Optional<CustomerResponseDto> prospect = this.prospectService.getProspectById(id);
         return new ResponseEntity<>(prospect, HttpStatus.OK);
     }
 
@@ -55,9 +56,9 @@ public class ProspectController {
      * @return
      */
     @PostMapping("")
-    public ResponseEntity<Prospect> createProspect(@RequestBody ProspectRequestDto prospectRequestDto) {
+    public ResponseEntity<Customer> createProspect(@RequestBody ProspectRequestDto prospectRequestDto) {
         // Call the service method to create the Prospect
-        Prospect prospect = prospectService.saveOrUpdateProspect(prospectRequestDto);
+        Customer prospect = prospectService.saveOrUpdateProspect(prospectRequestDto);
         // Return a ResponseEntity with the created Prospect and a 201 CREATED status
         return new ResponseEntity<>(prospect, HttpStatus.CREATED);
     }
@@ -74,28 +75,25 @@ public class ProspectController {
         }
 
         try {
-            List<Prospect> prospects = prospectService.uploadProspectsFromFile(excelFile);
+            List<Customer> prospects = prospectService.uploadProspectsFromFile(excelFile);
             return ResponseEntity.status(HttpStatus.CREATED).body(prospects);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the file");
         }
     }
 
-
     /**
-     * update prospect status By prospect Id
-     * @param status
-     * @param prospectId
-     * @return
+     * this function allows to export prospect to Excel file
+     * @param prospectsJson prospect
+     * @return ResponseEntity<String>
      */
-
     @GetMapping("/export")
     public ResponseEntity<String> exportProspectsToExcel(@RequestParam(required = false) String prospectsJson){
      try {
-         List<Prospect> prospects = null;
+         List<Customer> prospects = null;
          if ( prospectsJson != null && !prospectsJson.isEmpty()){
              ObjectMapper objectMapper = new ObjectMapper();
-             prospects = objectMapper.readValue(prospectsJson, new TypeReference<List<Prospect>>() {});
+             prospects = objectMapper.readValue(prospectsJson, new TypeReference<List<Customer>>() {});
          }
          prospectService.exportFileExcel(prospects,"Prospects_file.xlsx");
         return ResponseEntity.ok("Excel File exported successfuly: Prospects_file.xlsx" );
@@ -104,13 +102,13 @@ public class ProspectController {
      }
     }
     @PutMapping("status")
-    public ResponseEntity<ProspectResponseDto> updateProspectStatus(
+    public ResponseEntity<CustomerResponseDto> updateProspectStatus(
             @RequestParam ProspectStatus status,
             @RequestParam Long prospectId
     ) {
         try {
             // Update the status using a service method
-            ProspectResponseDto updatedProspect = prospectService.updateProspectStatus(status, prospectId);
+            CustomerResponseDto updatedProspect = prospectService.updateProspectStatus(status, prospectId);
             return ResponseEntity.ok(updatedProspect); // Return updated prospect
         } catch (EntityNotFoundException e) {
             // Handle the exception if the prospect is not found

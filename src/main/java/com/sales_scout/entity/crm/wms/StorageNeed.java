@@ -2,7 +2,7 @@ package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
-import com.sales_scout.entity.Customer;
+import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.enums.crm.wms.LivreEnum;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
 import com.sales_scout.enums.crm.wms.StorageReasonEnum;

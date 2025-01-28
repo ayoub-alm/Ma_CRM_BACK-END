@@ -3,7 +3,7 @@ package com.sales_scout.mapper;
 import com.sales_scout.dto.request.ProspectInterestRequestDto;
 import com.sales_scout.dto.response.ProspectInterestResponseDto;
 import com.sales_scout.entity.Interest;
-import com.sales_scout.entity.leads.Prospect;
+import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.ProspectInterest;
 
 
@@ -13,7 +13,7 @@ public class ProspectInterestDtoBuilder {
                 .id(prospectInterest.getId())
                 .name(prospectInterest.getName())
                 .status(prospectInterest.getStatus())
-                .prospectId(prospectInterest.getProspect().getId())
+                .prospectId(prospectInterest.getCustomer().getId())
                 .interestId(prospectInterest.getInterest().getId())
                 .build();
     }
@@ -21,7 +21,7 @@ public class ProspectInterestDtoBuilder {
         return ProspectInterest.builder()
                 .name(prospectInterestRequestDto.getName())
                 .status(prospectInterestRequestDto.getStatus())
-                .prospect(Prospect.builder().id(prospectInterestRequestDto.getProspectId()).build())
+                .customer(Customer.builder().id(prospectInterestRequestDto.getProspectId()).build())
                 .interest(Interest.builder().id(prospectInterestRequestDto.getInterestId()).build())
                 .build();
     }

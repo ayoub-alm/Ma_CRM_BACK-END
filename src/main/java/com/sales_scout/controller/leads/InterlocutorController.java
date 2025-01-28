@@ -9,6 +9,7 @@ import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.service.leads.InterlocutorService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.query.sqm.EntityTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,7 +64,7 @@ public class InterlocutorController {
     @PostMapping("")
     public ResponseEntity<Interlocutor> saveOrUpdate(@RequestBody CreateInterlocutorDTO interlocutor) {
         Interlocutor saved = interlocutorService.saveOrUpdate(interlocutor);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        return new ResponseEntity<>(saved, HttpStatus.OK);
     }
 
     /**
@@ -73,9 +74,12 @@ public class InterlocutorController {
      * @return
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Interlocutor> update(@RequestBody UpdateInterlocutorDto interlocutor, @PathVariable Long id) {
-        Interlocutor saved = interlocutorService.update(interlocutor);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    public ResponseEntity<InterlocutorResponseDto> update(@RequestBody UpdateInterlocutorDto interlocutor, @PathVariable Long id) {
+        try{
+            return ResponseEntity.ok(interlocutorService.update(interlocutor));
+        }catch (EntityNotFoundException e){
+            throw new EntityTypeException(e.getMessage(),e.getMessage());
+        }
     }
 
     /**

@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ProspectInterestRepository extends JpaRepository<ProspectInterest,Long> {
-    Optional<ProspectInterest> findByDeletedAtIsNullAndInterestIdAndProspectId(Long interestId,Long prospectId);
+    Optional<ProspectInterest> findByDeletedAtIsNullAndInterestIdAndCustomerId(Long interestId, Long prospectId);
 }

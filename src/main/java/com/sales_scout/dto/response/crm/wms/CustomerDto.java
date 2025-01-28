@@ -1,5 +1,8 @@
 package com.sales_scout.dto.response.crm.wms;
 
+import lombok.Builder;
+
+@Builder
 public class CustomerDto {
     private Long id;
     private String name; // Add more customer fields if needed

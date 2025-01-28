@@ -33,6 +33,9 @@ public class InteractionController {
         this.interlocutorService = interlocutorService;
     }
 
+    /**
+     * Get all non-soft-deleted interactions with specification
+     */
     @GetMapping("")
     ResponseEntity<List<InteractionResponseDto>> getAllInteractions(
             @RequestParam(required = false) InteractionSubject interactionSubject,
@@ -47,6 +50,7 @@ public class InteractionController {
             @RequestParam(required = false) Long affectedToId,
             @RequestParam(required = false) String report
     ){
+        // creation object interactionFilter
         InteractionFilter interactionFilter = new InteractionFilter();
         interactionFilter.setInteractionSubject(interactionSubject);
         interactionFilter.setInteractionType(interactionType);
@@ -59,7 +63,6 @@ public class InteractionController {
             interlocutor.setId(interlocutorId);
             interactionFilter.setInterlocutor(interlocutor);
         }
-
         interactionFilter.setPlanningDate(planningDate);
         interactionFilter.setAddress(address);
 

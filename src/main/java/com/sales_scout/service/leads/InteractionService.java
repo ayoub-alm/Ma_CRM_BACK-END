@@ -58,7 +58,6 @@ public class InteractionService {
 
     /**
      * Get a single interaction by ID.
-     *
      * @param id Interaction ID.
      * @return InteractionResponseDto.
      */
@@ -121,8 +120,6 @@ public class InteractionService {
         // Convert and return the response DTO
         return convertToResponseDto(interaction);
     }
-
-
 
     /**
      * Soft delete an interaction by ID.

@@ -48,8 +48,8 @@ public class InterlocutorService {
     }
 
     /**
-     * Get all non-soft-deleted interlocutors
-     * @return List<Interlocutor> list of interlocutors
+     * Get all non-soft-deleted interlocutors with specification
+     * @return list of interlocutorsResponseDto
      */
     public List<InterlocutorResponseDto> getAllInterlocutors(InterlocutorFilter interlocutorFilter) {
         Specification<Interlocutor> specification = InterlocutorSpecification.hasInterlocutorFilter(interlocutorFilter);

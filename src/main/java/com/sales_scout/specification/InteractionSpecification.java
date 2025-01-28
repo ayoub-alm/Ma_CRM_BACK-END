@@ -6,7 +6,12 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 public class InteractionSpecification {
-    // Correct method for filtering by InteractionType and Report
+
+    /**
+     * Filter Interaction with fields
+     * @param interactionFilter
+     * @return {predicate}
+     */
     public static Specification<Interaction> hasInteractionFilter(InteractionFilter interactionFilter) {
         return (root, query, builder) -> {
             Predicate predicate = builder.conjunction(); // Start with an empty condition (AND logic)

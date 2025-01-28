@@ -33,7 +33,7 @@ public class InterlocutorController {
     }
 
     /**
-     * Get all interlocutors
+     * Get Interlocutor Filter if RequestParam exist if not get allInterlocutor
      */
     @GetMapping("")
     public ResponseEntity<List<InterlocutorResponseDto>> getAllInterlocutors(
@@ -45,13 +45,16 @@ public class InterlocutorController {
             @RequestParam(required = false) ActiveInactiveEnum active,
             @RequestParam(required = false) Long jobTitle
             ) {
+        // creation object interlocutorFilter
         InterlocutorFilter interlocutorFilter = new InterlocutorFilter();
         interlocutorFilter.setId(id);
         interlocutorFilter.setFullName(fullName);
         interlocutorFilter.setActive(active);
+        // checking department exist
         if(department != null){
             interlocutorFilter.setDepartment(departmentService.findById(department));
         }
+        // checking jobTitle exist
         if(jobTitle != null){
             Optional<JobTitle> jobTitleOptional = jobTitleService.getJobTitleById(jobTitle);
             if (jobTitleOptional.isPresent()){

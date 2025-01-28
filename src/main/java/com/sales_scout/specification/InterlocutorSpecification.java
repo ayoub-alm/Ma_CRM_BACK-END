@@ -7,6 +7,12 @@ import org.springframework.data.jpa.domain.Specification;
 
 
 public class InterlocutorSpecification {
+
+    /**
+     * Filter Interlocutor with fields
+     * @param interlocutorFilter
+     * @return {predicate}
+     */
     public static Specification<Interlocutor> hasInterlocutorFilter(InterlocutorFilter interlocutorFilter){
         return (root, query, builder) -> {
             Predicate predicate = builder.conjunction();

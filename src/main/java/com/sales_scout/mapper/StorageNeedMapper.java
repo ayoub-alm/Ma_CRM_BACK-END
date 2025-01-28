@@ -121,7 +121,6 @@ public class StorageNeedMapper {
                     .build();
             dto.setCustomer(customerDto);
         }
-
         return dto;
     }
 

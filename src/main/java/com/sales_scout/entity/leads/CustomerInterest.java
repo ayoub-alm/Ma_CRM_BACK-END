@@ -1,12 +1,9 @@
 package com.sales_scout.entity.leads;
 
-import com.sales_scout.dto.response.InterestResponseDto;
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Interest;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.*;
 
 
 @Entity
@@ -15,7 +12,7 @@ import java.util.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProspectInterest extends BaseEntity {
+public class CustomerInterest extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

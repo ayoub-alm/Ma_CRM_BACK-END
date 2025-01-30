@@ -1,12 +1,9 @@
 package com.sales_scout.dto.response;
 
 import com.sales_scout.dto.BaseDto;
-import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.data.*;
-import com.sales_scout.entity.leads.ProspectInterest;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;

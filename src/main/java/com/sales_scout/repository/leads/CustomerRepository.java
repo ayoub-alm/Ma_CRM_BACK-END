@@ -44,10 +44,50 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             "FROM Customer c " +
             "WHERE (:startDate IS NULL OR c.createdAt >= :startDate) " +
             "AND (:endDate IS NULL OR c.createdAt <= :endDate) " +
+            "AND(c.deletedAt IS NULL)"+
             "GROUP BY c.status")
     List<Object[]> getCountOfCustomersByStatusBetweenOptionalDates(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * this function allows to get count of prospect per interest
+     * @return {List<Object[]>} return array of prospects count by interest
+     */
+    @Query("SELECT ci.interest , COUNT(c.id) " +
+            "FROM Customer c " +
+            "JOIN c.customerInterests ci "+
+            "WHERE c.deletedAt IS NULL " +
+            "GROUP BY ci.interest.id  ")
+    List<Object[]> getCountOfCustomerByInterest();
+
+    /**
+     * this function allows to get count of Customer per Seller
+     * @return {List<Object[]>} return array of Customer count by Seller
+     */
+    @Query("SELECT c.createdBy , COUNT(c.id) FROM Customer c WHERE c.deletedAt IS NULL GROUP BY c.createdBy ")
+    List<Object[]> getCountOfCustomerBySeller();
+
+    /**
+     * this function allows to get count of Customer per City
+     * @return {List<Object[]>} return array of Customer count by City
+     */
+    @Query("SELECT c.city , COUNT(c.id) as count FROM Customer c  WHERE c.deletedAt IS NULL GROUP BY c.city ")
+    List<Object[]> getCountOfCustomerByCity();
+
+    /**
+     * this function allows to get count of Customer per Date
+     * @return {List<Object[]>} return array of Customer count by Date
+     */
+    @Query("SELECT c.createdAt , COUNT(c.id) as count FROM Customer c  WHERE c.deletedAt IS NULL GROUP BY c.createdAt ")
+    List<Object[]> getCountOfCustomerByDate();
+
+    /**
+     * this function allows to get count of Customer per Industry
+     * @return {List<Object[]>} return array of Customer count by Industry
+     */
+    @Query("SELECT c.industry , COUNT(c.id) as count FROM Customer c  WHERE c.deletedAt IS NULL GROUP BY c.industry ")
+    List<Object[]> getCountOfCustomerByIndustry();
 
     Collection<Customer> findByDeletedAtIsNull();
 }

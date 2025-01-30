@@ -4,7 +4,7 @@ import com.sales_scout.dto.request.InterestRequestDto;
 import com.sales_scout.dto.response.InterestResponseDto;
 import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.leads.Customer;
-import com.sales_scout.entity.leads.ProspectInterest;
+import com.sales_scout.entity.leads.CustomerInterest;
 import com.sales_scout.mapper.InterestDtoBuilder;
 import com.sales_scout.repository.InterestRepository;
 import com.sales_scout.repository.leads.CustomerRepository;
@@ -32,12 +32,12 @@ public class InterestService {
      */
     public List<InterestResponseDto> getAllInterestByProspectId(Long prospectId) throws EntityNotFoundException {
         // Récupérer le prospect par son ID
-        Customer prospect = this.customerRepository.findById(prospectId)
+        Customer customer = this.customerRepository.findById(prospectId)
                 .orElseThrow(() -> new EntityNotFoundException("Prospect not found with id: " + prospectId));
 
         // Récupérer les intérêts associés au prospect via la table de jointure ProspectInterest
-        List<Interest> interests = prospect.getProspectInterests().stream()
-                .map(ProspectInterest::getInterest)
+        List<Interest> interests = customer.getCustomerInterests().stream()
+                .map(CustomerInterest::getInterest)
                 .toList();
 
         // Convertir les entités Interest en DTOs

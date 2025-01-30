@@ -1,14 +1,18 @@
 package com.sales_scout.mapper.wms;
 
 
+import com.sales_scout.dto.response.crm.wms.ProvisionResponseDto;
 import com.sales_scout.dto.response.crm.wms.StockedItemResponseDto;
 import com.sales_scout.entity.crm.wms.StockedItem;
+import com.sales_scout.mapper.ProvisionMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
 public class StockedItemMapper {
+    private static final ProvisionMapper provisionMapper =  new ProvisionMapper();
 
     /**
      * Converts a StockedItem entity to StockedItemResponseDto.
@@ -20,7 +24,9 @@ public class StockedItemMapper {
         if (stockedItem == null) {
             return null;
         }
-
+        List<ProvisionResponseDto> provisionResponseDtos = stockedItem.getStockedItemProvisions().stream().map(stockedItemProvision -> {
+           return ProvisionMapper.toDto(stockedItemProvision.getProvision());
+        }).toList();
         return StockedItemResponseDto.builder()
                 .id(stockedItem.getId())
                 .ref(stockedItem.getRef().toString()) // Convert UUID to String
@@ -35,7 +41,7 @@ public class StockedItemMapper {
                 .price(stockedItem.getPrice())
                 .storageOffer(stockedItem.getStorageOffer()) // Assuming StorageOffer is directly serializable
                 .storageNeed(stockedItem.getStorageNeed()) // Assuming StorageNeed is directly serializable
-                .provisionResponseDto(null) // Map if provisions are required; else leave null
+                .provisionResponseDto(provisionResponseDtos) // Map if provisions are required; else leave null
                 .build();
     }
 

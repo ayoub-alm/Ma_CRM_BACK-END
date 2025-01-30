@@ -3,6 +3,7 @@ package com.sales_scout.controller;
 import com.sales_scout.dto.request.CommentRequestDto;
 import com.sales_scout.dto.response.CommentResponseDto;
 import com.sales_scout.entity.Comment;
+import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.service.CommentService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -27,10 +28,13 @@ public class CommentController {
      * @return the created comment
      */
     @PostMapping
-    public ResponseEntity<Comment> createComment(@RequestBody CommentRequestDto commentRequestDto) {
-
-        Comment createdComment = commentService.createComment(commentRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
+    public ResponseEntity<CommentResponseDto> createComment(@RequestBody CommentRequestDto commentRequestDto) {
+        try{
+            return ResponseEntity.ok( commentService.createComment(commentRequestDto));
+        }
+        catch (Exception e){
+            throw  new ResourceNotFoundException(e.getMessage(),"comment",commentRequestDto);
+        }
     }
 
     /**
@@ -44,9 +48,14 @@ public class CommentController {
     public ResponseEntity<List<CommentResponseDto>> getCommentsByModule(
             @RequestParam String entity,
             @RequestParam Long entityId) {
+        try{
+            List<CommentResponseDto> comments = commentService.getCommentsByModule(entity, entityId);
+            return ResponseEntity.ok(comments);
+        }
+        catch (Exception e){
+            throw  new ResourceNotFoundException(e.getMessage(),"comment",entity);
+        }
 
-        List<CommentResponseDto> comments = commentService.getCommentsByModule(entity, entityId);
-        return ResponseEntity.ok(comments);
     }
 
     /**
@@ -57,9 +66,13 @@ public class CommentController {
      */
     @GetMapping("/{commentId}")
     public ResponseEntity<Comment> getCommentById(@PathVariable Long commentId) {
-        Optional<Comment> comment = commentService.getCommentById(commentId);
-        return comment.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        try{
+            Optional<Comment> comment = commentService.getCommentById(commentId);
+            return comment.map(ResponseEntity::ok).orElseThrow(() -> new EntityNotFoundException("comment not found"));
+        }
+        catch (Exception e){
+            throw  new EntityNotFoundException(e.getMessage());
+        }
     }
 
     /**
@@ -84,7 +97,7 @@ public class CommentController {
      * @param commentId the ID of the comment
      * @return a response indicating the result
      */
-    @DeleteMapping("/soft-delete/{commentId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<Boolean> softDeleteComment(@PathVariable Long commentId)throws EntityNotFoundException {
         try{
         return  ResponseEntity.ok().body(commentService.softDeleteComment(commentId));

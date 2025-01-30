@@ -54,4 +54,7 @@ public class StorageNeed extends BaseEntity {
 
     @OneToMany(mappedBy = "storageNeed", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StorageNeedRequirement> storageNeedRequirements;
+
+    @OneToMany(mappedBy = "storageNeed", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StorageNeedUnloadingType> storageNeedUnloadingTypes;
 }

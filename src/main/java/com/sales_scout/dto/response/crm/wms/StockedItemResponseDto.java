@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,5 +28,5 @@ public class StockedItemResponseDto {
     private Double price;
     private StorageOffer storageOffer;
     private StorageNeed storageNeed;
-    private ProvisionResponseDto provisionResponseDto;
+    private List<ProvisionResponseDto> provisionResponseDto;
 }

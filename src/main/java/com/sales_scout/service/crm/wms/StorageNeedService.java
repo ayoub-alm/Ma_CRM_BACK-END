@@ -4,6 +4,7 @@ package com.sales_scout.service.crm.wms;
 import com.sales_scout.dto.request.create.wms.ProvisionRequestDto;
 import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
+import com.sales_scout.dto.response.crm.wms.CreatedStorageNeedDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
 import com.sales_scout.entity.crm.wms.*;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,31 +53,36 @@ public class StorageNeedService {
      * @throws {EntityNotFoundException} if one of the elements ids not found
      */
     @Transactional
-    public StorageNeedResponseDto createStorageNeed(StorageNeedCreateDto storageNeedDto) throws EntityNotFoundException {
+    public CreatedStorageNeedDto createStorageNeed(StorageNeedCreateDto storageNeedDto) throws Exception {
         // Set the customer and company information
-        storageNeedDto.setCustomerId(storageNeedDto.getCustomerId());
-        storageNeedDto.setStatus(NeedStatusEnum.CREATION);  // Set initial status
+       try{
+           storageNeedDto.setCustomerId(storageNeedDto.getCustomerId());
+           storageNeedDto.setStatus(NeedStatusEnum.CREATION);  // Set initial status
 
-        // Convert StorageNeedCreateDto to StorageNeed entity and save
-        StorageNeed storageNeed = storageNeedMapper.toEntity(storageNeedDto);
-        StorageNeed savedStorageNeed = storageNeedRepository.save(storageNeed);
+           // Convert StorageNeedCreateDto to StorageNeed entity and save
+           StorageNeed storageNeed = storageNeedMapper.toEntity(storageNeedDto);
+           StorageNeed savedStorageNeed = storageNeedRepository.save(storageNeed);
 
-        // Process and save StockedItems
-        List<StockedItem> stockedItems = storageNeedDto.getStockedItemsRequestDto().stream()
-                .map(stockedItemDto -> createStockedItem(stockedItemDto, savedStorageNeed))
-                .collect(Collectors.toList());
+           // Process and save StockedItems
+           List<StockedItem> stockedItems = storageNeedDto.getStockedItemsRequestDto().stream()
+                   .map(stockedItemDto -> createStockedItem(stockedItemDto, savedStorageNeed))
+                   .collect(Collectors.toList());
 
-        // Save StockedItems in bulk
-        stockedItemRepository.saveAll(stockedItems);
+           // Save StockedItems in bulk
+           stockedItemRepository.saveAll(stockedItems);
 
-        // Create and save StorageNeedRequirements
-        createStorageNeedRequirements(storageNeedDto.getRequirements(), savedStorageNeed);
+           // Create and save StorageNeedRequirements
+           createStorageNeedRequirements(storageNeedDto.getRequirements(), savedStorageNeed);
 
-        // Create and save StorageNeedUnloadingTypes
-        createStorageNeedUnloadingTypes(storageNeedDto.getUnloadingTypes(), savedStorageNeed);
+           // Create and save StorageNeedUnloadingTypes
+           createStorageNeedUnloadingTypes(storageNeedDto.getUnloadingTypes(), savedStorageNeed);
 
-        // Return the mapped response DTO
-        return this.storageNeedMapper.toResponseDto(savedStorageNeed);
+           // Return the mapped response DTO
+           return this.storageNeedMapper.createdStorageNeedDto(savedStorageNeed);
+       }catch (Exception e){
+           System.out.println(e.getCause());
+           throw new Exception("data none valide");
+       }
     }
 
     private StockedItem createStockedItem(StockedItemRequestDto stockedItemDto, StorageNeed savedStorageNeed) {
@@ -172,5 +179,20 @@ public class StorageNeedService {
         return storageNeeds.stream()
                 .map(storageNeedMapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * this function allows to get storage need by ID
+     * @param storageNeedId the id of the need
+     * @return
+     */
+    public StorageNeedResponseDto getStorageNeedsById(Long storageNeedId) throws EntityNotFoundException {
+        // Fetch all storage needs by company ID
+        Optional<StorageNeed> storageNeed = storageNeedRepository.findByIdAndDeletedAtIsNull(storageNeedId);
+        if (storageNeed.isPresent()) {
+            return storageNeedMapper.toResponseDto(storageNeed.get());
+        }else {
+            throw new EntityNotFoundException("No storage needs found for ID: " + storageNeedId);
+        }
     }
 }

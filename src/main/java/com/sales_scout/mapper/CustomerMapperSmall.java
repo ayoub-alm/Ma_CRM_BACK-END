@@ -5,7 +5,7 @@ import com.sales_scout.entity.leads.Customer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CustomerMapper {
+public class CustomerMapperSmall {
 
     public static CustomerResponseDto toResponseDto(Customer customer) {
         if (customer == null) {

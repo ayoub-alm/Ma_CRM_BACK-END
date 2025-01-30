@@ -1,6 +1,7 @@
 package com.sales_scout.controller.crm.wms;
 
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
+import com.sales_scout.dto.response.crm.wms.CreatedStorageNeedDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
 import com.sales_scout.entity.crm.wms.StorageNeed;
 import com.sales_scout.service.crm.wms.StorageNeedService;
@@ -41,9 +42,22 @@ public class NeedController {
         }
     }
 
+    @GetMapping("/{storageNeedId}")
+    public ResponseEntity<StorageNeedResponseDto> getStoragesNeedsById(@PathVariable  Long storageNeedId) throws EntityNotFoundException, Exception {
+        try {
+            return ResponseEntity.ok(storageNeedService.getStorageNeedsById(storageNeedId));
+        } catch (EntityNotFoundException e) {
+           throw new EntityNotFoundException(e.getMessage());
+        } catch (Exception e) {
+            // Return 500 for unexpected errors
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @PostMapping("")
-    public ResponseEntity<StorageNeedResponseDto> createStorageNeed(@RequestBody StorageNeedCreateDto storageNeedCreateDto) throws Exception{
+    public ResponseEntity<CreatedStorageNeedDto> createStorageNeed(@RequestBody StorageNeedCreateDto storageNeedCreateDto) throws Exception{
                 try {
                     return ResponseEntity.ok(this.storageNeedService.createStorageNeed(storageNeedCreateDto));
                 }catch (Exception e){

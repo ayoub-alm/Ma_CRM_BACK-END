@@ -1,6 +1,7 @@
 package com.sales_scout.mapper;
 
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
+import com.sales_scout.dto.response.crm.wms.CreatedStorageNeedDto;
 import com.sales_scout.dto.response.crm.wms.CustomerDto;
 import com.sales_scout.dto.response.crm.wms.StockedItemResponseDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
@@ -84,19 +85,22 @@ public class StorageNeedMapper {
         List<StockedItem> stockedItems = storageNeedStockedItemRepository.findAllByStorageNeedId(storageNeed.getId())
                 .stream()
                 .map(storageNeedStockedItem -> storageNeedStockedItem.getStockedItem())
-                .collect(Collectors.toList());
+                .toList();
 
         // Get all requirements
         List<Requirement> requirements = storageNeedRequirementRepository.findAllByStorageNeedId(storageNeed.getId())
                 .stream()
                 .map(storageNeedRequirement -> storageNeedRequirement.getRequirement())
-                .collect(Collectors.toList());
+                .toList();
 
         // Get all unloading types
         List<UnloadingType> unloadingTypes = storageNeedUnloadingTypeRepository.findAllByStorageNeedId(storageNeed.getId())
                 .stream()
                 .map(storageNeedUnloadingType -> storageNeedUnloadingType.getUnloadingType())
-                .collect(Collectors.toList());
+                .toList();
+//                List<UnloadingType> unloadingTypes = storageNeed.getStorageNeedUnloadingTypes().stream()
+//                        .map(storageNeedUnloadingType -> storageNeedUnloadingType.getUnloadingType())
+//                        .collect(Collectors.toList());
 
         // Create DTO and set properties
         StorageNeedResponseDto dto = new StorageNeedResponseDto();
@@ -113,7 +117,7 @@ public class StorageNeedMapper {
         dto.setUnloadingTypes(unloadingTypes.stream().map(UnloadingTypeMapper::toResponseDto).collect(Collectors.toList()));
         dto.setRequirements(requirements.stream().map(RequirementMapper::toResponseDto).collect(Collectors.toList()));
 
-        // Map nested customer details if present
+//         Map nested customer details if present
         if (storageNeed.getCustomer() != null) {
             CustomerDto customerDto = CustomerDto.builder()
                     .id(storageNeed.getCustomer().getId())
@@ -121,6 +125,25 @@ public class StorageNeedMapper {
                     .build();
             dto.setCustomer(customerDto);
         }
+        return dto;
+    }
+
+    public CreatedStorageNeedDto createdStorageNeedDto(StorageNeed storageNeed){
+        if (storageNeed == null) {
+            return null;
+        }
+
+        CreatedStorageNeedDto dto = new CreatedStorageNeedDto();
+        dto.setId(storageNeed.getId());
+        dto.setRef(storageNeed.getRef());
+        dto.setLiverStatus(storageNeed.getLiverStatus().name()); // Convert Enum to String
+        dto.setStorageReason(storageNeed.getStorageReason().name()); // Convert Enum to String
+        dto.setStatus(storageNeed.getStatus().name()); // Convert Enum to String
+        dto.setExpirationDate(storageNeed.getExpirationDate());
+        dto.setDuration(storageNeed.getDuration());
+        dto.setNumberOfSku(storageNeed.getNumberOfSku());
+        dto.setProductType(storageNeed.getProductType());
+
         return dto;
     }
 

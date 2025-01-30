@@ -16,7 +16,7 @@ public class InterlocutorMapper {
                 .id(interlocutor.getId())
                 .fullName(interlocutor.getFullName())
                 .customer(interlocutor.getCustomer() != null
-                        ? CustomerMapper.toResponseDto(interlocutor.getCustomer()) // Assuming a CustomerMapper exists
+                        ? CustomerMapperSmall.toResponseDto(interlocutor.getCustomer()) // Assuming a CustomerMapper exists
                         : null)
                 .department(interlocutor.getDepartment())
                 .phoneNumber(interlocutor.getPhoneNumber())

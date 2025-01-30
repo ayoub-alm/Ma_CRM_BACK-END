@@ -20,7 +20,6 @@ public class GlobalExceptionHandler {
         response.put("resource", ex.getResourceName());
         response.put("field", ex.getFieldName());
         response.put("value", ex.getFieldValue());
-
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 

@@ -4,11 +4,11 @@ import com.sales_scout.dto.request.ProspectInterestRequestDto;
 import com.sales_scout.dto.response.ProspectInterestResponseDto;
 import com.sales_scout.entity.Interest;
 import com.sales_scout.entity.leads.Customer;
-import com.sales_scout.entity.leads.ProspectInterest;
+import com.sales_scout.entity.leads.CustomerInterest;
 
 
 public class ProspectInterestDtoBuilder {
-    public static ProspectInterestResponseDto fromEntity(ProspectInterest prospectInterest){
+    public static ProspectInterestResponseDto fromEntity(CustomerInterest prospectInterest){
         return ProspectInterestResponseDto.builder()
                 .id(prospectInterest.getId())
                 .name(prospectInterest.getName())
@@ -17,8 +17,8 @@ public class ProspectInterestDtoBuilder {
                 .interestId(prospectInterest.getInterest().getId())
                 .build();
     }
-    public static ProspectInterest fromDto(ProspectInterestRequestDto prospectInterestRequestDto){
-        return ProspectInterest.builder()
+    public static CustomerInterest fromDto(ProspectInterestRequestDto prospectInterestRequestDto){
+        return CustomerInterest.builder()
                 .name(prospectInterestRequestDto.getName())
                 .status(prospectInterestRequestDto.getStatus())
                 .customer(Customer.builder().id(prospectInterestRequestDto.getProspectId()).build())

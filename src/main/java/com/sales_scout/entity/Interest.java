@@ -1,7 +1,7 @@
 package com.sales_scout.entity;
 
 
-import com.sales_scout.entity.leads.ProspectInterest;
+import com.sales_scout.entity.leads.CustomerInterest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +28,5 @@ public class Interest extends BaseEntity {
 
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProspectInterest> prospectInterests = new ArrayList<>();
+    private List<CustomerInterest> customerInterests = new ArrayList<>();
 }

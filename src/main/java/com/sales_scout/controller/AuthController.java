@@ -6,7 +6,9 @@ import com.sales_scout.dto.request.UserRequestDto;
 import com.sales_scout.dto.request.create.JwtRequest;
 import com.sales_scout.dto.response.JwtResponse;
 import com.sales_scout.dto.response.UserResponseDto;
+import com.sales_scout.exception.DataNotFoundException;
 import com.sales_scout.exception.UserAlreadyExistsException;
+import com.sales_scout.repository.RoleRepository;
 import com.sales_scout.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,9 @@ public class AuthController {
     private UserDetailsService userDetailsService;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
@@ -42,10 +47,11 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/create")
-    public ResponseEntity<JwtResponse> createUser(@RequestBody UserRequestDto userRequestDto) {
+    @PostMapping("/register")
+    public ResponseEntity<JwtResponse> createUser(@RequestBody UserRequestDto userRequestDto) throws UserAlreadyExistsException {
         try {
             // Create a new user
+            userRequestDto.setRole(roleRepository.findByRoleAndDeletedAtIsNull("User"));
             UserResponseDto userResponseDto = userService.createUser(userRequestDto);
 
             // Load user details to generate JWT
@@ -60,17 +66,12 @@ public class AuthController {
 
             return new ResponseEntity<>(jwtResponse, HttpStatus.CREATED);
         } catch (UserAlreadyExistsException ex) {
-            logger.error("User already exists: {}", ex.getMessage());
-
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body( JwtResponse.builder()
-                            .token(("User already exists: "))
-                            .build());
+            throw new UserAlreadyExistsException(ex.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest jwtRequest) {
+    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest jwtRequest) throws DataNotFoundException {
         try {
             // Authenticate the user
             authenticateUser(jwtRequest.getEmail(), jwtRequest.getPassword());
@@ -101,6 +102,8 @@ public class AuthController {
                     .build();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(jwtResponse);
+        }catch (DataNotFoundException e){
+            throw new DataNotFoundException(e.getMessage(),e.getCode());
         }
     }
 

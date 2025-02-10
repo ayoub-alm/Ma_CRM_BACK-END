@@ -20,7 +20,7 @@ public class CompanyDtoBuilder {
                 .sigle(company.getSigle())
                 .capital(company.getCapital())
                 .headOffice(company.getHeadOffice())
-                .leageRepresentative(company.getLegalRepresentative())
+                .legalRepresentative(company.getLegalRepresentative())
                 .yearOfCreation(company.getYearOfCreation())
                 .dateOfRegistration(company.getDateOfRegistration())
                 .email(company.getEmail())

@@ -21,7 +21,7 @@ public class CompanyResponseDto extends BaseDto {
     private String sigle;
     private double capital;
     private String headOffice;
-    private String leageRepresentative;
+    private String legalRepresentative;
     private String yearOfCreation;
     private Date dateOfRegistration ;
     private String email;

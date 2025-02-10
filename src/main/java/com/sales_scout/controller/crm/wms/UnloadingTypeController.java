@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -20,7 +19,6 @@ public class UnloadingTypeController {
     public UnloadingTypeController(UnloadingTypeService unloadingTypeService) {
         this.unloadingTypeService = unloadingTypeService;
     }
-
 
     /**
      * Get all unloading types by company ID

@@ -1,4 +1,4 @@
-package com.sales_scout.service.crm.wms;
+package com.sales_scout.service.crm.wms.need;
 
 
 import com.sales_scout.dto.request.create.wms.ProvisionRequestDto;
@@ -6,10 +6,21 @@ import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
 import com.sales_scout.dto.response.crm.wms.CreatedStorageNeedDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
+import com.sales_scout.dto.response.crm.wms.StorageRequirementResponseDto;
+import com.sales_scout.dto.response.crm.wms.UnloadingTypeResponseDto;
 import com.sales_scout.entity.crm.wms.*;
+import com.sales_scout.entity.crm.wms.need.StorageNeed;
+import com.sales_scout.entity.crm.wms.need.StorageNeedRequirement;
+import com.sales_scout.entity.crm.wms.need.StorageNeedStockedItem;
+import com.sales_scout.entity.crm.wms.need.StorageNeedUnloadingType;
+import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
-import com.sales_scout.mapper.StorageNeedMapper;
+import com.sales_scout.mapper.wms.StorageNeedMapper;
 import com.sales_scout.repository.crm.wms.*;
+import com.sales_scout.repository.crm.wms.need.StorageNeedRepository;
+import com.sales_scout.repository.crm.wms.need.StorageNeedRequirementRepository;
+import com.sales_scout.repository.crm.wms.need.StorageNeedStockedItemRepository;
+import com.sales_scout.repository.crm.wms.need.StorageNeedUnloadingTypeRepository;
 import com.sales_scout.repository.leads.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -61,6 +72,7 @@ public class StorageNeedService {
 
            // Convert StorageNeedCreateDto to StorageNeed entity and save
            StorageNeed storageNeed = storageNeedMapper.toEntity(storageNeedDto);
+           storageNeed.setInterlocutor(Interlocutor.builder().id(storageNeedDto.getInterlocutorId()).build());
            StorageNeed savedStorageNeed = storageNeedRepository.save(storageNeed);
 
            // Process and save StockedItems
@@ -88,10 +100,10 @@ public class StorageNeedService {
     private StockedItem createStockedItem(StockedItemRequestDto stockedItemDto, StorageNeed savedStorageNeed) {
         // Save related Dimension
         Dimension dimension = dimensionRepository.save(Dimension.builder()
-                .lang(stockedItemDto.getLength())
-                .large(stockedItemDto.getLarger())
+                .length(stockedItemDto.getLength())
+                .width(stockedItemDto.getWidth())
                 .height(stockedItemDto.getHeight())
-                .volume(stockedItemDto.getLength() * stockedItemDto.getLarger() * stockedItemDto.getHeight())
+                .volume(stockedItemDto.getLength() * stockedItemDto.getWidth() * stockedItemDto.getHeight())
                 .build());
 
 
@@ -107,7 +119,9 @@ public class StorageNeedService {
                 .structure(structure)
                 .uvc(stockedItemDto.getUvc())
                 .dimension(dimension)
+                .isFragile(stockedItemDto.getIsFragile())
                 .uc(stockedItemDto.getUc())
+                .volume(stockedItemDto.getVolume())
                 .weight(stockedItemDto.getWeight())
                 .stackedLevel(stockedItemDto.getStackedLevel())
                 .numberOfPackages(stockedItemDto.getNumberOfPackages())
@@ -139,21 +153,21 @@ public class StorageNeedService {
         storageNeedStockedItemRepository.save(storageNeedStockedItem);
     }
 
-    private void createStorageNeedRequirements(List<Long> requirementIds, StorageNeed savedStorageNeed) {
+    private void createStorageNeedRequirements(List<StorageRequirementResponseDto> requirementIds, StorageNeed savedStorageNeed) {
         List<StorageNeedRequirement> requirements = requirementIds.stream()
                 .map(requirementId -> StorageNeedRequirement.builder()
-                        .requirement(Requirement.builder().id(requirementId).build())
+                        .requirement(Requirement.builder().id(requirementId.getId()).build())
                         .storageNeed(savedStorageNeed)
                         .build())
                 .collect(Collectors.toList());
         storageNeedRequirementRepository.saveAll(requirements);
     }
 
-    private void createStorageNeedUnloadingTypes(List<Long> unloadingTypeIds, StorageNeed savedStorageNeed) {
+    private void createStorageNeedUnloadingTypes(List<UnloadingTypeResponseDto> unloadingTypeIds, StorageNeed savedStorageNeed) {
         List<StorageNeedUnloadingType> unloadingTypes = unloadingTypeIds.stream()
                 .map(unloadingTypeId -> StorageNeedUnloadingType.builder()
                         .storageNeed(savedStorageNeed)
-                        .unloadingType(UnloadingType.builder().id(unloadingTypeId).build())
+                        .unloadingType(UnloadingType.builder().id(unloadingTypeId.getId()).build())
                         .build())
                 .collect(Collectors.toList());
         storageNeedUnloadingTypeRepository.saveAll(unloadingTypes);

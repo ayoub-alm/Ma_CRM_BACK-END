@@ -1,6 +1,8 @@
-package com.sales_scout.entity.crm.wms;
+package com.sales_scout.entity.crm.wms.offer;
 
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.crm.wms.UnloadingType;
+import com.sales_scout.enums.crm.DiscountTypeEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,28 +12,25 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "contract_unloading_types")
+@Table(name = "offer_unload_types")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContractUnloadingType extends BaseEntity {
+public class StorageOfferUnloadType extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
-
-    private String notes;
-
-    private double price;
-
+    private Double initPrice;
+    private DiscountTypeEnum discountType;
+    private Double discountValue;
+    private Double salesPrice;
     @ManyToOne
-    @JoinColumn(name = "contract_id")
-    private StorageContract contract;
-
+    @JoinColumn(name = "storage_offer_id")
+    private StorageOffer storageOffer;
     @ManyToOne
-    @JoinColumn(name = "unloading_type_id")
+    @JoinColumn(name = "unload_type_id")
     private UnloadingType unloadingType;
 }

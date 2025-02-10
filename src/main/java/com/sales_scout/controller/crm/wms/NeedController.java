@@ -3,15 +3,11 @@ package com.sales_scout.controller.crm.wms;
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
 import com.sales_scout.dto.response.crm.wms.CreatedStorageNeedDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
-import com.sales_scout.entity.crm.wms.StorageNeed;
-import com.sales_scout.service.crm.wms.StorageNeedService;
+import com.sales_scout.service.crm.wms.need.StorageNeedService;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,8 +1,7 @@
-package com.sales_scout.repository.crm.wms;
+package com.sales_scout.repository.crm.wms.need;
 
-import com.sales_scout.entity.crm.wms.StorageNeedUnloadingType;
+import com.sales_scout.entity.crm.wms.need.StorageNeedUnloadingType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 

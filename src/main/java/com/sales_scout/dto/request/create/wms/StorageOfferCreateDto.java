@@ -1,14 +1,11 @@
 package com.sales_scout.dto.request.create.wms;
 
-import com.sales_scout.dto.response.crm.wms.StorageRequirementResponseDto;
 import com.sales_scout.dto.response.crm.wms.UnloadingTypeResponseDto;
 import com.sales_scout.entity.crm.wms.Requirement;
-import com.sales_scout.entity.crm.wms.StockedItem;
+import com.sales_scout.entity.crm.wms.UnloadingType;
 import com.sales_scout.enums.crm.wms.LivreEnum;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
 import com.sales_scout.enums.crm.wms.StorageReasonEnum;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +15,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
-public class StorageNeedCreateDto {
+public class StorageOfferCreateDto {
         private UUID ref;
         private StorageReasonEnum storageReason;
         private NeedStatusEnum status;
@@ -31,6 +28,10 @@ public class StorageNeedCreateDto {
         private Long companyId;
         private List<StockedItemRequestDto> stockedItemsRequestDto;
         private List<UnloadingTypeResponseDto> unloadingTypes;
-        private List<StorageRequirementResponseDto> requirements;
+        private List<StorageRequirementRequestDto> requirements;
+        private Double price;
+        private Long storageNeedId;
+        private Long paymentTypeId;
+        private int paymentDeadline;
         private Long interlocutorId;
 }

@@ -1,24 +1,25 @@
-package com.sales_scout.mapper;
+package com.sales_scout.mapper.wms;
 
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
 import com.sales_scout.dto.response.crm.wms.CreatedStorageNeedDto;
 import com.sales_scout.dto.response.crm.wms.CustomerDto;
-import com.sales_scout.dto.response.crm.wms.StockedItemResponseDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
 import com.sales_scout.entity.Company;
 import com.sales_scout.entity.crm.wms.*;
+import com.sales_scout.entity.crm.wms.need.StorageNeed;
+import com.sales_scout.entity.crm.wms.need.StorageNeedRequirement;
+import com.sales_scout.entity.crm.wms.need.StorageNeedStockedItem;
+import com.sales_scout.entity.crm.wms.need.StorageNeedUnloadingType;
 import com.sales_scout.entity.leads.Customer;
-import com.sales_scout.mapper.wms.RequirementMapper;
-import com.sales_scout.mapper.wms.StockedItemMapper;
+import com.sales_scout.mapper.InterlocutorMapper;
+import com.sales_scout.mapper.UnloadingTypeMapper;
 import com.sales_scout.repository.crm.wms.StockedItemRepository;
-import com.sales_scout.repository.crm.wms.StorageNeedRequirementRepository;
-import com.sales_scout.repository.crm.wms.StorageNeedStockedItemRepository;
-import com.sales_scout.repository.crm.wms.StorageNeedUnloadingTypeRepository;
+import com.sales_scout.repository.crm.wms.need.StorageNeedRequirementRepository;
+import com.sales_scout.repository.crm.wms.need.StorageNeedStockedItemRepository;
+import com.sales_scout.repository.crm.wms.need.StorageNeedUnloadingTypeRepository;
 import com.sales_scout.repository.leads.CustomerRepository;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.stylesheets.LinkStyle;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,13 +32,15 @@ public class StorageNeedMapper {
     private final StorageNeedStockedItemRepository storageNeedStockedItemRepository;
     private final StorageNeedRequirementRepository storageNeedRequirementRepository;
     private final StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository;
+    private final InterlocutorMapper interlocutorMapper;
 
-    public StorageNeedMapper(CustomerRepository customerRepository, StockedItemRepository stockedItemRepository, StockedItemRepository stockedItemRepository1, StorageNeedStockedItemRepository storageNeedStockedItemRepository, StorageNeedRequirementRepository storageNeedRequirementRepository, StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository) {
+    public StorageNeedMapper(CustomerRepository customerRepository, StockedItemRepository stockedItemRepository, StockedItemRepository stockedItemRepository1, StorageNeedStockedItemRepository storageNeedStockedItemRepository, StorageNeedRequirementRepository storageNeedRequirementRepository, StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository, InterlocutorMapper interlocutorMapper) {
         this.customerRepository = customerRepository;
         this.stockedItemRepository = stockedItemRepository1;
         this.storageNeedStockedItemRepository = storageNeedStockedItemRepository;
         this.storageNeedRequirementRepository = storageNeedRequirementRepository;
         this.storageNeedUnloadingTypeRepository = storageNeedUnloadingTypeRepository;
+        this.interlocutorMapper = interlocutorMapper;
     }
 
     /**
@@ -84,19 +87,19 @@ public class StorageNeedMapper {
         // Get all stocked items
         List<StockedItem> stockedItems = storageNeedStockedItemRepository.findAllByStorageNeedId(storageNeed.getId())
                 .stream()
-                .map(storageNeedStockedItem -> storageNeedStockedItem.getStockedItem())
+                .map(StorageNeedStockedItem::getStockedItem)
                 .toList();
 
         // Get all requirements
         List<Requirement> requirements = storageNeedRequirementRepository.findAllByStorageNeedId(storageNeed.getId())
                 .stream()
-                .map(storageNeedRequirement -> storageNeedRequirement.getRequirement())
+                .map(StorageNeedRequirement::getRequirement)
                 .toList();
 
         // Get all unloading types
         List<UnloadingType> unloadingTypes = storageNeedUnloadingTypeRepository.findAllByStorageNeedId(storageNeed.getId())
                 .stream()
-                .map(storageNeedUnloadingType -> storageNeedUnloadingType.getUnloadingType())
+                .map(StorageNeedUnloadingType::getUnloadingType)
                 .toList();
 //                List<UnloadingType> unloadingTypes = storageNeed.getStorageNeedUnloadingTypes().stream()
 //                        .map(storageNeedUnloadingType -> storageNeedUnloadingType.getUnloadingType())
@@ -116,6 +119,7 @@ public class StorageNeedMapper {
         dto.setStockedItems(stockedItems.stream().map(StockedItemMapper::toResponseDto).collect(Collectors.toList()));
         dto.setUnloadingTypes(unloadingTypes.stream().map(UnloadingTypeMapper::toResponseDto).collect(Collectors.toList()));
         dto.setRequirements(requirements.stream().map(RequirementMapper::toResponseDto).collect(Collectors.toList()));
+        dto.setInterlocutor(interlocutorMapper.toResponseDto(storageNeed.getInterlocutor()));
 
 //         Map nested customer details if present
         if (storageNeed.getCustomer() != null) {

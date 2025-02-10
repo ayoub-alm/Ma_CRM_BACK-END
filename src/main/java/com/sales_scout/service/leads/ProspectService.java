@@ -204,6 +204,11 @@ public class ProspectService {
         }
     }
 
+
+//    public String updateImage() throws IOException {
+//
+//    }
+
     /**
      * Save the Base64-encoded image to the local file system and return the image path.
      * @param base64Image The Base64-encoded image string.

@@ -39,8 +39,8 @@ public class StockedItemMapper {
                 .numberOfPackages(stockedItem.getNumberOfPackages())
                 .dimension(stockedItem.getDimension()) // Assuming Dimension is directly serializable
                 .price(stockedItem.getPrice())
-                .storageOffer(stockedItem.getStorageOffer()) // Assuming StorageOffer is directly serializable
-                .storageNeed(stockedItem.getStorageNeed()) // Assuming StorageNeed is directly serializable
+//                .storageOffer(stockedItem.getStorageOffer()) // Assuming StorageOffer is directly serializable
+//                .storageNeed(stockedItem.getStorageNeed()) // Assuming StorageNeed is directly serializable
                 .provisionResponseDto(provisionResponseDtos) // Map if provisions are required; else leave null
                 .build();
     }

@@ -1,20 +1,16 @@
 package com.sales_scout.dto.response.crm.wms;
 
-import com.sales_scout.dto.response.InterlocutorResponseDto;
-import com.sales_scout.entity.crm.wms.Requirement;
-import com.sales_scout.entity.crm.wms.StockedItem;
-import com.sales_scout.entity.crm.wms.UnloadingType;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Setter
 @Getter
-public class StorageNeedResponseDto {
-    // Getters and Setters
+@Builder
+public class CreatedStorageOfferDto {
     private Long id;
     private UUID ref;
     private String liverStatus;  // LivreEnum as String
@@ -25,8 +21,7 @@ public class StorageNeedResponseDto {
     private int numberOfSku;
     private String productType;
     private CustomerDto customer;
-    private InterlocutorResponseDto interlocutor;
-    private List<StockedItemResponseDto> stockedItems;
-    private List<UnloadingTypeResponseDto> unloadingTypes;
-    private List<StorageRequirementResponseDto> requirements;
+    private Long storageNeedId;
+    private Long paymentTypeId;
+    private int paymentDeadline;
 }

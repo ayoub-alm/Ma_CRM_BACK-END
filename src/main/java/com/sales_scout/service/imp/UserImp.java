@@ -98,4 +98,7 @@ public class UserImp implements UserService {
                 .rights(user.getRights())
                 .build();
     }
+
+
+
 }

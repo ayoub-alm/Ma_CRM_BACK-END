@@ -1,9 +1,7 @@
 package com.sales_scout.dto.response.crm.wms;
 
 import com.sales_scout.dto.response.InterlocutorResponseDto;
-import com.sales_scout.entity.crm.wms.Requirement;
-import com.sales_scout.entity.crm.wms.StockedItem;
-import com.sales_scout.entity.crm.wms.UnloadingType;
+import com.sales_scout.entity.data.PaymentMethod;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +11,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
-public class StorageNeedResponseDto {
+public class StorageOfferResponseDto {
     // Getters and Setters
     private Long id;
     private UUID ref;
@@ -25,8 +23,12 @@ public class StorageNeedResponseDto {
     private int numberOfSku;
     private String productType;
     private CustomerDto customer;
-    private InterlocutorResponseDto interlocutor;
+    private double price;
+    private StorageNeedResponseDto storageNeed;
     private List<StockedItemResponseDto> stockedItems;
     private List<UnloadingTypeResponseDto> unloadingTypes;
     private List<StorageRequirementResponseDto> requirements;
+    private PaymentMethod paymentType;
+    private int paymentDeadline;
+    private InterlocutorResponseDto interlocutor;
 }

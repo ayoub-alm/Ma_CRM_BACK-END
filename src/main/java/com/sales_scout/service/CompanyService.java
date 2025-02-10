@@ -256,5 +256,5 @@ public class CompanyService {
         UserEntity currentUser = authenticationService.getCurrentUser();
         return currentUser.getCompanies().stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
     }
-
 }
+

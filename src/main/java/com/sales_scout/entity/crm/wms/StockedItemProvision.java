@@ -1,6 +1,7 @@
 package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.enums.crm.DiscountTypeEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +20,10 @@ public class StockedItemProvision extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private Double price;
-
+    private Double initPrice;
+    private DiscountTypeEnum discountType;
+    private Double discountValue;
+    private Double salesPrice;
     private UUID ref = UUID.randomUUID();
 
     @ManyToOne
@@ -31,5 +33,6 @@ public class StockedItemProvision extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "provision_id", nullable = false)
     private Provision provision;
+
 
 }

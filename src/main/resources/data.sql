@@ -1,30 +1,30 @@
 
 INSERT INTO `banks`(`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `active`, `name`)
 VALUES
-    ('1', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Banque Populaire (BP)'),
-    ('2', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'BMCE Bank of Africa'),
-    ('3', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Crédit Agricole du Maroc'),
-    ('4', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Crédit du Maroc'),
-    ('5', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'BMCI (Banque Marocaine pour le Commerce et l''Industrie)'),
-    ('6', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Société Générale Maroc'),
-    ('7', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'CIH Bank (Crédit Immobilier et Hôtelier)'),
-    ('8', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Al Barid Bank'),
-    ('9', '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Bank Al-Maghrib (Central Bank)');
+    (1, '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Banque Populaire (BP)'),
+    (2, '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'BMCE Bank of Africa'),
+    (3, '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Crédit Agricole du Maroc'),
+    (4, '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Crédit du Maroc'),
+    (5, '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'BMCI (Banque Marocaine pour le Commerce et l''Industrie)'),
+    (6, '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Société Générale Maroc'),
+    (7, '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'CIH Bank (Crédit Immobilier et Hôtelier)'),
+    (8, '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Al Barid Bank'),
+    (9, '2024-09-26 12:00:00', CURRENT_TIME, NULL, CURRENT_TIME, 1, 'Bank Al-Maghrib (Central Bank)');
 
 
 INSERT INTO `devises`(`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `code`, `nom_de_la_centime`, `nom_de_la_devise`, `pays`, `symbole`)
 VALUES
-    ('1', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'USD', 'Cent', 'Dollar', 'États-Unis', '$'),
-    ('2', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'EUR', 'Cent', 'Euro', 'Zone euro', '€'),
-    ('3', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'JPY', 'Pas', 'Yen', 'Japon', '¥'),
-    ('4', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'GBP', 'Penny', 'Livre', 'Royaume-Uni', '£'),
-    ('5', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'AUD', 'Cent', 'Dollar', 'Australie', 'A$'),
-    ('6', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'CAD', 'Cent', 'Dollar', 'Canada', 'C$'),
-    ('7', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'CHF', 'Centime', 'Franc', 'Suisse', 'CHF'),
-    ('8', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'CNY', 'Fen', 'Yuan', 'Chine', '¥'),
-    ('9', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'INR', 'Paisa', 'Roupie', 'Inde', '₹'),
-    ('10', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'RUB', 'Kopek', 'Rouble', 'Russie', '₽'),
-    ('11', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'BRL', 'Centavo', 'Réal', 'Brésil', 'R$'),
+    (1, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'USD', 'Cent', 'Dollar', 'États-Unis', '$'),
+    (2, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'EUR', 'Cent', 'Euro', 'Zone euro', '€'),
+    (3, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'JPY', 'Pas', 'Yen', 'Japon', '¥'),
+    (4, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'GBP', 'Penny', 'Livre', 'Royaume-Uni', '£'),
+    (5, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'AUD', 'Cent', 'Dollar', 'Australie', 'A$'),
+    (6, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'CAD', 'Cent', 'Dollar', 'Canada', 'C$'),
+    (7, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'CHF', 'Centime', 'Franc', 'Suisse', 'CHF'),
+    (8, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'CNY', 'Fen', 'Yuan', 'Chine', '¥'),
+    (9, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'INR', 'Paisa', 'Roupie', 'Inde', '₹'),
+    (10, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'RUB', 'Kopek', 'Rouble', 'Russie', '₽'),
+    (11, CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'BRL', 'Centavo', 'Réal', 'Brésil', 'R$'),
     ('12', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'ZAR', 'Cent', 'Rand', 'Afrique du Sud', 'R'),
     ('13', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'MXN', 'Centavo', 'Peso', 'Mexique', '$'),
     ('14', CURRENT_TIME, NULL, CURRENT_TIME, NULL, 'KRW', 'Jeon', 'Won', 'Corée du Sud', '₩'),
@@ -35,28 +35,28 @@ VALUES
 
 
 INSERT INTO `courts`(`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `active`, `name`)
-VALUES ('1',CURRENT_TIME,'',NULL,CURRENT_TIME,1,'Casablanca');
+VALUES (1,CURRENT_TIME,'',NULL,CURRENT_TIME,1,'Casablanca');
 
 INSERT INTO `company_sizes`(`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `active`, `name`) VALUES
-('1', CURRENT_TIME, NULL, NULL, NULL, 1, 'Micro-entreprise : Moins de 10 employés'),
-('2', CURRENT_TIME, NULL, NULL, NULL, 1, 'Moyenne entreprise : 50 à 249 employés'),
-('3', CURRENT_TIME, NULL, NULL, NULL, 1, 'Petite entreprise : 10 à 49 employés'),
-('4', CURRENT_TIME, NULL, NULL, NULL, 1, 'Grande entreprise : Plus de 250 employés');
+(1, CURRENT_TIME, NULL, NULL, NULL, 1, 'Micro-entreprise : Moins de 10 employés'),
+(2, CURRENT_TIME, NULL, NULL, NULL, 1, 'Moyenne entreprise : 50 à 249 employés'),
+(3, CURRENT_TIME, NULL, NULL, NULL, 1, 'Petite entreprise : 10 à 49 employés'),
+(4, CURRENT_TIME, NULL, NULL, NULL, 1, 'Grande entreprise : Plus de 250 employés');
 
 
 INSERT INTO `online_payment_methods`(`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `active`, `name`)
 VALUES
-    ('1', CURRENT_TIME, NULL, NULL, NULL, 1, '2Checkout (Verifone)'),
-    ('2', CURRENT_TIME, NULL, NULL, NULL, 1, 'Adyen'),
-    ('3', CURRENT_TIME, NULL, NULL, NULL, 1, 'Al Barid Bank (Digital services)'),
-    ('4', CURRENT_TIME, NULL, NULL, NULL, 1, 'Alipay'),
-    ('5', CURRENT_TIME, NULL, NULL, NULL, 1, 'Amazon Pay'),
-    ('6', CURRENT_TIME, NULL, NULL, NULL, 1, 'Apple Pay'),
-    ('7', CURRENT_TIME, NULL, NULL, NULL, 1, 'Attijariwafa Bank (Digital services)'),
-    ('8', CURRENT_TIME, NULL, NULL, NULL, 1, 'Authorize.Net'),
-    ('9', CURRENT_TIME, NULL, NULL, NULL, 1, 'Banque Populaire (Chaabi Net)'),
-    ('10', CURRENT_TIME, NULL, NULL, NULL, 1, 'BMCE Bank (Digital services)'),
-    ('11', CURRENT_TIME, NULL, NULL, NULL, 1, 'BMCI (Digital services)'),
+    (1, CURRENT_TIME, NULL, NULL, NULL, 1, '2Checkout (Verifone)'),
+    (2, CURRENT_TIME, NULL, NULL, NULL, 1, 'Adyen'),
+    (3, CURRENT_TIME, NULL, NULL, NULL, 1, 'Al Barid Bank (Digital services)'),
+    (4, CURRENT_TIME, NULL, NULL, NULL, 1, 'Alipay'),
+    (5, CURRENT_TIME, NULL, NULL, NULL, 1, 'Amazon Pay'),
+    (6, CURRENT_TIME, NULL, NULL, NULL, 1, 'Apple Pay'),
+    (7, CURRENT_TIME, NULL, NULL, NULL, 1, 'Attijariwafa Bank (Digital services)'),
+    (8, CURRENT_TIME, NULL, NULL, NULL, 1, 'Authorize.Net'),
+    (9, CURRENT_TIME, NULL, NULL, NULL, 1, 'Banque Populaire (Chaabi Net)'),
+    (10, CURRENT_TIME, NULL, NULL, NULL, 1, 'BMCE Bank (Digital services)'),
+    (11, CURRENT_TIME, NULL, NULL, NULL, 1, 'BMCI (Digital services)'),
     ('12', CURRENT_TIME, NULL, NULL, NULL, 1, 'Bpay'),
     ('13', CURRENT_TIME, NULL, NULL, NULL, 1, 'CIH Bank (Digital services)'),
     ('14', CURRENT_TIME, NULL, NULL, NULL, 1, 'CMI (Centre Monétique Interbancaire)'),
@@ -78,17 +78,17 @@ VALUES
 
 INSERT INTO `job_titles`(`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `active`, `name`)
 VALUES
-    ('1', CURRENT_TIME, NULL, NULL, NULL, 1, 'Acheteur Senior'),
-    ('2', CURRENT_TIME, NULL, NULL, NULL, 1, 'Administrateur Systèmes et Réseaux'),
-    ('3', CURRENT_TIME, NULL, NULL, NULL, 1, 'Agent de Sécurité'),
-    ('4', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste de Marché International'),
-    ('5', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste de Projet'),
-    ('6', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste des Achats'),
-    ('7', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste des Risques'),
-    ('8', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste en Innovation'),
-    ('9', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste Financier'),
-    ('10', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste IT'),
-    ('11', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste Marketing'),
+    (1, CURRENT_TIME, NULL, NULL, NULL, 1, 'Acheteur Senior'),
+    (2, CURRENT_TIME, NULL, NULL, NULL, 1, 'Administrateur Systèmes et Réseaux'),
+    (3, CURRENT_TIME, NULL, NULL, NULL, 1, 'Agent de Sécurité'),
+    (4, CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste de Marché International'),
+    (5, CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste de Projet'),
+    (6, CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste des Achats'),
+    (7, CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste des Risques'),
+    (8, CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste en Innovation'),
+    (9, CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste Financier'),
+    (10, CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste IT'),
+    (11, CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste Marketing'),
     ('12', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste Sécurité'),
     ('13', CURRENT_TIME, NULL, NULL, NULL, 1, 'Analyste Stratégique'),
     ('14', CURRENT_TIME, NULL, NULL, NULL, 1, 'Assistant Administratif'),
@@ -185,51 +185,51 @@ VALUES
 
 INSERT INTO `industries`(`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `active`, `name`)
 VALUES
-    ('1', CURRENT_TIME, NULL, NULL, NULL, 1, 'Aéronautique et spatial'),
-    ('2', CURRENT_TIME, NULL, NULL, NULL, 1, 'Agriculture'),
-    ('3', CURRENT_TIME, NULL, NULL, NULL, 1, 'Agritech'),
-    ('4', CURRENT_TIME, NULL, NULL, NULL, 1, 'Alimentation et boissons'),
-    ('5', CURRENT_TIME, NULL, NULL, NULL, 1, 'Arts et culture'),
-    ('6', CURRENT_TIME, NULL, NULL, NULL, 1, 'Biotechnologie'),
-    ('7', CURRENT_TIME, NULL, NULL, NULL, 1, 'Chimie'),
-    ('8', CURRENT_TIME, NULL, NULL, NULL, 1, 'Commerce de détail'),
-    ('9', CURRENT_TIME, NULL, NULL, NULL, 1, 'Construction'),
-    ('10', CURRENT_TIME, NULL, NULL, NULL, 1, 'Développement durable et environnement'),
-    ('11', CURRENT_TIME, NULL, NULL, NULL, 1, 'E-santé (Health Tech)'),
-    ('12', CURRENT_TIME, NULL, NULL, NULL, 1, 'Économie circulaire'),
-    ('13', CURRENT_TIME, NULL, NULL, NULL, 1, 'Éducation'),
-    ('14', CURRENT_TIME, NULL, NULL, NULL, 1, 'Énergie et services publics'),
-    ('15', CURRENT_TIME, NULL, NULL, NULL, 1, 'Finance'),
-    ('16', CURRENT_TIME, NULL, NULL, NULL, 1, 'Hôtellerie et tourisme'),
-    ('17', CURRENT_TIME, NULL, NULL, NULL, 1, 'Immobilier'),
-    ('18', CURRENT_TIME, NULL, NULL, NULL, 1, 'Industrie manufacturière'),
-    ('19', CURRENT_TIME, NULL, NULL, NULL, 1, 'Jeux vidéo'),
-    ('20', CURRENT_TIME, NULL, NULL, NULL, 1, 'Logistique et chaîne d''approvisionnement'),
-    ('21', CURRENT_TIME, NULL, NULL, NULL, 1, 'Médias et divertissements'),
-    ('22', CURRENT_TIME, NULL, NULL, NULL, 1, 'Mode et textile'),
-    ('23', CURRENT_TIME, NULL, NULL, NULL, 1, 'Ressources naturelles'),
-    ('24', CURRENT_TIME, NULL, NULL, NULL, 1, 'Santé'),
-    ('25', CURRENT_TIME, NULL, NULL, NULL, 1, 'Services aux entreprises'),
-    ('26', CURRENT_TIME, NULL, NULL, NULL, 1, 'Services financiers alternatifs'),
-    ('27', CURRENT_TIME, NULL, NULL, NULL, 1, 'Services professionnels'),
-    ('28', CURRENT_TIME, NULL, NULL, NULL, 1, 'Technologie'),
-    ('29', CURRENT_TIME, NULL, NULL, NULL, 1, 'Télécommunications'),
-    ('30', CURRENT_TIME, NULL, NULL, NULL, 1, 'Transports et logistique'),
-    ('31', CURRENT_TIME, NULL, NULL, NULL, 1, 'Vente en gros et distribution');
+    (1, CURRENT_TIME, NULL, NULL, NULL, 1, 'Aéronautique et spatial'),
+    (2, CURRENT_TIME, NULL, NULL, NULL, 1, 'Agriculture'),
+    (3, CURRENT_TIME, NULL, NULL, NULL, 1, 'Agritech'),
+    (4, CURRENT_TIME, NULL, NULL, NULL, 1, 'Alimentation et boissons'),
+    (5, CURRENT_TIME, NULL, NULL, NULL, 1, 'Arts et culture'),
+    (6, CURRENT_TIME, NULL, NULL, NULL, 1, 'Biotechnologie'),
+    (7, CURRENT_TIME, NULL, NULL, NULL, 1, 'Chimie'),
+    (8, CURRENT_TIME, NULL, NULL, NULL, 1, 'Commerce de détail'),
+    (9, CURRENT_TIME, NULL, NULL, NULL, 1, 'Construction'),
+    (10, CURRENT_TIME, NULL, NULL, NULL, 1, 'Développement durable et environnement'),
+    (11, CURRENT_TIME, NULL, NULL, NULL, 1, 'E-santé (Health Tech)'),
+    (12, CURRENT_TIME, NULL, NULL, NULL, 1, 'Économie circulaire'),
+    (13, CURRENT_TIME, NULL, NULL, NULL, 1, 'Éducation'),
+    (14, CURRENT_TIME, NULL, NULL, NULL, 1, 'Énergie et services publics'),
+    (15, CURRENT_TIME, NULL, NULL, NULL, 1, 'Finance'),
+    (16, CURRENT_TIME, NULL, NULL, NULL, 1, 'Hôtellerie et tourisme'),
+    (17, CURRENT_TIME, NULL, NULL, NULL, 1, 'Immobilier'),
+    (18, CURRENT_TIME, NULL, NULL, NULL, 1, 'Industrie manufacturière'),
+    (19, CURRENT_TIME, NULL, NULL, NULL, 1, 'Jeux vidéo'),
+    (20, CURRENT_TIME, NULL, NULL, NULL, 1, 'Logistique et chaîne d''approvisionnement'),
+    (21, CURRENT_TIME, NULL, NULL, NULL, 1, 'Médias et divertissements'),
+    (22, CURRENT_TIME, NULL, NULL, NULL, 1, 'Mode et textile'),
+    (23, CURRENT_TIME, NULL, NULL, NULL, 1, 'Ressources naturelles'),
+    (24, CURRENT_TIME, NULL, NULL, NULL, 1, 'Santé'),
+    (25, CURRENT_TIME, NULL, NULL, NULL, 1, 'Services aux entreprises'),
+    (26, CURRENT_TIME, NULL, NULL, NULL, 1, 'Services financiers alternatifs'),
+    (27, CURRENT_TIME, NULL, NULL, NULL, 1, 'Services professionnels'),
+    (28, CURRENT_TIME, NULL, NULL, NULL, 1, 'Technologie'),
+    (29, CURRENT_TIME, NULL, NULL, NULL, 1, 'Télécommunications'),
+    (30, CURRENT_TIME, NULL, NULL, NULL, 1, 'Transports et logistique'),
+    (31, CURRENT_TIME, NULL, NULL, NULL, 1, 'Vente en gros et distribution');
 
 
 
 INSERT INTO `delivery_methods`(`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `active`, `name`)
-VALUES ('1', CURRENT_TIME, NULL, NULL, NULL, 1, 'Expédition standard'),
-       ('2', CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison à domicile'),
-       ('3', CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison avec suivi'),
-       ('4', CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison en point relais'),
-       ('5', CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison express'),
-       ('6', CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison internationale'),
-       ('7', CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison par coursier'),
-       ('8', CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison programmée'),
-       ('9', CURRENT_TIME, NULL, NULL, NULL, 1, 'Non applicable'),
-       ('10', CURRENT_TIME, NULL, NULL, NULL, 1, 'Ramassage en magasin');
+VALUES (1, CURRENT_TIME, NULL, NULL, NULL, 1, 'Expédition standard'),
+       (2, CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison à domicile'),
+       (3, CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison avec suivi'),
+       (4, CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison en point relais'),
+       (5, CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison express'),
+       (6, CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison internationale'),
+       (7, CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison par coursier'),
+       (8, CURRENT_TIME, NULL, NULL, NULL, 1, 'Livraison programmée'),
+       (9, CURRENT_TIME, NULL, NULL, NULL, 1, 'Non applicable'),
+       (10, CURRENT_TIME, NULL, NULL, NULL, 1, 'Ramassage en magasin');
 
 
 
@@ -396,16 +396,16 @@ INSERT INTO `payment_methods`(`id`, `created_at`, `created_by`, `deleted_at`, `u
   (8, NOW(), 'system', NULL, NOW(), 1, 'Virement');
 
 INSERT INTO `proprietary_structures` (`id`, `active`, `name`, `created_at`, `created_by`, `deleted_at`, `updated_at`)
-VALUES (NULL, b'1', 'Privé', NOW(), NULL, NULL, NOW()),
-                    (NULL, b'1', 'Public', NOW(), NULL, NULL, NOW());
+VALUES (NULL, b1, 'Privé', NOW(), NULL, NULL, NOW()),
+                    (NULL, b1, 'Public', NOW(), NULL, NULL, NOW());
 
 
 -- Inserting a record for 'M'
 INSERT INTO titles (created_at, created_by, deleted_at, updated_at, active, title)
-VALUES (CURRENT_TIMESTAMP(6), 'user1', NULL, NULL, b'1', 'M');
+VALUES (CURRENT_TIMESTAMP(6), 'user1', NULL, NULL, b1, 'M');
 -- Inserting a record for 'Mem'
 INSERT INTO titles (created_at, created_by, deleted_at, updated_at, active, title)
-VALUES (CURRENT_TIMESTAMP(6), 'user2', NULL, NULL, b'1', 'Mem');
+VALUES (CURRENT_TIMESTAMP(6), 'user2', NULL, NULL, b1, 'Mem');
 
 
 INSERT INTO `users` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `email`, `name`, `password`, `phone`, `refresh_token`, `role_id`) VALUES
@@ -476,22 +476,22 @@ INSERT INTO `structures` (`id`, `created_at`, `created_by`, `deleted_at`, `updat
  (18, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 80, 'Support palette EURO', 'Euro pallet support', 0x0c13d566d18c11efa399482ae33417ab, 'PALETTE', 2),
  (19, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 120, 'SUPPORT PALETTE ISO', 'ISO pallet support', 0x0c13d5d7d18c11efa399482ae33417ab, 'PALETTE', 2),
  (20, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 80, 'Support palettes Américaines occasionnelles', 'Occasional American pallet support', 0x0c13d649d18c11efa399482ae33417ab, 'PALETTE', 2),
- (21, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 50, 'Support Palette EURO occasionnel', 'Occasional Euro pallet support', 0x0c13d6b9d18c11efa399482ae33417ab, '1', 2),
- (22, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 1200, 'PROLONGATION SAMEDI', 'Saturday extension', 0x0c13d728d18c11efa399482ae33417ab, '1', 2),
+ (21, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 50, 'Support Palette EURO occasionnel', 'Occasional Euro pallet support', 0x0c13d6b9d18c11efa399482ae33417ab, 1, 2),
+ (22, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 1200, 'PROLONGATION SAMEDI', 'Saturday extension', 0x0c13d728d18c11efa399482ae33417ab, 1, 2),
  (23, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Re-Palettisation OUTBOUND Palette Euro Homogène samedi', 'Re-palletization Euro Saturday', 0x0c13e851d18c11efa399482ae33417ab, 'Palette Euro', 2),
  (24, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Re-Palettisation OUTBOUND Palette ISO Homogène samedi', 'Re-palletization ISO Saturday', 0x0c13e942d18c11efa399482ae33417ab, 'Palette ISO', 2);
 
 INSERT INTO `unloading_types` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `last_updated_by`, `init_price`, `name`, `ref`, `status`, `unit_of_measurement`, `company_id`) VALUES
-(1, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 600, 'Dépottage TC 20 Pieds Palettisé', 0x74b09bded18911efa399482ae33417ab, b'1', 'TC', 2),
-(2, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 2200, 'Dépottage TC 40 Pieds Vrac', 0x74b13e56d18911efa399482ae33417ab, b'1', 'TC', 2),
-(3, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1200, 'Dépottage TC 40 Pieds Palettisé', 0x74b1402fd18911efa399482ae33417ab, b'1', 'TC', 2),
-(4, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1100, 'Dépottage TC 20 Pieds Vrac', 0x74b140c0d18911efa399482ae33417ab, b'1', 'TC', 2),
-(5, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 2200, 'Dépottage Semi-remorque Vrac', 0x74b14136d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
-(6, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1200, 'Dépottage Semi-remorque Palettisé', 0x74b141e1d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
-(7, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 600, 'Dépottage Camion Palettisé', 0x74b14259d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
-(8, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1100, 'Dépottage Camion Vrac', 0x74b142c2d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
-(9, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 600, 'TRI camion/TC 20 (palettes)', 0x74b1434ad18911efa399482ae33417ab, b'1', 'TRUCK/TC', 2),
-(10, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1200, 'TRI camion/TC 40 (palettes)', 0x74b143b6d18911efa399482ae33417ab, b'1', 'TRUCK/TC', 2);
+(1, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 600, 'Dépottage TC 20 Pieds Palettisé', 0x74b09bded18911efa399482ae33417ab, b1, 'TC', 2),
+(2, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 2200, 'Dépottage TC 40 Pieds Vrac', 0x74b13e56d18911efa399482ae33417ab, b1, 'TC', 2),
+(3, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1200, 'Dépottage TC 40 Pieds Palettisé', 0x74b1402fd18911efa399482ae33417ab, b1, 'TC', 2),
+(4, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1100, 'Dépottage TC 20 Pieds Vrac', 0x74b140c0d18911efa399482ae33417ab, b1, 'TC', 2),
+(5, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 2200, 'Dépottage Semi-remorque Vrac', 0x74b14136d18911efa399482ae33417ab, b1, 'TRUCK', 2),
+(6, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1200, 'Dépottage Semi-remorque Palettisé', 0x74b141e1d18911efa399482ae33417ab, b1, 'TRUCK', 2),
+(7, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 600, 'Dépottage Camion Palettisé', 0x74b14259d18911efa399482ae33417ab, b1, 'TRUCK', 2),
+(8, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1100, 'Dépottage Camion Vrac', 0x74b142c2d18911efa399482ae33417ab, b1, 'TRUCK', 2),
+(9, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 600, 'TRI camion/TC 20 (palettes)', 0x74b1434ad18911efa399482ae33417ab, b1, 'TRUCK/TC', 2),
+(10, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1200, 'TRI camion/TC 40 (palettes)', 0x74b143b6d18911efa399482ae33417ab, b1, 'TRUCK/TC', 2);
 
 
 INSERT INTO `temperatures` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `last_updated_by`,`name`, `ref`, `company_id`) VALUES

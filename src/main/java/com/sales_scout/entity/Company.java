@@ -126,6 +126,14 @@ public class Company extends BaseEntity {
     private List<Customer> customers;
 
     @JsonIgnore
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL , orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Role> roles;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL , orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Right> rights;
+
+    @JsonIgnore
     @ManyToMany(mappedBy = "companies")
     private Set<UserEntity> employees;
 

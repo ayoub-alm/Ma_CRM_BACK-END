@@ -33,6 +33,8 @@ public class UserEntity extends BaseEntity implements UserDetails {
         private String email;
         private String phone;
         private String refreshToken;
+        private String logo;
+        private String matriculate;
 
         @ManyToOne(fetch = FetchType.EAGER )
         @JoinColumn(name = "role_id")

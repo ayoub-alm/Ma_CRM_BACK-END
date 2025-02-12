@@ -13,7 +13,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * this function allows to get non soft-deleted roles
      * @return {List<Role>}
      */
-    List<Role> findByDeletedAtIsNull();
+    List<Role> findAllByDeletedAtIsNull();
 
     /**
      * get role by id

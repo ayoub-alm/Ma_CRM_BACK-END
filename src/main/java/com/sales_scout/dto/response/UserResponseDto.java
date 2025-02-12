@@ -17,6 +17,8 @@ public class UserResponseDto extends BaseDto {
     private String email;
     private String aboutMe;
     private String phone;
+    private String logo;
+    private String matriculate;
     private long  id;
     private Role role;
     private List<RightsResponseDto> rights;

@@ -17,4 +17,8 @@ public class Role extends BaseEntity {
     private String role;
     private String description;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = true)
+    private Company company;
+
 }

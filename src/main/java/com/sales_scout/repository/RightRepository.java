@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface RightRepository extends JpaRepository<Right, Long> {
-    List<Right> findByDeletedAtIsNull(); // Get all non-deleted rights
-    Right findByIdAndDeletedAtIsNull(Long id); // Get non-deleted right by id
+    List<Right> findAllByDeletedAtIsNull(); // Get all non-deleted rights
+    Right findByIdAndDeletedAtIsNull(Long id);
+    Right findByNameAndDeletedAtIsNull(String name);
 }

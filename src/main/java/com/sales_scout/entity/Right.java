@@ -3,6 +3,7 @@ package com.sales_scout.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,6 +21,6 @@ public class Right extends BaseEntity {
 
     private String description;
 
-    @ManyToMany(mappedBy = "rights", fetch = FetchType.LAZY)
-    private List<UserEntity> users; // Optional if bidirectional
+    @OneToMany(mappedBy = "right", cascade = CascadeType.ALL , orphanRemoval = true)
+    private List<UserRights> userRights = new ArrayList<>(); // Optional if bidirectional
 }

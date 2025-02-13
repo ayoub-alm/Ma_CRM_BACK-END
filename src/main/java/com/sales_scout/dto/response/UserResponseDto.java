@@ -1,5 +1,5 @@
 package com.sales_scout.dto.response;
-
+import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.Right;
 import com.sales_scout.entity.Role;
 import lombok.*;
@@ -15,10 +15,9 @@ import java.util.List;
 public class UserResponseDto  {
     private String name;
     private String email;
-//    private String password;
     private String aboutMe;
     private String phone;
     private long  id;
     private Role role;
-    private List<Right> rights;
+    private List<RightsResponseDto> rights;
 }

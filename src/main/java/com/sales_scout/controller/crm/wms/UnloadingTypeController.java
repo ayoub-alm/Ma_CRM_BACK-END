@@ -5,7 +5,13 @@ import com.sales_scout.dto.response.crm.wms.UnloadingTypeResponseDto;
 import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.service.crm.wms.UnloadingTypeService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -18,7 +24,6 @@ public class UnloadingTypeController {
     public UnloadingTypeController(UnloadingTypeService unloadingTypeService) {
         this.unloadingTypeService = unloadingTypeService;
     }
-
 
     /**
      * Get all unloading types by company ID

@@ -3,6 +3,7 @@ package com.sales_scout.service.leads;
 import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
 import com.sales_scout.dto.response.CustomerResponseDto;
+import com.sales_scout.dto.response.DepartmentResponseDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
 import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interlocutor;
@@ -115,7 +116,7 @@ public class InterlocutorService {
 
         // Fetch Department
         // Fetch or set Department (nullable)
-        Department department = null;
+        DepartmentResponseDto department = null;
         if (interlocutorDto.getDepartmentId() != null) {
             department = this.departmentService.findById(interlocutorDto.getDepartmentId());
             if (department == null) {
@@ -146,7 +147,7 @@ public class InterlocutorService {
                 .customer(prospect)
                 .phoneNumber(phoneNumber)
                 .emailAddress(emailAddress)
-                .department(department)
+                .department(mapToDepartment(department))
                 .jobTitle(jobTitle)
                 .active(ActiveInactiveEnum.ACTIVE)
                 .build();
@@ -159,7 +160,7 @@ public class InterlocutorService {
                 .customer(CustomerMapperSmall.toResponseDto(savedInterlocutor.getCustomer()))
                 .phoneNumber(phoneNumber)
                 .emailAddress(emailAddress)
-                .department(department)
+                .department(mapToDepartment(department))
                 .jobTitle(savedInterlocutor.getJobTitle())
                 .active(ActiveInactiveEnum.ACTIVE)
                 .build();
@@ -179,7 +180,7 @@ public class InterlocutorService {
                 .orElseThrow(() -> new EntityNotFoundException("Prospect with id " + updateInterlocutorDto.getProspectId() + " not found"));
 
         // Fetch Department
-        Department department = this.departmentService.findById(updateInterlocutorDto.getDepartmentId());
+        DepartmentResponseDto department = this.departmentService.findById(updateInterlocutorDto.getDepartmentId());
         if (department == null) {
             throw new EntityNotFoundException("Department with id " + updateInterlocutorDto.getDepartmentId() + " not found");
         }
@@ -206,7 +207,7 @@ public class InterlocutorService {
         // Update fields
         interlocutor.setFullName(updateInterlocutorDto.getFullName());
         interlocutor.setCustomer(customer);
-        interlocutor.setDepartment(department);
+        interlocutor.setDepartment(mapToDepartment(department));
         interlocutor.setPhoneNumber(phoneNumber); // Use persisted PhoneNumber
         interlocutor.setJobTitle(jobTitle);
         interlocutor.setActive(updateInterlocutorDto.getActive());
@@ -263,6 +264,14 @@ public class InterlocutorService {
             }
         }
 
+    }
+
+    public Department mapToDepartment(DepartmentResponseDto departmentResponseDto) {
+        return Department.builder()
+                .id(departmentResponseDto.getId())
+                .name(departmentResponseDto.getName())
+                // Map other fields if necessary
+                .build();
     }
 
     /**

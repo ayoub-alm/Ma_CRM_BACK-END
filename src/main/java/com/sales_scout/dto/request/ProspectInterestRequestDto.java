@@ -1,7 +1,6 @@
 package com.sales_scout.dto.request;
 
 import com.sales_scout.entity.Interest;
-import com.sales_scout.entity.leads.Prospect;
 import jakarta.persistence.*;
 import lombok.*;
 

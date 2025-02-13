@@ -3,8 +3,6 @@ package com.sales_scout.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 
 @Entity
 @AllArgsConstructor
@@ -18,6 +16,9 @@ public class Role extends BaseEntity {
     private Long id;
     private String role;
     private String description;
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserEntity> users; // Optional if bidirectional
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = true)
+    private Company company;
+
 }

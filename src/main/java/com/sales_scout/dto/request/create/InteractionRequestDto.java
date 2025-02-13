@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class InteractionRequestDto extends BaseDto {
-    private Long prospectId;
+public class InteractionRequestDto  {
+    private Long customerId;
     private Long interlocutorId;
     private String report;
     private InteractionSubject interactionSubject;

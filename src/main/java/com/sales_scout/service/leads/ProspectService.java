@@ -1,16 +1,18 @@
 package com.sales_scout.service.leads;
 
 import com.sales_scout.dto.request.ProspectRequestDto;
-import com.sales_scout.dto.response.ProspectResponseDto;
+
+import com.sales_scout.dto.response.CustomerResponseDto;
 import com.sales_scout.entity.Company;
-import com.sales_scout.entity.leads.Prospect;
+
+import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.TrackingLog;
 import com.sales_scout.entity.UserEntity;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import com.sales_scout.mapper.ProspectResponseDtoBuilder;
-import com.sales_scout.repository.leads.ProspectRepository;
+import com.sales_scout.repository.leads.CustomerRepository;
 import com.sales_scout.repository.leads.TrackingLogRepository;
 import com.sales_scout.repository.UserRepository;
 import com.sales_scout.repository.data.*;
@@ -30,11 +32,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
+        import java.util.stream.Collectors;
 
 @Service
 public class ProspectService {
-    private final ProspectRepository prospectRepository;
+    private final CustomerRepository prospectRepository;
 
     private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
     @Autowired
@@ -72,7 +74,7 @@ public class ProspectService {
     @Autowired
     private UserRepository userRepository;
 
-    public ProspectService(ProspectRepository prospectRepository) {
+    public ProspectService(CustomerRepository prospectRepository) {
         this.prospectRepository = prospectRepository;
     }
 
@@ -80,7 +82,7 @@ public class ProspectService {
      * This function allows us to get all prospect within Soft-deleted
      * @return { List<Prospect> }
      */
-    public List<ProspectResponseDto> getAllProspects() {
+    public List<CustomerResponseDto> getAllProspects() {
         UserEntity CurrentUser = this.authenticationService.getCurrentUser();
         List<Long> companiesIds =  CurrentUser.getCompanies().stream().map(Company::getId).toList();
         return this.prospectRepository.findAllByDeletedAtIsNullAndCompanyIdIn(companiesIds)
@@ -94,7 +96,7 @@ public class ProspectService {
      * @param prospectRequestDto DTO containing prospect details
      * @return Prospect created or updated Prospect
      */
-    public Prospect saveOrUpdateProspect(ProspectRequestDto prospectRequestDto) {
+    public Customer saveOrUpdateProspect(ProspectRequestDto prospectRequestDto) {
         // Ensure `deletedAt` is null to mark the prospect as active
         prospectRequestDto.setDeletedAt(null);
 
@@ -104,14 +106,14 @@ public class ProspectService {
             if (prospectRequestDto.getLogo() != null && !prospectRequestDto.getLogo().isEmpty()) {
                 imagePath = saveImageFromBase64(prospectRequestDto.getLogo());
             } else if (prospectRequestDto.getLogo() == null) {
-                 imagePath = null;
+                imagePath = null;
             }
 
-            Prospect prospect;
+            Customer prospect;
 
             if (prospectRequestDto.getId() != null) {
                 // If the ID is present, check if the prospect exists
-                Optional<Prospect> existingProspect = prospectRepository.findById(prospectRequestDto.getId());
+                Optional<Customer> existingProspect = prospectRepository.findById(prospectRequestDto.getId());
                 if (existingProspect.isPresent()) {
                     // Update the existing prospect
                     prospect = existingProspect.get();
@@ -149,7 +151,7 @@ public class ProspectService {
                 }
             } else {
                 // Create a new Prospect
-                prospect = Prospect.builder()
+                prospect = Customer.builder()
 
                         .name(prospectRequestDto.getName())
                         .sigle(prospectRequestDto.getSigle())
@@ -185,8 +187,8 @@ public class ProspectService {
             }
 
 
-           prospect.setCreatedAt(LocalDateTime.now());
-           prospect.setUpdatedAt(LocalDateTime.now());
+            prospect.setCreatedAt(LocalDateTime.now());
+            prospect.setUpdatedAt(LocalDateTime.now());
 
             // Save the prospect entity
             return prospectRepository.save(prospect);
@@ -201,6 +203,11 @@ public class ProspectService {
             throw new RuntimeException("Failed to save prospect: " + prospectRequestDto.getName(), e);
         }
     }
+
+
+//    public String updateImage() throws IOException {
+//
+//    }
 
     /**
      * Save the Base64-encoded image to the local file system and return the image path.
@@ -237,9 +244,9 @@ public class ProspectService {
      * @param id {Long} id if prospect to be soft-deleted
      */
     public void softDeleteProspect(Long id) {
-        Optional<Prospect> prospectOptional = prospectRepository.findByDeletedAtIsNullAndId(id);
+        Optional<Customer> prospectOptional = prospectRepository.findByDeletedAtIsNullAndId(id);
         if (prospectOptional.isPresent()) {
-            Prospect prospect = prospectOptional.get();
+            Customer prospect = prospectOptional.get();
             prospect.setDeletedAt(LocalDateTime.now());
             prospectRepository.save(prospect);
         } else {
@@ -253,8 +260,8 @@ public class ProspectService {
      * @return Optional<Prospect>
      * @throws EntityNotFoundException exception
      */
-    public Optional<ProspectResponseDto> getProspectById(Long id) throws EntityNotFoundException{
-        Optional<Prospect> prospectOptional =  this.prospectRepository.findByDeletedAtIsNullAndId(id);
+    public Optional<CustomerResponseDto> getProspectById(Long id) throws EntityNotFoundException{
+        Optional<Customer> prospectOptional =  this.prospectRepository.findByDeletedAtIsNullAndId(id);
         if (prospectOptional.isPresent()) {
             return Optional.ofNullable(ProspectResponseDtoBuilder.fromEntity(prospectOptional.get()));
         } else {
@@ -264,8 +271,8 @@ public class ProspectService {
 
 
     @Transactional
-    public List<Prospect> uploadProspectsFromFile(MultipartFile excelFile) throws IOException {
-        List<Prospect> prospects = new ArrayList<>();
+    public List<Customer> uploadProspectsFromFile(MultipartFile excelFile) throws IOException {
+        List<Customer> prospects = new ArrayList<>();
 
         // Open the Excel file from MultipartFile
         try (Workbook workbook = new XSSFWorkbook(excelFile.getInputStream())) {
@@ -281,7 +288,7 @@ public class ProspectService {
 
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
-                Prospect prospect = mapRowToProspect(row);
+                Customer prospect = mapRowToProspect(row);
                 if (prospect.getName() != null && !prospect.getName().equals("")) {
                     prospects.add(prospect);
                 }else{
@@ -294,8 +301,8 @@ public class ProspectService {
         return prospectRepository.saveAll(prospects);
     }
 
-    private Prospect mapRowToProspect(Row row) {
-        Prospect prospect = new Prospect();
+    private Customer mapRowToProspect(Row row) {
+        Customer prospect = new Customer();
 
         // Map row data to Prospect object
         prospect.setName(getStringCellValue(row, 0));
@@ -457,9 +464,71 @@ public class ProspectService {
         }
     }
 
-    public ProspectResponseDto updateProspectStatus(ProspectStatus status, Long prospectId) throws EntityNotFoundException {
+    public void exportFileExcel(List<Customer> prospects , String filePath)throws IOException{
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Prospects");
+            Row headerRow = sheet.createRow(0);
+            String[] colmuns = {"Id","Name","Email" , "Active" , "Business Description " , "Capital" ,"Date of Registration"
+                    ,"Phone","Fax","Head Office" , "Ice", "Ifm" , "Legal Representative" ,"Whatsapp", "Linkedin" ,"WebSite" ,"Patent"
+                    ,"Rc" , "Sigle" ,"Status" , "Year of Creation" , "City" , "Company","Company Size","Country","Court","Industry"
+                    ,"Legal Status" , "Proprietary Structure" , "Job Title" , "Title Id"};
+            for (int i= 0 ; i < colmuns.length ; i++ ){
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(colmuns[i]);
+            }
+
+            int rowNum = 1;
+            if (prospects == null) {
+                prospects = prospectRepository.findAll();
+            }
+
+            for(Customer prospect : prospects){
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(prospect.getId());
+                    row.createCell(1).setCellValue(prospect.getName());
+                    row.createCell(2).setCellValue(prospect.getEmail());
+                    row.createCell(3).setCellValue(prospect.getActive().name());
+                    row.createCell(4).setCellValue(prospect.getBusinessDescription());
+                    row.createCell(5).setCellValue(prospect.getCapital());
+                    row.createCell(6).setCellValue(prospect.getDateOfRegistration());
+                    row.createCell(7).setCellValue(prospect.getPhone());
+                    row.createCell(8).setCellValue(prospect.getFax());
+                    row.createCell(9).setCellValue(prospect.getHeadOffice());
+                    row.createCell(10).setCellValue(prospect.getIce());
+                    row.createCell(11).setCellValue(prospect.getIfm());
+                    row.createCell(12).setCellValue(prospect.getLegalRepresentative());
+                    row.createCell(13).setCellValue(prospect.getWhatsapp());
+                    row.createCell(14).setCellValue(prospect.getLinkedin());
+                    row.createCell(15).setCellValue(prospect.getWebsite());
+                    row.createCell(16).setCellValue(prospect.getPatent());
+                    row.createCell(17).setCellValue(prospect.getRc());
+                    row.createCell(18).setCellValue(prospect.getSigle());
+                    row.createCell(19).setCellValue(prospect.getStatus().name());
+                    row.createCell(20).setCellValue(prospect.getYearOfCreation());
+                    row.createCell(21).setCellValue(prospect.getCity().getName());
+                    row.createCell(22).setCellValue(prospect.getCompany().getName());
+                    row.createCell(23).setCellValue(prospect.getCompanySize().getName());
+                    row.createCell(24).setCellValue(prospect.getCountry().getName());
+                    row.createCell(25).setCellValue(prospect.getCourt().getName());
+                    row.createCell(26).setCellValue(prospect.getIndustry().getName());
+                    row.createCell(27).setCellValue(prospect.getLegalStatus().getName());
+                    row.createCell(28).setCellValue(prospect.getProprietaryStructure().getName());
+                    row.createCell(29).setCellValue(prospect.getReprosentaveJobTitle().getName());
+                    row.createCell(30).setCellValue(prospect.getTitle().getTitle());
+            }
+
+            for (int i = 0 ; i <colmuns.length ; i++){
+                sheet.autoSizeColumn(i);
+            }
+            try(FileOutputStream fileOut = new FileOutputStream(filePath)) {
+                workbook.write(fileOut);
+            }
+        }
+    }
+
+    public CustomerResponseDto updateProspectStatus(ProspectStatus status, Long prospectId) throws EntityNotFoundException {
         // Fetch the prospect or throw an exception if not found
-        Prospect prospect = this.prospectRepository.findByDeletedAtIsNullAndId(prospectId)
+        Customer prospect = this.prospectRepository.findByDeletedAtIsNullAndId(prospectId)
                 .orElseThrow(() -> new EntityNotFoundException("The prospect with ID " + prospectId + " was not found."));
 
 
@@ -475,7 +544,7 @@ public class ProspectService {
                 .timestamp(LocalDateTime.now())
                 .user(managedUser) // Use the managed user
                 .details(managedUser.getName() +" a changé le statut du prospect du " + prospect.getStatus() +" à " + status)
-                .prospect(prospect)
+                .customer(prospect)
                 .build();
 
         // Save the tracking log
@@ -483,10 +552,42 @@ public class ProspectService {
         // Update the status
         prospect.setStatus(status);
         // Save the updated prospect
-        Prospect updatedProspect = this.prospectRepository.save(prospect);
+        Customer updatedProspect = this.prospectRepository.save(prospect);
 
         return ProspectResponseDtoBuilder.fromEntity(updatedProspect);
     }
 
+    /**
+     * Restore Prospect By Id
+      * @param id
+     * @return true if prospect exsist else @return false
+     */
+    public boolean restoreProspectById(Long id) throws EntityNotFoundException {
+        // Restore the prospect
+        Optional<Customer> prospect = prospectRepository.findByDeletedAtIsNotNullAndId(id);
+        if (prospect.isPresent()){
+            prospect.get().setDeletedAt(null);
+            prospectRepository.save(prospect.get());
+            return true;
+        }else{
+            throw new EntityNotFoundException("Prospect with ID " + id + " not found or already restored.");
+        }
+    }
 
+    /**
+     * Soft Delete Prospect By Id
+     * @param id
+     * @return true if prospect exsist else @return false
+     */
+    public boolean softDeleteById(Long id)throws EntityNotFoundException {
+        // Restore the prospect
+        Optional<Customer> prospect = prospectRepository.findByDeletedAtIsNullAndId(id);
+        if (prospect.isPresent()){
+            prospect.get().setDeletedAt(LocalDateTime.now());
+            prospectRepository.save(prospect.get());
+            return true;
+        }else{
+            throw new EntityNotFoundException("Prospect with ID " + id + " not found or already deleted.");
+        }
+    }
 }

@@ -24,8 +24,8 @@ public class Interaction extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "prospect_id", referencedColumnName = "id", nullable = false)
-    private Prospect prospect;
+    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "interlocutor_id", referencedColumnName = "id", nullable = true)

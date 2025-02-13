@@ -3,6 +3,7 @@ package com.sales_scout.dto.response;
 
 import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.data.*;
+import com.sales_scout.enums.ActiveInactiveEnum;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -21,7 +22,7 @@ public class CompanyResponseDto extends BaseDto {
     private String sigle;
     private double capital;
     private String headOffice;
-    private String leageRepresentative;
+    private String legalRepresentative;
     private String yearOfCreation;
     private Date dateOfRegistration ;
     private String email;
@@ -38,6 +39,7 @@ public class CompanyResponseDto extends BaseDto {
     private String certificationText;
     private String businessDescription;
     private LegalStatus legalStatus;
+    private ActiveInactiveEnum status;
     private City city;
     private Court court;
     private CompanySize companySize;

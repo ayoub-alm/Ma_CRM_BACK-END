@@ -5,8 +5,10 @@ import com.sales_scout.dto.response.CommentResponseDto;
 import com.sales_scout.entity.Comment;
 import com.sales_scout.entity.UserEntity;
 import com.sales_scout.enums.EntityEnum;
+import com.sales_scout.mapper.CommentMapper;
 import com.sales_scout.repository.CommentRepository;
 import com.sales_scout.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,18 +22,18 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
-
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository) {
+    private final CommentMapper commentMapper;
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+        this.commentMapper = commentMapper;
     }
 
     /**
-     *
      * @param commentRequestDto
      * @return
      */
-     public Comment createComment(CommentRequestDto commentRequestDto) {
+     public CommentResponseDto createComment(CommentRequestDto commentRequestDto)  {
         // Fetch the user
         UserEntity user = userRepository.findById(commentRequestDto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + commentRequestDto.getUserId()));
@@ -44,7 +46,7 @@ public class CommentService {
                 .entityId(commentRequestDto.getEntityId())
                 .build();
 
-        return commentRepository.save(comment);
+        return this.commentMapper.toDto(commentRepository.save(comment));
     }
 
     /**
@@ -106,22 +108,30 @@ public class CommentService {
      *
      * @param commentId the ID of the comment
      */
-    public void softDeleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + commentId));
-        comment.setDeletedAt(LocalDateTime.now());
-        commentRepository.save(comment);
+    public boolean softDeleteComment(Long commentId) throws EntityNotFoundException{
+        Optional<Comment> comment = commentRepository.findByIdAndDeletedAtIsNull(commentId);
+        if(comment.isPresent()){
+            comment.get().setDeletedAt(LocalDateTime.now());
+            commentRepository.save(comment.get());
+        return true;
+        }else {
+            throw  new EntityNotFoundException("Comment with ID " + commentId + " not found or already deleted.");
+        }
     }
 
     /**
-     * This function allows us to restore a soft-deleted comment
+     * This function allows us to restore a  comment
      *
      * @param commentId  the ID of the comment
      */
-    public void restoreComment(Long commentId){
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + commentId));
-        comment.setDeletedAt(null);
-        commentRepository.save(comment);
+    public boolean restoreComment(Long commentId)throws EntityNotFoundException{
+        Optional<Comment> comment = commentRepository.findByIdAndDeletedAtIsNotNull(commentId);
+        if(comment.isPresent()){
+            comment.get().setDeletedAt(null);
+            commentRepository.save(comment.get());
+            return true;
+        }else {
+            throw new EntityNotFoundException("Comment with Id "+ commentId + " not found or already restored");
+        }
     }
 }

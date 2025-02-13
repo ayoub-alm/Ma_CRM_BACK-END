@@ -1,6 +1,5 @@
 package com.sales_scout.entity.leads;
 
-import com.sales_scout.entity.Customer;
 import com.sales_scout.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,10 +32,6 @@ public class TrackingLog {
 
     @Column(name = "details", length = 500)
     private String details;
-
-    @ManyToOne
-    @JoinColumn(name = "prospect_id", referencedColumnName = "id", nullable = true)
-    private Prospect prospect;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = true)

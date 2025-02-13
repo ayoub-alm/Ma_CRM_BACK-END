@@ -2,6 +2,7 @@ package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
+import com.sales_scout.entity.crm.wms.need.StorageNeedRequirement;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,16 +23,11 @@ public class Requirement extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
-
     private String name;
-
     private Double initPrice;
-
     private String unitOfMeasurement;
-
     private String notes;
 
     @ManyToOne(fetch = FetchType.LAZY)

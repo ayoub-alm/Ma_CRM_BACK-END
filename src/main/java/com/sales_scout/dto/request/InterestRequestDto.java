@@ -1,7 +1,7 @@
 package com.sales_scout.dto.request;
 
 
-import com.sales_scout.entity.leads.Prospect;
+import com.sales_scout.entity.leads.Customer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +18,6 @@ public class InterestRequestDto {
     private String name;
     private Boolean status;
     private Long companyId;
-    private List<Prospect> prospects;
+    private List<Customer> customers;
 
 }

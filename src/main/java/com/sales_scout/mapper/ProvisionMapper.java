@@ -4,6 +4,8 @@ import com.sales_scout.dto.request.create.wms.ProvisionRequestDto;
 import com.sales_scout.dto.response.crm.wms.ProvisionResponseDto;
 import com.sales_scout.entity.Company;
 import com.sales_scout.entity.crm.wms.Provision;
+import com.sales_scout.entity.crm.wms.StockedItemProvision;
+import com.sales_scout.enums.crm.DiscountTypeEnum;
 
 public class ProvisionMapper {
     // Map entity to response DTO
@@ -20,6 +22,9 @@ public class ProvisionMapper {
         dto.setUnitOfMeasurement(provision.getUnitOfMeasurement());
         dto.setNotes(provision.getNotes());
         dto.setCompanyId(provision.getCompany() != null ? provision.getCompany().getId() : null);
+        dto.setDiscountType(provision.getDiscountTypeEnum() );
+        dto.setDiscountValue(provision.getDiscountValue());
+        dto.setSalesPrice(dto.getSalesPrice());
         return dto;
     }
 

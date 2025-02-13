@@ -1,11 +1,14 @@
 package com.sales_scout.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -19,8 +22,8 @@ import java.util.Set;
 @Table (name = "users")
 public class UserEntity extends BaseEntity implements UserDetails {
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private long id;
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
         @Column(unique = true,nullable = false)
         private String name;
         @Column(unique = true,nullable = false)
@@ -30,18 +33,16 @@ public class UserEntity extends BaseEntity implements UserDetails {
         private String email;
         private String phone;
         private String refreshToken;
+        private String logo;
+        private String matriculate;
 
-        @ManyToOne
+        @ManyToOne(fetch = FetchType.EAGER )
         @JoinColumn(name = "role_id")
         private Role role; // Each user has one role.
 
-        @ManyToMany
-        @JoinTable(
-                name = "user_rights",
-                joinColumns = @JoinColumn(name = "user_id"),
-                inverseJoinColumns = @JoinColumn(name = "rights_id")
-        )
-        private List<Right> rights; // Each user can have multiple rights.
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL , orphanRemoval = true)
+        @JsonIgnore
+        private List<UserRights> userRights = new ArrayList<>(); // Each user can have multiple rights.
 
 
         @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})

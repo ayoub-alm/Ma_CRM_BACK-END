@@ -103,7 +103,7 @@ public class CompanyDepartmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Company", "id", companyDepartmentDto.getCompanyId()));
         companyDepartment1.setCompany(company);
 
-        UserEntity user = userRepository.findByIdAndDeletedAtIsNull(companyDepartmentDto.getResponsibleId())
+        UserEntity user = userRepository.findByDeletedAtIsNullAndId(companyDepartmentDto.getResponsibleId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", companyDepartmentDto.getResponsibleId()));
         companyDepartment1.setResponsible(user);
 

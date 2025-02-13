@@ -2,7 +2,8 @@ package com.sales_scout.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sales_scout.entity.data.*;
-import com.sales_scout.entity.leads.Prospect;
+
+import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -122,10 +123,25 @@ public class Company extends BaseEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Prospect> prospects;
+    private List<Customer> customers;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "companies")
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL , orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Role> roles;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL , orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Right> rights;
+
+   
+
+    @ManyToMany(fetch = FetchType.LAZY , cascade = {CascadeType.PERSIST , CascadeType.MERGE})
+    @JoinTable(
+            name = "user_company",
+            joinColumns = @JoinColumn(name = "company_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private Set<UserEntity> employees;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

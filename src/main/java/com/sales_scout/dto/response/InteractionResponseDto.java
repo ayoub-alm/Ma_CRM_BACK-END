@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class InteractionResponseDto {
     private Long id;
-    private Long prospectId;
+    private Long customerId;
     private String prospectName;
     private Long interlocutorId;
     private String interlocutorName;

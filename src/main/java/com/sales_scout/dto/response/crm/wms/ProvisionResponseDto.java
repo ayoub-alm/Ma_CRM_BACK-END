@@ -1,6 +1,7 @@
 package com.sales_scout.dto.response.crm.wms;
 
 
+import com.sales_scout.enums.crm.DiscountTypeEnum;
 import lombok.*;
 
 import java.util.UUID;
@@ -16,4 +17,7 @@ public class ProvisionResponseDto {
     private String unitOfMeasurement;
     private String notes;
     private Long companyId;
+    private DiscountTypeEnum discountType;
+    private Double discountValue;
+    private Double salesPrice;
 }

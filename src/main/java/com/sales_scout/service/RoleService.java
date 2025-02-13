@@ -1,20 +1,30 @@
 package com.sales_scout.service;
 
 
+import com.sales_scout.dto.request.RoleRequestDto;
+import com.sales_scout.dto.response.RoleResponseDto;
+import com.sales_scout.entity.Company;
 import com.sales_scout.entity.Role;
+import com.sales_scout.exception.DataAlreadyExistsException;
+import com.sales_scout.exception.DataNotFoundException;
+import com.sales_scout.mapper.RoleMapper;
+import com.sales_scout.repository.CompanyRepository;
 import com.sales_scout.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleService {
 
     private final RoleRepository roleRepository;
-
-    public RoleService(RoleRepository roleRepository) {
+    public final CompanyRepository companyRepository;
+    public RoleService(RoleRepository roleRepository, CompanyRepository companyRepository) {
         this.roleRepository = roleRepository;
+        this.companyRepository = companyRepository;
     }
 
     /**
@@ -22,8 +32,13 @@ public class RoleService {
      *
      * @return List of roles.
      */
-    public List<Role> getAllRoles() {
-        return roleRepository.findByDeletedAtIsNull();
+    public List<RoleResponseDto> getAllRoles() throws DataNotFoundException {
+        List<Role> roles = roleRepository.findAllByDeletedAtIsNull();
+        if (!roles.isEmpty() && roles != null){
+            return roles.stream().map(RoleMapper::fromEntity).collect(Collectors.toList());
+        }else {
+            throw new DataNotFoundException("Data of Roles Not Found : List of Roles Not Found",777L);
+        }
     }
 
     /**
@@ -32,18 +47,30 @@ public class RoleService {
      * @param id {Long} ID of the role.
      * @return {Role} The role entity.
      */
-    public Role getRoleById(Long id) {
-        return roleRepository.findByIdAndDeletedAtIsNull(id);
+    public RoleResponseDto getRoleById(Long id) throws DataNotFoundException {
+        Role role = roleRepository.findByIdAndDeletedAtIsNull(id);
+        if(role != null){
+            return RoleMapper.fromEntity(role);
+        }else {
+            throw new DataNotFoundException("Role with Id : "+id+" Not Found",555L);
+        }
     }
 
     /**
      * Create a new role.
      *
-     * @param role {Role} The role to be created.
+     * @param roleRequestDto {Role} The role to be created.
      * @return {Role} The created role.
      */
-    public Role createRole(Role role) {
-        return roleRepository.save(role);
+    public RoleResponseDto createRole(RoleRequestDto roleRequestDto) throws DataAlreadyExistsException {
+        Role roleCheck = roleRepository.findByRoleAndDeletedAtIsNull(roleRequestDto.getRole());
+        if (roleCheck == null){
+            Role role = RoleMapper.fromDto(roleRequestDto);
+            Role roleSave = roleRepository.save(role);
+            return RoleMapper.fromEntity(roleSave);
+        }else {
+            throw new DataAlreadyExistsException("Role Name Already exists ",111L);
+        }
     }
 
     /**
@@ -53,29 +80,33 @@ public class RoleService {
      * @param updatedRole {Role} The updated role data.
      * @return {Role} The updated role entity.
      */
-    public Role updateRole(Long id, Role updatedRole) {
-        Role role = this.getRoleById(id);
+    public RoleResponseDto updateRole(Long id, RoleRequestDto updatedRole) throws DataNotFoundException {
+        Role role = roleRepository.findByIdAndDeletedAtIsNull(id);
         if (role != null) {
             role.setRole(updatedRole.getRole());
             role.setDescription(updatedRole.getDescription());
-            return roleRepository.save(role);
+            Optional<Company> company = companyRepository.findByDeletedAtIsNullAndId(updatedRole.getCompanyId());
+            if (updatedRole.getCompanyId() != null){
+                role.setCompany(company.get());
+            }
+            Role roleSave = roleRepository.save(role);
+            return RoleMapper.fromEntity(roleSave);
         } else {
-            throw new RuntimeException("Role not found with id " + id);
+            throw new DataNotFoundException("Role with Id "+id+" Not Found",888L);
         }
     }
 
     /**
      * Soft delete a role by setting its deletedAt attribute.
-     *
      * @param id {Long} ID of the role to delete.
      */
-    public void deleteRole(Long id) {
-        Role role = this.getRoleById(id);
+    public Boolean deleteRole(Long id) throws DataNotFoundException {
+        Role role = roleRepository.findByIdAndDeletedAtIsNull(id);
         if (role != null) {
-            role.setDeletedAt(LocalDateTime.now());
-            roleRepository.save(role);
+           roleRepository.delete(role);
+           return true;
         } else {
-            throw new RuntimeException("Role not found with id " + id);
+           throw new DataNotFoundException("Role with Id "+ id + " Not Found",258L);
         }
     }
 }

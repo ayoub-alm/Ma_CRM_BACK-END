@@ -18,7 +18,7 @@ public class InterlocutorResponseDto {
     private Long id;
     private String fullName;
 
-    private ProspectResponseDto prospect;
+    private CustomerResponseDto customer;
 
     private Department department;
 

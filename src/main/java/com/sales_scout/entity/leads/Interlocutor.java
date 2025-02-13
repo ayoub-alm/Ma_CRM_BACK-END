@@ -2,7 +2,6 @@ package com.sales_scout.entity.leads;
 
 
 import com.sales_scout.entity.BaseEntity;
-import com.sales_scout.entity.Customer;
 import com.sales_scout.entity.data.Department;
 import com.sales_scout.entity.data.EmailAddress;
 import com.sales_scout.entity.data.JobTitle;
@@ -25,8 +24,8 @@ public class Interlocutor extends BaseEntity {
     private String fullName;
 
     @ManyToOne
-    @JoinColumn(name = "prospect_id", referencedColumnName = "id")
-    private Prospect prospect;
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "id")
@@ -50,7 +49,4 @@ public class Interlocutor extends BaseEntity {
     @JoinColumn(name = "job_title_id", nullable = true)
     private JobTitle jobTitle;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
 }

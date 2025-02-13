@@ -7,7 +7,8 @@ public enum EntityEnum {
     PROSPECT("PROSPECT"),
     INTERACTION("INTERACTION"),
     INTERLOCUTOR("INTERLOCUTOR"),
-    INCLASSED("IN CLASSED");
+    INCLASSED("IN CLASSED"),
+    STORAGENEED("STORAGENEED");
 
     private final String value;
 

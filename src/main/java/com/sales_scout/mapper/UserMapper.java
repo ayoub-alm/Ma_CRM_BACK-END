@@ -17,12 +17,14 @@ public class UserMapper {
                 .email(userEntity.getEmail())
                 .phone(userEntity.getPhone())
                 .role(userEntity.getRole())
+                .matriculate(userEntity.getMatriculate())
+                .logo(userEntity.getLogo())
                 .rights(userEntity.getUserRights() != null ? userEntity.getUserRights()
                         .stream()
                         .map(userRights->
                         {
                             Right right = userRights.getRight();
-                            return new RightsResponseDto(right.getId(), right.getName(), right.getDescription());
+                            return new RightsResponseDto(right.getId(), right.getName(), right.getDescription(), right.getCompany() != null ? right.getCompany().getId() : null);
                         }).collect(Collectors.toList()) : null)
                 .build();
     }
@@ -34,6 +36,8 @@ public class UserMapper {
                 .password(userRequestDto.getPassword())
                 .phone(userRequestDto.getPhone())
                 .role(userRequestDto.getRole())
+                .matriculate(userRequestDto.getMatriculate())
+                .logo(userRequestDto.getLogo())
                 .build();
     }
 }

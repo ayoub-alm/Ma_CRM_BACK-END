@@ -21,6 +21,10 @@ public class Right extends BaseEntity {
 
     private String description;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id" , nullable = true)
+    private Company company;
+
     @OneToMany(mappedBy = "right", cascade = CascadeType.ALL , orphanRemoval = true)
     private List<UserRights> userRights = new ArrayList<>(); // Optional if bidirectional
 }

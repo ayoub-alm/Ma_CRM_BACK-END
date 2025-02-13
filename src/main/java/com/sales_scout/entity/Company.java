@@ -126,6 +126,16 @@ public class Company extends BaseEntity {
     private List<Customer> customers;
 
     @JsonIgnore
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL , orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Role> roles;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL , orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Right> rights;
+
+   
+
     @ManyToMany(fetch = FetchType.LAZY , cascade = {CascadeType.PERSIST , CascadeType.MERGE})
     @JoinTable(
             name = "user_company",

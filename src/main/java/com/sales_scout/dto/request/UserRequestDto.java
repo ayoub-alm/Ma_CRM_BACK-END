@@ -16,5 +16,7 @@ public class UserRequestDto {
         private String aboutMe;
         private String phone;
         private Role role;
+        private String logo;
+        private String matriculate;
         private List<Right> rights;
 }

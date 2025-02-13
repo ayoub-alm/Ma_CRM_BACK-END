@@ -19,19 +19,28 @@ import com.sales_scout.repository.UserRepository;
 import com.sales_scout.repository.UserRightsRepository;
 import com.sales_scout.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class UserImp implements UserService {
+
+    private static final String IMAGE_DIRECTORY ="src/main/resources/static/images/";
 
     @Autowired
     private UserRepository userRepository;
@@ -89,18 +98,28 @@ public class UserImp implements UserService {
      */
     @Override
     public UserResponseDto createUser(UserRequestDto userRequestDto) throws UserAlreadyExistsException {
-        Optional<UserEntity> foundUser = userRepository.findByEmail(userRequestDto.getEmail());
-        if (!foundUser.isPresent()) {
-            if (userRequestDto.getRole() == null){
-                userRequestDto.setRole(roleRepository.findByRoleAndDeletedAtIsNull("User"));
+        try{
+            String imagePath = null;
+            if (userRequestDto.getLogo() != null && !userRequestDto.getLogo().isEmpty()) {
+                imagePath = saveImageFromBase64(userRequestDto.getLogo());
+            } else if (userRequestDto.getLogo() == null) {
+                imagePath = null;
             }
-            UserEntity user = UserMapper.fromDto(userRequestDto);
-            user.setPassword(authConfig.passwordEncoder().encode(user.getPassword()));
-
-            UserEntity createdUser = userRepository.save(user);
-            return UserMapper.fromEntity(createdUser);
-        }else {
-            throw new UserAlreadyExistsException("User with email " + userRequestDto.getEmail() + " already exists");
+            Optional<UserEntity> foundUser = userRepository.findByEmail(userRequestDto.getEmail());
+            if (!foundUser.isPresent()) {
+                if (userRequestDto.getRole() == null) {
+                    userRequestDto.setRole(roleRepository.findByRoleAndDeletedAtIsNull("User"));
+                }
+                userRequestDto.setLogo(imagePath != null && !imagePath.isEmpty() ? imagePath : "");
+                UserEntity user = UserMapper.fromDto(userRequestDto);
+                user.setPassword(authConfig.passwordEncoder().encode(user.getPassword()));
+                UserEntity createdUser = userRepository.save(user);
+                return UserMapper.fromEntity(createdUser);
+            } else {
+                throw new UserAlreadyExistsException("User with email " + userRequestDto.getEmail() + " already exists");
+            }
+        }catch (IOException e){
+            throw new RuntimeException("Failed to save user logo for : "+ e.getMessage());
         }
     }
 
@@ -126,6 +145,7 @@ public class UserImp implements UserService {
             userEntity.setEmail(userRequestDto.getEmail());
             userEntity.setPhone(userRequestDto.getPhone());
             userEntity.setRole(userRequestDto.getRole());
+            userEntity.setMatriculate(userRequestDto.getMatriculate());
 
             return UserMapper.fromEntity(userRepository.save(userEntity));
         }catch (DataNotFoundException e){
@@ -223,6 +243,26 @@ public class UserImp implements UserService {
         }else{
             throw new DataNotFoundException("Data of User Not Found : User With Id "+id+" Not Found",222L);
         }
+    }
+
+    private String  saveImageFromBase64(String base64Image)throws IOException{
+        if (base64Image == null || base64Image.isEmpty()){
+            return null;
+        }
+        String[] parts = base64Image.split(",");
+        if (parts.length != 1){
+            throw  new IllegalArgumentException("Invalid Base64 image format");
+        }
+        byte[] decodeBytes = Base64.getDecoder().decode(parts[0]);
+
+        String fileName = "user_logo_"+System.currentTimeMillis()+".png";
+        Path imagePath = Paths.get(IMAGE_DIRECTORY, fileName);
+
+        Files.createDirectories(imagePath.getParent());
+        try(FileOutputStream fos = new FileOutputStream(imagePath.toFile())) {
+            fos.write(decodeBytes);
+        }
+        return fileName;
     }
 
     /**

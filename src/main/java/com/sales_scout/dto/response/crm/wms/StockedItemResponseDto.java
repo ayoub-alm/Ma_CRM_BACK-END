@@ -19,7 +19,7 @@ public class StockedItemResponseDto {
     private String ref;
     private String supportName;
     private String structureName;
-    private String stackedLevelName;
+    private Long stackedLevelName;
     private String temperatureName;
     private Boolean isFragile;
     private Integer uvc;

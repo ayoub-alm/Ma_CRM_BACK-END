@@ -12,4 +12,6 @@ import java.util.List;
 public interface StorageOfferStockedItemRepository extends JpaRepository<StorageOfferStockedItem, Long> {
 
     List<StorageOfferStockedItem> findAllByStorageOfferId(Long id);
+
+    List<StorageOfferStockedItem> findAllByStorageOfferIdAndDeletedAtIsNull(Long id);
 }

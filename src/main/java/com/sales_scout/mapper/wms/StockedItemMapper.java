@@ -32,7 +32,7 @@ public class StockedItemMapper {
                 .ref(stockedItem.getRef().toString()) // Convert UUID to String
                 .supportName(stockedItem.getSupport() != null ? stockedItem.getSupport().getName() : null)
                 .structureName(stockedItem.getStructure() != null ? stockedItem.getStructure().getName() : null)
-                .stackedLevelName(stockedItem.getStackedLevel() != null ? stockedItem.getStackedLevel().toString() : null)
+                .stackedLevelName(stockedItem.getStackedLevel() != null ? stockedItem.getStackedLevel() : null)
                 .temperatureName(stockedItem.getTemperature() != null ? stockedItem.getTemperature().getName() : null)
                 .isFragile(stockedItem.getIsFragile())
                 .uvc(stockedItem.getUvc())

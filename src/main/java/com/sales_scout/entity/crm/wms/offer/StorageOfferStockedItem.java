@@ -1,6 +1,7 @@
 package com.sales_scout.entity.crm.wms.offer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.crm.wms.StockedItem;
 import com.sales_scout.entity.crm.wms.need.StorageNeed;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StorageOfferStockedItem {
+public class StorageOfferStockedItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

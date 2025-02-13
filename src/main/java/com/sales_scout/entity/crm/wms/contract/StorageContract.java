@@ -7,6 +7,7 @@ import com.sales_scout.entity.crm.wms.offer.StorageOfferRequirement;
 import com.sales_scout.entity.crm.wms.offer.StorageOfferUnloadType;
 import com.sales_scout.entity.data.PaymentMethod;
 import com.sales_scout.entity.leads.Customer;
+import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.enums.crm.wms.LivreEnum;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
 import com.sales_scout.enums.crm.wms.StorageReasonEnum;
@@ -16,6 +17,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,7 +40,9 @@ public class StorageContract extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LivreEnum liverStatus;
-
+    private LocalDateTime expirationDate = LocalDateTime.now();
+    private String duration;
+    private int numberOfSku;
     // Enum for the reason for storage (TEMPORARY, PERMANENT, SEASONAL)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -60,8 +64,11 @@ public class StorageContract extends BaseEntity {
     private Set<StorageContractRequirement> storageContractRequirements;
     @OneToMany(mappedBy = "storageContract", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StorageContractUnloadingType> storageContractUnloadingTypes;
-
+    @ManyToOne
+    @JoinColumn(name = "interlocutor_id",nullable = false)
+    private Interlocutor interlocutor;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_method_id", nullable = false)
     private PaymentMethod paymentMethod;
+    private int paymentDeadline;
 }

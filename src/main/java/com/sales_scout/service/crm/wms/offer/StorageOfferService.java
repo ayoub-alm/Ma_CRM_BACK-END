@@ -46,7 +46,8 @@ public class StorageOfferService {
     private final StockedItemProvisionRepository stockedItemProvisionRepository;
     private final StructureRepository structureRepository;
     private final StorageOfferStockedItemRepository storageOfferStockedItemRepository;
-    public StorageOfferService(StorageOfferRepository storageOfferRepository, StorageOfferRequirementRepository storageOfferRequirementRepository, StorageOfferUnloadTypeRepository storageOfferUnloadTypeRepository, StorageOfferMapper storageOfferMapper, StockedItemRepository stockedItemRepository, DimensionRepository dimensionRepository, StockedItemProvisionRepository stockedItemProvisionRepository, StructureRepository structureRepository, StorageOfferStockedItemRepository storageOfferStockedItemRepository) {
+    private final SupportRepository supportRepository;
+    public StorageOfferService(StorageOfferRepository storageOfferRepository, StorageOfferRequirementRepository storageOfferRequirementRepository, StorageOfferUnloadTypeRepository storageOfferUnloadTypeRepository, StorageOfferMapper storageOfferMapper, StockedItemRepository stockedItemRepository, DimensionRepository dimensionRepository, StockedItemProvisionRepository stockedItemProvisionRepository, StructureRepository structureRepository, StorageOfferStockedItemRepository storageOfferStockedItemRepository, SupportRepository supportRepository) {
         this.storageOfferRepository = storageOfferRepository;
         this.storageOfferRequirementRepository = storageOfferRequirementRepository;
         this.storageOfferUnloadTypeRepository = storageOfferUnloadTypeRepository;
@@ -55,6 +56,7 @@ public class StorageOfferService {
         this.stockedItemProvisionRepository = stockedItemProvisionRepository;
         this.structureRepository = structureRepository;
         this.storageOfferStockedItemRepository = storageOfferStockedItemRepository;
+        this.supportRepository = supportRepository;
     }
 
     @Transactional
@@ -116,12 +118,13 @@ public class StorageOfferService {
         // Find the related Structure
         Structure structure = structureRepository.findById(stockedItemDto.getStructureId())
                 .orElseThrow(() -> new EntityNotFoundException("Structure not found"));
-
+        Support support = supportRepository.findById(stockedItemDto.getSupportId())
+                .orElseThrow(() -> new EntityNotFoundException("Support not found"));
         // Create and save the StockedItem
         StockedItem stockedItem = StockedItem.builder()
                 .ref(UUID.randomUUID())
                 .price(stockedItemDto.getPrice())
-                .support(Support.builder().id(stockedItemDto.getSupportId()).build())
+                .support(support)
                 .structure(structure)
                 .uvc(stockedItemDto.getUvc())
                 .dimension(dimension)

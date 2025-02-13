@@ -11,6 +11,7 @@ import com.sales_scout.entity.data.EmailAddress;
 import com.sales_scout.entity.data.JobTitle;
 import com.sales_scout.entity.data.PhoneNumber;
 import com.sales_scout.enums.ActiveInactiveEnum;
+import com.sales_scout.mapper.CustomerMapperSmall;
 import com.sales_scout.mapper.InterlocutorMapper;
 import com.sales_scout.mapper.ProspectResponseDtoBuilder;
 import com.sales_scout.repository.EmailAddressRepository;
@@ -106,7 +107,7 @@ public class InterlocutorService {
      * @param interlocutorDto Interlocutor object to save.
      * @return Interlocutor saved object.
      */
-    public Interlocutor saveOrUpdate(CreateInterlocutorDTO interlocutorDto) {
+    public InterlocutorResponseDto saveOrUpdate(CreateInterlocutorDTO interlocutorDto) {
 
         // Fetch Prospect
         Customer prospect = this.customerRepository.findByDeletedAtIsNullAndId(interlocutorDto.getProspectId())
@@ -151,7 +152,17 @@ public class InterlocutorService {
                 .build();
 
         // Save and return
-        return interlocutorRepository.save(interlocutor);
+         Interlocutor savedInterlocutor = interlocutorRepository.save(interlocutor);
+        return InterlocutorResponseDto.builder()
+                .id(savedInterlocutor.getId())
+                .fullName(interlocutorDto.getFullName())
+                .customer(CustomerMapperSmall.toResponseDto(savedInterlocutor.getCustomer()))
+                .phoneNumber(phoneNumber)
+                .emailAddress(emailAddress)
+                .department(department)
+                .jobTitle(savedInterlocutor.getJobTitle())
+                .active(ActiveInactiveEnum.ACTIVE)
+                .build();
     }
 
 

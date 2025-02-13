@@ -62,8 +62,8 @@ public class InterlocutorController {
      */
 
     @PostMapping("")
-    public ResponseEntity<Interlocutor> saveOrUpdate(@RequestBody CreateInterlocutorDTO interlocutor) {
-        Interlocutor saved = interlocutorService.saveOrUpdate(interlocutor);
+    public ResponseEntity<InterlocutorResponseDto> saveOrUpdate(@RequestBody CreateInterlocutorDTO interlocutor) {
+        InterlocutorResponseDto saved = interlocutorService.saveOrUpdate(interlocutor);
         return new ResponseEntity<>(saved, HttpStatus.OK);
     }
 

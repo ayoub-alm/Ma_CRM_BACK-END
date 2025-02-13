@@ -3,6 +3,7 @@ package com.sales_scout.mapper;
 import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 import com.sales_scout.dto.response.crm.wms.StockedItemResponseDto;
 import com.sales_scout.entity.crm.wms.*;
+import com.sales_scout.entity.crm.wms.offer.StorageOffer;
 
 public class StockedItemMapper {
 

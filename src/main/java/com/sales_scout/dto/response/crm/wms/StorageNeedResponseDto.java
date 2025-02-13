@@ -1,5 +1,6 @@
 package com.sales_scout.dto.response.crm.wms;
 
+import com.sales_scout.dto.response.InterlocutorResponseDto;
 import com.sales_scout.entity.crm.wms.Requirement;
 import com.sales_scout.entity.crm.wms.StockedItem;
 import com.sales_scout.entity.crm.wms.UnloadingType;
@@ -24,6 +25,7 @@ public class StorageNeedResponseDto {
     private int numberOfSku;
     private String productType;
     private CustomerDto customer;
+    private InterlocutorResponseDto interlocutor;
     private List<StockedItemResponseDto> stockedItems;
     private List<UnloadingTypeResponseDto> unloadingTypes;
     private List<StorageRequirementResponseDto> requirements;

@@ -18,9 +18,9 @@ public class Dimension extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double lang;
+    private Double length;
 
-    private Double large;
+    private Double width;
 
     private Double height;
 

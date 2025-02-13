@@ -2,6 +2,7 @@ package com.sales_scout.service.leads;
 
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
+import com.sales_scout.entity.EntityFilters.InteractionFilter;
 import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interaction;
 import com.sales_scout.entity.leads.Interlocutor;
@@ -61,8 +62,8 @@ public class InteractionService {
      * Get all non-soft-deleted interactions.
      * @return List of InteractionResponseDto.
      */
-    public List<InteractionResponseDto> getAllInteractions(InteractionType type, InteractionSubject subject) {
-        Specification<Interaction> specification =  InteractionSpecification.hasInteractionTypeAndReport(type,subject);
+    public List<InteractionResponseDto> getAllInteractions(InteractionFilter interactionFilter) {
+        Specification<Interaction> specification =  InteractionSpecification.hasInteractionFilter(interactionFilter);
         return interactionRepository.findAll(specification).stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
@@ -76,7 +77,6 @@ public class InteractionService {
 
     /**
      * Get a single interaction by ID.
-     *
      * @param id Interaction ID.
      * @return InteractionResponseDto.
      */
@@ -146,6 +146,7 @@ public class InteractionService {
         return convertToResponseDto(interaction);
     }
 
+
     /**
      * check the file and size is good and return file path
      * @param base64File
@@ -172,6 +173,7 @@ public class InteractionService {
 
         return fileName;
     }
+
 
 
 

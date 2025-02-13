@@ -1,11 +1,12 @@
 package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.crm.wms.need.StorageNeed;
+import com.sales_scout.entity.crm.wms.offer.StorageOffer;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -15,48 +16,36 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Data
+@Getter
 public class StockedItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
-
     @ManyToOne
     @JoinColumn(name = "support_id")
     private Support support;
-
     @ManyToOne
     @JoinColumn(name = "structure_id")
     private Structure structure;
-
-
     private Long stackedLevel;
-
     @ManyToOne
     @JoinColumn(name = "temperature_id")
     private Temperature temperature;
-
     private Boolean isFragile;
-
     private Integer uvc;
     private Integer uc;
-
     private Integer numberOfPackages;
-
+    private Double volume;
     @ManyToOne
     @JoinColumn(name = "dimension_id")
     private Dimension dimension;
     private Double weight;
-
     private Double price;
-
     @ManyToOne
     @JoinColumn(name = "storage_offer_id") // Reference to the StorageOffer entity
     private StorageOffer storageOffer;
-
-
     @ManyToOne
     @JoinColumn(name = "storage_need_id") // Reference to the StorageOffer entity
     private StorageNeed storageNeed;

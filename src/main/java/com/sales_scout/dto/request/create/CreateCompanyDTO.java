@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class CreateCompanyDTO extends BaseDto {
     private Long id;
     private String logo;
@@ -42,11 +44,7 @@ public class CreateCompanyDTO extends BaseDto {
     private String certificationText;
     private String businessDescription;
     private ActiveInactiveEnum status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-    private String createdBy;
-    private String updatedBy;
     // Nested DTOs
     private LegalStatus legalStatus;
     private City city;

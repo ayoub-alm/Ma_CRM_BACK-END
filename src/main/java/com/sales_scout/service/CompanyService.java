@@ -5,10 +5,15 @@ import com.sales_scout.dto.response.CompanyResponseDto;
 import com.sales_scout.entity.Company;
 import com.sales_scout.entity.UserEntity;
 import com.sales_scout.enums.ActiveInactiveEnum;
+import com.sales_scout.exception.DataNotFoundException;
+import com.sales_scout.exception.DuplicateKeyValueException;
 import com.sales_scout.mapper.CompanyDtoBuilder;
 import com.sales_scout.repository.CompanyRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,28 +48,33 @@ public class CompanyService {
 
     /**
      * This function allows to find company with deleted_at is null and ID
-     *
      * @param id the ID of the company to get
      * @return Optional<Company>
      * @throws {EntityNotFoundException}
      */
-    public CompanyResponseDto findCompanyById(Long id) {
-
-        return companyRepository.findByDeletedAtIsNullAndId(id).map(CompanyDtoBuilder::fromEntity).orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas ou est supprimée"));
+    public CompanyResponseDto findCompanyById(Long id) throws DataNotFoundException {
+        Optional<Company> company = companyRepository.findByDeletedAtIsNullAndId(id);
+        if (company != null && !company.isEmpty()){
+            return company.map(CompanyDtoBuilder::fromEntity).orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas ou est supprimée"));
+        }else{
+            throw new DataNotFoundException("Data of Companies Not Found : Company by Id "+ id +" Not Found",900L);
+        }
     }
 
     /**
      * This function allows to soft delete a company
-     *
      * @param id the ID of the company to delete
      * @throws {EntityNotFoundException}
      */
-    public void softDeleteCompany(Long id) throws EntityNotFoundException {
-        Company company = companyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas"));
-
-        // Set deletedAt to the current time
-        company.setDeletedAt(LocalDateTime.now());
-        companyRepository.save(company);
+    public Boolean softDeleteCompany(Long id) throws EntityNotFoundException {
+        Optional<Company> company = companyRepository.findByDeletedAtIsNullAndId(id);
+        if (company.isPresent()){
+            company.get().setDeletedAt(LocalDateTime.now());
+            companyRepository.save(company.get());
+            return true;
+        }else {
+            throw new EntityNotFoundException("Company with ID " + id + " not found or already deleted.");
+        }
     }
 
     /**
@@ -75,56 +85,66 @@ public class CompanyService {
      * @return the updated Company
      * @throws {EntityNotFoundException}
      */
-    public CompanyResponseDto updateCompany(Long id, CreateCompanyDTO companyDetails) throws EntityNotFoundException {
-
-        Optional<Company> existingCompany = companyRepository.findByDeletedAtIsNullAndId(id);
-        if (existingCompany.isEmpty()) {
-            throw new RuntimeException("Entreprise n'existe pas ou est supprimée");
-        }
-
-        String imagePath = existingCompany.get().getLogo();
-        if (companyDetails.getLogo() != null && !companyDetails.getLogo().isEmpty()) {
-            try {
-                imagePath = saveImageFromBase64(companyDetails.getLogo());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    public CompanyResponseDto updateCompany(Long id, CreateCompanyDTO companyDetails) throws EntityNotFoundException, EntityExistsException, DuplicateKeyValueException {
+        try{
+            Optional<Company> existingCompany = companyRepository.findByDeletedAtIsNullAndId(id);
+            if (existingCompany.isEmpty()) {
+                throw new EntityNotFoundException("Entreprise n'existe pas ou est supprimée");
             }
+            String imagePath = existingCompany.get().getLogo();
+            if (companyDetails.getLogo() != null && !companyDetails.getLogo().isEmpty()) {
+                try {
+                    imagePath = saveImageFromBase64(companyDetails.getLogo());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            Company company = existingCompany.get();
+            company.setLogo(imagePath);
+            company.setName(companyDetails.getName());
+            company.setSigle(companyDetails.getSigle());
+            company.setCapital(companyDetails.getCapital());
+            company.setHeadOffice(companyDetails.getHeadOffice());
+            company.setLegalRepresentative(companyDetails.getLegalRepresentative());
+            company.setYearOfCreation(companyDetails.getYearOfCreation());
+            company.setDateOfRegistration(companyDetails.getDateOfRegistration());
+            company.setEmail(companyDetails.getEmail());
+            company.setPhone(companyDetails.getPhone());
+            company.setFax(companyDetails.getFax());
+            company.setWhatsapp(companyDetails.getWhatsapp());
+            company.setWebsite(companyDetails.getWebsite());
+            company.setLinkedin(companyDetails.getLinkedin());
+            company.setCertificationText(companyDetails.getCertificationText());
+            company.setStatus(companyDetails.getStatus());
+            company.setIce(companyDetails.getIce());
+            company.setRc(companyDetails.getRc());
+            company.setIfm(companyDetails.getIfm());
+            company.setPatent(companyDetails.getPatent());
+            company.setCnss(companyDetails.getCnss());
+            company.setBusinessDescription(companyDetails.getBusinessDescription());
+            company.setLegalStatus(companyDetails.getLegalStatus());
+            company.setCity(companyDetails.getCity());
+            company.setCourt(companyDetails.getCourt());
+            company.setCompanySize(companyDetails.getCompanySize());
+            company.setIndustry(companyDetails.getIndustry());
+            company.setCountry(companyDetails.getCountry());
+            company.setProprietaryStructure(companyDetails.getProprietaryStructure());
+            company.setTitle(companyDetails.getTitle());
+            company.setReprosentaveJobTitle(companyDetails.getReprosentaveJobTitle());
+
+
+            Company updatedCompany = companyRepository.save(company);
+
+            return CompanyDtoBuilder.fromEntity(updatedCompany);
+        } catch (EntityExistsException e) {
+            throw new EntityExistsException("Failed to add Company to data base "+ companyDetails+ " is already exists");
+        }catch (DataIntegrityViolationException e) {
+            // Handle the unique constraint violation
+            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                throw new DuplicateKeyValueException("Company with the same key already exists: " + companyDetails.getName(),e);
+            }
+            throw new RuntimeException("Data integrity violation: " + e.getMessage(), e);
         }
-        Company company = existingCompany.get();
-        company.setLogo(imagePath);
-        company.setName(companyDetails.getName());
-        company.setSigle(companyDetails.getSigle());
-        company.setCapital(companyDetails.getCapital());
-        company.setHeadOffice(companyDetails.getCertificationText());
-        company.setLegalRepresentative(companyDetails.getLegalRepresentative());
-        company.setYearOfCreation(companyDetails.getYearOfCreation());
-        company.setDateOfRegistration(companyDetails.getDateOfRegistration());
-        company.setEmail(companyDetails.getEmail());
-        company.setPhone(companyDetails.getPhone());
-        company.setFax(companyDetails.getFax());
-        company.setWhatsapp(companyDetails.getWhatsapp());
-        company.setWebsite(companyDetails.getWebsite());
-        company.setLinkedin(companyDetails.getLinkedin());
-        company.setIce(companyDetails.getIce());
-        company.setRc(companyDetails.getRc());
-        company.setIfm(companyDetails.getIfm());
-        company.setPatent(companyDetails.getPatent());
-        company.setCnss(companyDetails.getCnss());
-        company.setBusinessDescription(companyDetails.getBusinessDescription());
-        company.setLegalStatus(companyDetails.getLegalStatus());
-        company.setCity(companyDetails.getCity());
-        company.setCourt(companyDetails.getCourt());
-        company.setCompanySize(companyDetails.getCompanySize());
-        company.setIndustry(companyDetails.getIndustry());
-        company.setCountry(companyDetails.getCountry());
-        company.setProprietaryStructure(companyDetails.getProprietaryStructure());
-        company.setTitle(companyDetails.getTitle());
-        company.setReprosentaveJobTitle(companyDetails.getReprosentaveJobTitle());
-
-
-        Company updatedCompany = companyRepository.save(company);
-
-        return CompanyDtoBuilder.fromEntity(updatedCompany);
     }
 
     /**
@@ -132,8 +152,13 @@ public class CompanyService {
      *
      * @return {List<Company>} the list of all companies
      */
-    public List<CompanyResponseDto> findAllCompaniesIncludingDeleted() {
-        return companyRepository.findAll().stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
+    public List<CompanyResponseDto> findAllCompaniesIncludingDeleted() throws DataNotFoundException {
+        List<Company> companies = companyRepository.findAllByDeletedAtIsNull();
+        if (companies != null && !companies.isEmpty()){
+            return companies.stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
+        }else {
+         throw new DataNotFoundException("Data of Companies Not Found : List Companies Not Found",1000L);
+        }
     }
 
 
@@ -143,15 +168,15 @@ public class CompanyService {
      * @param id the ID of the company to restore
      * @throws {EntityNotFoundException}
      */
-    public Company restoreCompany(Long id) throws EntityNotFoundException {
-        Company company = companyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas"));
-        // Check if the company is soft deleted
-        if (company.getDeletedAt() == null) {
-            throw new RuntimeException("L'entreprise n'est pas supprimée.");
+    public Boolean restoreCompany(Long id) throws EntityNotFoundException {
+        Optional<Company> company = companyRepository.findByDeletedAtIsNotNullAndId(id);
+        if (company.isPresent() ) {
+            company.get().setDeletedAt(null);
+            companyRepository.save(company.get());
+            return true;
+        }else {
+            throw new EntityNotFoundException("Company with ID " + id + " not found or already restored.");
         }
-        // Restore the company by setting deletedAt to null
-        company.setDeletedAt(null);
-        return companyRepository.save(company);
     }
 
 
@@ -185,7 +210,7 @@ public class CompanyService {
      * @param companyDTO The DTO containing company details.
      * @return The saved Company object.
      */
-    public CompanyResponseDto addCompany(CreateCompanyDTO companyDTO) {
+    public CompanyResponseDto addCompany(CreateCompanyDTO companyDTO) throws EntityExistsException, DuplicateKeyException {
         // Set the deletedAt to null to ensure the company isn’t marked as deleted
         companyDTO.setDeletedAt(null);
 
@@ -194,6 +219,8 @@ public class CompanyService {
             String imagePath = null;
             if (companyDTO.getLogo() != null && !companyDTO.getLogo().isEmpty()) {
                 imagePath = saveImageFromBase64(companyDTO.getLogo());
+            } else if (companyDTO.getLogo() == null) {
+                imagePath = null;
             }
 
             // Create a new Company entity from the DTO
@@ -207,13 +234,15 @@ public class CompanyService {
             return CompanyDtoBuilder.fromEntity(savedCompany);
 
         } catch (IOException e) {
-            // Log the exception
-            System.err.println("Error while saving image: " + e.getMessage());
             throw new RuntimeException("Failed to save company logo for: " + companyDTO.getName(), e);
-        } catch (Exception e) {
-            // Log the exception
-            System.err.println("Error while saving company: " + e.getMessage());
-            throw new RuntimeException("Failed to save company: " + companyDTO.getName(), e);
+        } catch (EntityExistsException e) {
+            throw new EntityExistsException("Failed to add Company to data base "+ companyDTO+ " is already exists");
+        }catch (DataIntegrityViolationException e) {
+            // Handle the unique constraint violation
+            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                throw new DuplicateKeyValueException("Company with the same key already exists: " + companyDTO.getName(),e);
+            }
+            throw new RuntimeException("Data integrity violation: " + e.getMessage(), e);
         }
     }
 
@@ -230,10 +259,17 @@ public class CompanyService {
         }
 
         String[] parts = base64Image.split(",");
-        if (parts.length != 2) {
+        String imageData;
+        if (parts.length == 2) {
+            // Extract the data part after the comma
+            imageData = parts[1];
+        } else if (parts.length == 1) {
+            // Assume the entire string is the data (no header)
+            imageData = parts[0];
+        } else {
             throw new IllegalArgumentException("Invalid Base64 image format");
         }
-        byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
+        byte[] decodedBytes = Base64.getDecoder().decode(imageData);
 
         String fileName = "company_logo_" + System.currentTimeMillis() + ".png"; // Adjust extension if needed
         Path imagePath = Paths.get(IMAGE_DIRECTORY, fileName); // Use the constant defined above
@@ -252,9 +288,15 @@ public class CompanyService {
      * This function allows to get all companies for the current authenticated user
      * @return List<CompanyResponseDto> list of companies
      */
-    public List<CompanyResponseDto> getCompaniesByCurrentUser(){
+    public List<CompanyResponseDto> getCompaniesByCurrentUser() throws DataNotFoundException {
         UserEntity currentUser = authenticationService.getCurrentUser();
-        return currentUser.getCompanies().stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
-    }
+        List<Company> companies = companyRepository.findAllByDeletedAtIsNullAndEmployees(currentUser);
+        if (companies != null && !companies.isEmpty()  ){
+            return companies.stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
+        }else {
+            throw new DataNotFoundException("Data of Companies Not Found : List Companies by Current User Not Found",999L);
+        }
 
+    }
 }
+

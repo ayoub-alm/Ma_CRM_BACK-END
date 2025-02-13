@@ -32,15 +32,15 @@ public class StockedItemMapper {
                 .ref(stockedItem.getRef().toString()) // Convert UUID to String
                 .supportName(stockedItem.getSupport() != null ? stockedItem.getSupport().getName() : null)
                 .structureName(stockedItem.getStructure() != null ? stockedItem.getStructure().getName() : null)
-                .stackedLevelName(stockedItem.getStackedLevel() != null ? stockedItem.getStackedLevel().toString() : null)
+                .stackedLevelName(stockedItem.getStackedLevel() != null ? stockedItem.getStackedLevel() : null)
                 .temperatureName(stockedItem.getTemperature() != null ? stockedItem.getTemperature().getName() : null)
                 .isFragile(stockedItem.getIsFragile())
                 .uvc(stockedItem.getUvc())
                 .numberOfPackages(stockedItem.getNumberOfPackages())
                 .dimension(stockedItem.getDimension()) // Assuming Dimension is directly serializable
                 .price(stockedItem.getPrice())
-                .storageOffer(stockedItem.getStorageOffer()) // Assuming StorageOffer is directly serializable
-                .storageNeed(stockedItem.getStorageNeed()) // Assuming StorageNeed is directly serializable
+//                .storageOffer(stockedItem.getStorageOffer()) // Assuming StorageOffer is directly serializable
+//                .storageNeed(stockedItem.getStorageNeed()) // Assuming StorageNeed is directly serializable
                 .provisionResponseDto(provisionResponseDtos) // Map if provisions are required; else leave null
                 .build();
     }

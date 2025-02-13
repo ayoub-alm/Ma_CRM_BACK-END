@@ -24,7 +24,6 @@ public class GlobalExceptionHandler {
     }
 
 
-
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<Object> handleDataNotFoundException(DataNotFoundException ex , WebRequest request){
         Map<String, Object> response = new HashMap<>();
@@ -33,6 +32,17 @@ public class GlobalExceptionHandler {
         response.put("code", ex.getCode());
         return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
     }
+
+
+    @ExceptionHandler(DuplicateKeyValueException.class)
+    public ResponseEntity<Object> handleDuplicateKeyValueException(DuplicateKeyValueException ex , WebRequest request){
+        Map<String, Object> response = new HashMap<>();
+        response.put("status",HttpStatus.CONFLICT.value());
+        response.put("message", ex.getMessage());
+        response.put("cause",ex.getCause());
+        return new ResponseEntity<>(response,HttpStatus.CONFLICT);
+    }
+
     // You can also handle other exceptions if needed
 
     @ExceptionHandler(UserAlreadyExistsException.class)

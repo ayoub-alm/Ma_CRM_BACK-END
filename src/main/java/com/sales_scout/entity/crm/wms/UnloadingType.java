@@ -3,6 +3,8 @@ package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
+import com.sales_scout.entity.crm.wms.need.StorageNeedUnloadingType;
+import com.sales_scout.entity.crm.wms.offer.StorageOfferUnloadType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,20 +28,16 @@ public class UnloadingType extends BaseEntity {
 
     @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
-
     private String name;
-
     private Double initPrice;
-
     private String unitOfMeasurement;
-
     private Boolean status;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
-
     @OneToMany(mappedBy = "unloadingType", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StorageNeedUnloadingType> storageNeedUnloadingTypes;
+    @OneToMany(mappedBy = "unloadingType", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StorageOfferUnloadType> storageOfferUnloadingTypes;
 
 }

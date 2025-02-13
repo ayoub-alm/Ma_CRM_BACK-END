@@ -2,6 +2,7 @@ package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
+import com.sales_scout.enums.crm.DiscountTypeEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,17 +23,15 @@ public class Provision extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-
     @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
-
     private Double initPrice;
-
     private String unitOfMeasurement;
-
     private String notes;
+    private DiscountTypeEnum discountTypeEnum;
+    private double discountValue;
+    private double salesPrice;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,6 +39,6 @@ public class Provision extends BaseEntity {
     private Company company;
 
 
-    @OneToMany(mappedBy = "provision", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<StockedItemProvision> stockedItemProvisions;
+//    @OneToMany(mappedBy = "provision", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<StockedItemProvision> stockedItemProvisions;
 }

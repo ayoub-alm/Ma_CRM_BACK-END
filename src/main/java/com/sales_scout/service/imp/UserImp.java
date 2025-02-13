@@ -314,4 +314,7 @@ public class UserImp implements UserService {
             throw new DataNotFoundException("User Rights Data Not Found ",888L);
         }
     }
+
+
+
 }

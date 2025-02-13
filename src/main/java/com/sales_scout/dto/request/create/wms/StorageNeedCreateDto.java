@@ -1,5 +1,8 @@
 package com.sales_scout.dto.request.create.wms;
 
+import com.sales_scout.dto.response.crm.wms.StorageRequirementResponseDto;
+import com.sales_scout.dto.response.crm.wms.UnloadingTypeResponseDto;
+import com.sales_scout.entity.crm.wms.Requirement;
 import com.sales_scout.entity.crm.wms.StockedItem;
 import com.sales_scout.enums.crm.wms.LivreEnum;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
@@ -27,6 +30,7 @@ public class StorageNeedCreateDto {
         private Long customerId;
         private Long companyId;
         private List<StockedItemRequestDto> stockedItemsRequestDto;
-        private List<Long> unloadingTypes;
-        private List<Long> requirements;
+        private List<UnloadingTypeResponseDto> unloadingTypes;
+        private List<StorageRequirementResponseDto> requirements;
+        private Long interlocutorId;
 }

@@ -2,21 +2,23 @@ package com.sales_scout.entity.data;
 
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@NoArgsConstructor @AllArgsConstructor
-@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 @Table(name = "payment_methods")
 public class PaymentMethod extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String name;
+
+    @Column(nullable = false, unique = true)
+    private String name; // Ensure name is unique if it's a predefined set of values
+
     @Column(nullable = false)
     private boolean active = true;
 }

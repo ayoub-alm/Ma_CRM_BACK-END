@@ -1,5 +1,6 @@
 package com.sales_scout.dto.response.crm.wms;
 
+import com.sales_scout.enums.crm.DiscountTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UnloadingTypeResponseDto {
-
     private Long id;
     private UUID ref;
     private String name;
@@ -21,5 +21,9 @@ public class UnloadingTypeResponseDto {
     private String unitOfMeasurement;
     private Boolean status;
     private Long companyId;
+    private Double discountValue;
+    private DiscountTypeEnum discountType;
+    private Double salesPrice;
     private String companyName;
+
 }

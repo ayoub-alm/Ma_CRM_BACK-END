@@ -2,6 +2,7 @@ package com.sales_scout.entity.crm.wms;
 
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
+import com.sales_scout.entity.leads.Customer;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,10 @@ public class Support  extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
+
+    @ManyToOne
+    @JoinColumn(name = "dimension_id",nullable = true)
+    private Dimension dimension;
 
     // Getters and setters
 }

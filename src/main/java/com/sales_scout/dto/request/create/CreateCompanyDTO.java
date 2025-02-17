@@ -18,7 +18,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCompanyDTO extends BaseDto {
+public class CreateCompanyDTO {
     private Long id;
     private String logo;
     private String name;

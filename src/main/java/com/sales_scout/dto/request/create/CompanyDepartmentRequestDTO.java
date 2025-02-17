@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompanyDepartmentRequestDTO extends BaseDto {
+public class CompanyDepartmentRequestDTO {
     private Long id;
     @NotNull
     @NotBlank

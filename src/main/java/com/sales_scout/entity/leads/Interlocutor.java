@@ -31,8 +31,6 @@ public class Interlocutor extends BaseEntity {
     @JoinColumn(name = "department_id", referencedColumnName = "id")
     @Nullable
     private Department department;
-
-
     @ManyToOne
     @JoinColumn(name = "phone_number_id", referencedColumnName = "id")
     private PhoneNumber phoneNumber;

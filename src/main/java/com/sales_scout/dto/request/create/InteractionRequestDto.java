@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @SuperBuilder
 public class InteractionRequestDto  {
+    private Long id;
     private Long customerId;
     private Long interlocutorId;
     private String report;

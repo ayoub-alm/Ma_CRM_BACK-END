@@ -2,6 +2,7 @@ package com.sales_scout.dto.response;
 
 import com.sales_scout.dto.BaseDto;
 import com.sales_scout.entity.data.*;
+import com.sales_scout.entity.leads.CustomerStatus;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
 import lombok.Getter;
@@ -21,10 +22,10 @@ public class CustomerResponseDto extends BaseDto {
     private String logo;
     private String name;
     private String sigle;
-    private double capital; // Assuming capital is a double based on your JSON
+    private double capital;
     private String headOffice;
     private String legalRepresentative;
-    private String yearOfCreation; // Assuming yearOfCreation is an int
+    private String yearOfCreation;
     private Date dateOfRegistration;
     private String email;
     private String phone;
@@ -40,7 +41,7 @@ public class CustomerResponseDto extends BaseDto {
     private String certificationText;
     private String businessDescription;
     private ActiveInactiveEnum status;
-    private ProspectStatus prospectStatus;
+    private CustomerStatus customerStatus;
     private LocalDateTime deletedAt;
     // Nested DTOs
     private LegalStatus legalStatus;
@@ -54,5 +55,6 @@ public class CustomerResponseDto extends BaseDto {
     private JobTitle reprosentaveJobTitle;
     private List<TrackingLogForProspect> trackingLogs;
     private List<InterestResponseDto> interest;
+    private UserResponseDto affectedTo;
 
 }

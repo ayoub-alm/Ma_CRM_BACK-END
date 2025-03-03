@@ -4,11 +4,17 @@ package com.sales_scout.mapper;
 import com.sales_scout.dto.request.create.CreateCompanyDTO;
 import com.sales_scout.dto.response.CompanyResponseDto;
 import com.sales_scout.entity.Company;
+import org.apache.catalina.User;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class CompanyDtoBuilder {
+    private final UserMapper userMapper;
+    CompanyDtoBuilder(UserMapper userMapper){
+        this.userMapper = userMapper;
+    }
 
-    public static CompanyResponseDto fromEntity(Company company){
+    public CompanyResponseDto fromEntity(Company company){
         if(company == null){
             return null;
         }
@@ -46,9 +52,9 @@ public class CompanyDtoBuilder {
                 .title(company.getTitle())
                 .reprosentaveJobTitle(company.getReprosentaveJobTitle())
                 .createdAt(company.getCreatedAt())
-                .createdBy(company.getCreatedBy())
+                .createdBy(this.userMapper.fromEntity(company.getCreatedBy()))
                 .updatedAt(company.getUpdatedAt())
-                .updatedBy(company.getUpdatedBy())
+                .updatedBy(this.userMapper.fromEntity(company.getUpdatedBy()))
                 .build();
     }
 

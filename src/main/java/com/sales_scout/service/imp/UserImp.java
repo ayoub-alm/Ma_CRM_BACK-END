@@ -4,8 +4,7 @@ import com.sales_scout.config.AuthConfig;
 import com.sales_scout.dto.request.UserRequestDto;
 import com.sales_scout.dto.request.create.UserRightsRequestDto;
 import com.sales_scout.dto.response.UserResponseDto;
-import com.sales_scout.entity.Right;
-import com.sales_scout.entity.Role;
+import com.sales_scout.entity.CompanyDepartment;
 import com.sales_scout.entity.UserEntity;
 import com.sales_scout.entity.UserRights;
 import com.sales_scout.exception.DataAlreadyExistsException;
@@ -13,13 +12,9 @@ import com.sales_scout.exception.DataNotFoundException;
 import com.sales_scout.exception.DuplicateKeyValueException;
 import com.sales_scout.exception.UserAlreadyExistsException;
 import com.sales_scout.mapper.UserMapper;
-import com.sales_scout.repository.RightRepository;
-import com.sales_scout.repository.RoleRepository;
-import com.sales_scout.repository.UserRepository;
-import com.sales_scout.repository.UserRightsRepository;
+import com.sales_scout.repository.*;
 import com.sales_scout.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,22 +37,24 @@ public class UserImp implements UserService {
 
     private static final String IMAGE_DIRECTORY ="src/main/resources/static/images/";
 
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final RightRepository rightRepository;
+    private final UserRightsRepository userRightsRepository;
+    private final CompanyDepartmentRepository companyDepartmentRepository;
+    private final AuthConfig authConfig;
+    private final UserMapper userMapper;
 
-
-    @Autowired
-    private RightRepository rightRepository;
-
-    @Autowired
-    private UserRightsRepository userRightsRepository;
-
-    @Autowired
-    private AuthConfig authConfig;
-
+    public UserImp(UserRepository userRepository, RoleRepository roleRepository, RightRepository rightRepository, UserRightsRepository userRightsRepository, CompanyDepartmentRepository companyDepartmentRepository, AuthConfig authConfig, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.rightRepository = rightRepository;
+        this.userRightsRepository = userRightsRepository;
+        this.companyDepartmentRepository = companyDepartmentRepository;
+        this.authConfig = authConfig;
+        this.userMapper = userMapper;
+    }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByEmail(username)
@@ -83,7 +80,7 @@ public class UserImp implements UserService {
        Optional<List<UserEntity>> userEntities = userRepository.findAllByDeletedAtIsNull();
        if(!userEntities.get().isEmpty()){
            return userEntities.get().stream()
-                   .map(UserMapper::fromEntity)
+                   .map(userMapper::fromEntity)
                    .collect(Collectors.toList());
        }else{
            throw new DataNotFoundException("Data of Users Not Found : List of Users Not Found",999L);
@@ -111,10 +108,12 @@ public class UserImp implements UserService {
                     userRequestDto.setRole(roleRepository.findByRoleAndDeletedAtIsNull("User"));
                 }
                 userRequestDto.setLogo(imagePath != null && !imagePath.isEmpty() ? imagePath : "");
-                UserEntity user = UserMapper.fromDto(userRequestDto);
+                UserEntity user = userMapper.fromDto(userRequestDto);
                 user.setPassword(authConfig.passwordEncoder().encode(user.getPassword()));
+
                 UserEntity createdUser = userRepository.save(user);
-                return UserMapper.fromEntity(createdUser);
+
+                return userMapper.fromEntity(createdUser);
             } else {
                 throw new UserAlreadyExistsException("User with email " + userRequestDto.getEmail() + " already exists");
             }
@@ -147,12 +146,12 @@ public class UserImp implements UserService {
             userEntity.setRole(userRequestDto.getRole());
             userEntity.setMatriculate(userRequestDto.getMatriculate());
 
-            return UserMapper.fromEntity(userRepository.save(userEntity));
+            return userMapper.fromEntity(userRepository.save(userEntity));
         }catch (DataNotFoundException e){
             throw new DataNotFoundException("Data of User Not Found : User With Id "+id+" Not Found",222L);
         }catch (DataIntegrityViolationException e){
             if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-                throw new DuplicateKeyValueException("User with the same key already exists: " + userRequestDto.getEmail());
+                throw new DuplicateKeyValueException("User with the same key already exists: " + userRequestDto.getEmail(),e.getCause());
             }
             throw new RuntimeException("Data integrity violation: " + e.getMessage(), e);
         }
@@ -168,7 +167,7 @@ public class UserImp implements UserService {
     public UserResponseDto findById(Long id) throws DataNotFoundException {
         Optional<UserEntity> user = userRepository.findByDeletedAtIsNullAndId(id);
         if(!user.isEmpty() && user != null){
-        return UserMapper.fromEntity(user.get());
+        return userMapper.fromEntity(user.get());
         }else{
          throw new DataNotFoundException("Data of User Not Found : User With ID "+ id + " Not Found",957L);
         }
@@ -184,7 +183,7 @@ public class UserImp implements UserService {
     public UserResponseDto findByEmail(String email) throws DataNotFoundException {
         Optional<UserEntity> user =  this.userRepository.findByEmailAndDeletedAtIsNull(email);
         if(!user.isEmpty() && user != null){
-          return UserMapper.fromEntity(user.get());
+          return userMapper.fromEntity(user.get());
         }else {
             throw new DataNotFoundException("Data Of User Not Found : User With This Email " + email + " Not Found", 888L);
         }
@@ -239,7 +238,7 @@ public class UserImp implements UserService {
         if (!user.isEmpty()){
             UserEntity userEntity = user.get();
             userEntity.setRole(roleRepository.findByIdAndDeletedAtIsNull(userEntity.getRole().getId()));
-            return UserMapper.fromEntity(userRepository.save(userEntity));
+            return userMapper.fromEntity(userRepository.save(userEntity));
         }else{
             throw new DataNotFoundException("Data of User Not Found : User With Id "+id+" Not Found",222L);
         }
@@ -285,7 +284,7 @@ public class UserImp implements UserService {
                 userRightsRepository.save(userRights);
             }
         }
-            return UserMapper.fromEntity(user.get());
+            return userMapper.fromEntity(user.get());
         }else {
             throw new DataNotFoundException("User Data Not Found : User with Id "+userRightsRequestDto.getUserId()+" Not Found" , 589L);
         }
@@ -309,7 +308,7 @@ public class UserImp implements UserService {
                 }else {
                 }
             }
-            return UserMapper.fromEntity(user.get());
+            return userMapper.fromEntity(user.get());
         }else {
             throw new DataNotFoundException("User Rights Data Not Found ",888L);
         }

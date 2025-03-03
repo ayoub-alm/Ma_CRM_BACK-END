@@ -1,13 +1,12 @@
 package com.sales_scout.controller.leads;
 
 
+import com.sales_scout.dto.EntityFilters.CustomerFilerFields;
 import com.sales_scout.dto.response.leads_dashboard.*;
 import com.sales_scout.exception.DataNotFoundException;
 import com.sales_scout.service.leads.LeadsDashboardService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,10 +24,20 @@ public class LeadsDashboardController {
         return ResponseEntity.ok(this.leadsDashboardService.getCountOfProspects());
     }
 
-    @GetMapping("/customer-per-status")
-    public ResponseEntity<List<CustomerCountDto>> getCountOfProspectsPerStatus(){
+    @PostMapping("/customer-per-status")
+    public ResponseEntity<List<DashboardCountDto>> getCountOfProspectsPerStatus(@RequestBody CustomerFilerFields customerFilerFields){
         try{
-            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerStatus());
+            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerStatus(customerFilerFields, false));
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getMessage(),e.getCode());
+        }
+    }
+
+
+    @PostMapping("/customer-per-seller")
+    public ResponseEntity<List<DashboardCountDto>> getCountOfCustomerPerSeller(@RequestBody CustomerFilerFields customerFilerFields){
+        try{
+            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerSeller(customerFilerFields, false));
         } catch (DataNotFoundException e) {
             throw new DataNotFoundException(e.getMessage(),e.getCode());
         }
@@ -43,37 +52,39 @@ public class LeadsDashboardController {
         }
     }
 
-    @GetMapping("/customer-per-seller")
-    public ResponseEntity<List<CustomerCountDto>> getCountOfCustomerPerSeller(){
+
+
+    @PostMapping("/customer-per-city")
+    public ResponseEntity<List<DashboardCountDto>> getCountOfCustomerPerCity(@RequestBody CustomerFilerFields customerFilerFields){
         try{
-            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerSeller());
+            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerCity(customerFilerFields, false));
         } catch (DataNotFoundException e) {
             throw new DataNotFoundException(e.getMessage(),e.getCode());
         }
     }
 
-    @GetMapping("/customer-per-city")
-    public ResponseEntity<List<CustomerCountDto>> getCountOfCustomerPerCity(){
+    @PostMapping("/customer-per-date")
+    public ResponseEntity<List<DashboardCountDto>> getCountOfCustomerPerDate(@RequestBody CustomerFilerFields customerFilerFields){
         try{
-            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerCity());
+            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerDate(customerFilerFields, false));
         } catch (DataNotFoundException e) {
             throw new DataNotFoundException(e.getMessage(),e.getCode());
         }
     }
 
-    @GetMapping("/customer-per-date")
-    public ResponseEntity<List<CustomerCountDto>> getCountOfCustomerPerDate(){
+    @PostMapping("/customer-per-industry")
+    public ResponseEntity<List<DashboardCountDto>> getCountOfCustomerPerIndustry(@RequestBody CustomerFilerFields customerFilerFields){
         try{
-            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerDate());
+            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerIndustry(customerFilerFields,false));
         } catch (DataNotFoundException e) {
             throw new DataNotFoundException(e.getMessage(),e.getCode());
         }
     }
 
-    @GetMapping("/customer-per-industry")
-    public ResponseEntity<List<CustomerCountDto>> getCountOfCustomerPerIndustry(){
+    @PostMapping("/customer-per-structure")
+    public ResponseEntity<List<DashboardCountDto>> getCountOfCustomerPerStructure(@RequestBody CustomerFilerFields customerFilerFields){
         try{
-            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerIndustry());
+            return ResponseEntity.ok().body(this.leadsDashboardService.getCountOfCustomerPerStructure(customerFilerFields,false));
         } catch (DataNotFoundException e) {
             throw new DataNotFoundException(e.getMessage(),e.getCode());
         }

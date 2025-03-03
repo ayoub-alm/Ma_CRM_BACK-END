@@ -2,16 +2,14 @@ package com.sales_scout.entity.data;
 
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
 @Table(name = "cities")
+@Builder
 public class City extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

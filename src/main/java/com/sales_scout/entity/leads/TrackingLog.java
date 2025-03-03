@@ -1,5 +1,6 @@
 package com.sales_scout.entity.leads;
 
+import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Data
-public class TrackingLog {
+public class TrackingLog extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,10 +26,6 @@ public class TrackingLog {
 
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserEntity user;
 
     @Column(name = "details", length = 500)
     private String details;
@@ -45,6 +42,8 @@ public class TrackingLog {
     @JoinColumn(name = "interlocutor_id", referencedColumnName = "id")
     private Interlocutor interlocutor;
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt; // For soft delete
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntity user;
 }

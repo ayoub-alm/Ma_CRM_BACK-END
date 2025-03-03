@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 public class AuthError extends RuntimeException {
 
-    public ResponseEntity<String> AuthError (){
+    public ResponseEntity<String> Autherror(){
             return new ResponseEntity<>("Access Denied", HttpStatus.FORBIDDEN);
     }
 

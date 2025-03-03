@@ -1,11 +1,11 @@
 package com.sales_scout.service.leads;
 
+import com.sales_scout.Auth.SecurityUtils;
+import com.sales_scout.dto.EntityFilters.InterlocutorsFilterRequestDto;
 import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
 import com.sales_scout.dto.response.CustomerResponseDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
-import com.sales_scout.dto.response.ProspectResponseDto;
-import com.sales_scout.entity.EntityFilters.InterlocutorFilter;
 import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.entity.data.Department;
@@ -13,9 +13,8 @@ import com.sales_scout.entity.data.EmailAddress;
 import com.sales_scout.entity.data.JobTitle;
 import com.sales_scout.entity.data.PhoneNumber;
 import com.sales_scout.enums.ActiveInactiveEnum;
-import com.sales_scout.mapper.CustomerMapperSmall;
 import com.sales_scout.mapper.InterlocutorMapper;
-import com.sales_scout.mapper.ProspectResponseDtoBuilder;
+import com.sales_scout.mapper.CustomerMapper;
 import com.sales_scout.repository.EmailAddressRepository;
 import com.sales_scout.repository.leads.CustomerRepository;
 import com.sales_scout.repository.leads.InterlocutorRepository;
@@ -24,6 +23,7 @@ import com.sales_scout.repository.data.JobTitleRepository;
 import com.sales_scout.service.data.DepartmentService;
 import com.sales_scout.specification.InterlocutorSpecification;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.domain.Specification;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -31,6 +31,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -41,47 +44,46 @@ import java.util.stream.Collectors;
 @Service
 public class InterlocutorService {
     private final InterlocutorRepository interlocutorRepository;
-    private final ProspectService prospectService;
     private final DepartmentService departmentService;
     final private EmailAddressRepository emailAddressRepository;
     final private PhoneNumberRepository phoneNumberRepository;
     private final JobTitleRepository jobTitleRepository;
     private final CustomerRepository customerRepository;
     private final InterlocutorMapper interlocutorMapper;
-    public InterlocutorService(InterlocutorRepository interlocutorRepository, ProspectService prospectService, DepartmentService departmentService, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, JobTitleRepository jobTitleRepository, CustomerRepository prospectRepository, CustomerRepository customerRepository, InterlocutorMapper interlocutorMapper) {
+    private final CustomerMapper prospectResponseDtoBuilder;
+    public InterlocutorService(InterlocutorRepository interlocutorRepository, DepartmentService departmentService,
+                               EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository,
+                               JobTitleRepository jobTitleRepository, CustomerRepository customerRepository,
+                               InterlocutorMapper interlocutorMapper, CustomerMapper prospectResponseDtoBuilder) {
         this.interlocutorRepository = interlocutorRepository;
-        this.prospectService = prospectService;
         this.departmentService = departmentService;
         this.emailAddressRepository = emailAddressRepository;
         this.phoneNumberRepository = phoneNumberRepository;
         this.jobTitleRepository = jobTitleRepository;
         this.customerRepository = customerRepository;
         this.interlocutorMapper = interlocutorMapper;
+        this.prospectResponseDtoBuilder = prospectResponseDtoBuilder;
     }
 
     /**
-     * Get all non-soft-deleted interlocutors with specification
-     * @return list of interlocutorsResponseDto
+     * Retrieves a list of all interlocutors associated with a given company ID.
+     * Optionally filters the result by a search value that matches various fields such as
+     * full name, customer name, department name, phone number, email address, or job title.
+     *
+     * @param companyId the ID of the company whose interlocutors are to be retrieved
+     * @param searchValue an optional search string to filter interlocutors based on various fields
+     * @return a list of InterlocutorResponseDto objects containing details about the interlocutors
      */
-    public List<InterlocutorResponseDto> getAllInterlocutors(InterlocutorFilter interlocutorFilter) {
-        Specification<Interlocutor> specification = InterlocutorSpecification.hasInterlocutorFilter(interlocutorFilter);
-        List<Interlocutor> interlocutors = this.interlocutorRepository.findAll(specification);
-        return  interlocutors.stream().map(interlocutor -> {
-            CustomerResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getCustomer());
-            return InterlocutorResponseDto.builder()
-                     .fullName(interlocutor.getFullName())
-                     .id(interlocutor.getId())
-                     .department(interlocutor.getDepartment())
-                     .phoneNumber(interlocutor.getPhoneNumber())
-                     .emailAddress(interlocutor.getEmailAddress())
-                     .jobTitle(interlocutor.getJobTitle())
-                    .customer(CustomerResponseDto.builder()
-                            .id(interlocutor.getCustomer().getId())
-                            .name(interlocutor.getCustomer().getName())
-                            .build())
-                     .active(interlocutor.getActive())
-                     .build();
-        }).collect(Collectors.toList());
+    public List<InterlocutorResponseDto> getAllInterlocutorsByCompanyId(Long companyId, String searchValue) {
+        List<Interlocutor> interlocutors;
+
+        if (searchValue != null && !searchValue.isEmpty()) {
+            interlocutors = interlocutorRepository.searchAllFields(searchValue, companyId);
+        } else {
+            interlocutors = this.interlocutorRepository.findByCustomer_CompanyIdAndDeletedAtIsNull(companyId);
+        }
+
+        return interlocutors.stream().map(interlocutorMapper::toResponseDto).toList();
     }
 
     /**
@@ -90,16 +92,16 @@ public class InterlocutorService {
      * @return List<InterlocutorResponseDto> list of prospects
      */
     public List<InterlocutorResponseDto> getInterlocutorsByProspectId(Long prospectId) {
-        List<Interlocutor> interlocutors = this.interlocutorRepository.findAllByCustomerId(prospectId);
+        List<Interlocutor> interlocutors = this.interlocutorRepository.findAllByCustomerIdAndDeletedAtIsNull(prospectId);
         return  interlocutors.stream().map(interlocutor -> {
-            CustomerResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getCustomer());
+            CustomerResponseDto customerResponseDto = prospectResponseDtoBuilder.fromEntity(interlocutor.getCustomer());
             return InterlocutorResponseDto.builder()
                     .fullName(interlocutor.getFullName())
                     .id(interlocutor.getId())
                     .department(interlocutor.getDepartment())
                     .phoneNumber(interlocutor.getPhoneNumber())
                     .emailAddress(interlocutor.getEmailAddress())
-                    .customer(prospectresponseDto)
+                    .customer(customerResponseDto)
                     .jobTitle(interlocutor.getJobTitle())
                     .active(interlocutor.getActive())
                     .build();
@@ -107,12 +109,12 @@ public class InterlocutorService {
     }
 
     /**
-     * Create or update an interlocutor.
+     * Create  an interlocutor.
      *
      * @param interlocutorDto Interlocutor object to save.
      * @return Interlocutor saved object.
      */
-    public InterlocutorResponseDto saveOrUpdate(CreateInterlocutorDTO interlocutorDto) {
+    public InterlocutorResponseDto createInterlocutor(CreateInterlocutorDTO interlocutorDto) {
 
         // Fetch Prospect
         Customer prospect = this.customerRepository.findByDeletedAtIsNullAndId(interlocutorDto.getProspectId())
@@ -156,24 +158,18 @@ public class InterlocutorService {
                 .active(ActiveInactiveEnum.ACTIVE)
                 .build();
 
+        interlocutor.setCreatedBy(SecurityUtils.getCurrentUser());
+        interlocutor.setUpdatedBy(SecurityUtils.getCurrentUser());
+        interlocutor.setUpdatedAt(LocalDateTime.now());
         // Save and return
          Interlocutor savedInterlocutor = interlocutorRepository.save(interlocutor);
-        return InterlocutorResponseDto.builder()
-                .id(savedInterlocutor.getId())
-                .fullName(interlocutorDto.getFullName())
-                .customer(CustomerMapperSmall.toResponseDto(savedInterlocutor.getCustomer()))
-                .phoneNumber(phoneNumber)
-                .emailAddress(emailAddress)
-                .department(department)
-                .jobTitle(savedInterlocutor.getJobTitle())
-                .active(ActiveInactiveEnum.ACTIVE)
-                .build();
+        return interlocutorMapper.toResponseDto(savedInterlocutor);
     }
 
 
 
     /**
-     * Create or update an interlocutor
+     * Update an interlocutor
      * @param updateInterlocutorDto Interlocutor object to update
      * @return Interlocutor saved object
      */
@@ -215,47 +211,60 @@ public class InterlocutorService {
         interlocutor.setPhoneNumber(phoneNumber); // Use persisted PhoneNumber
         interlocutor.setJobTitle(jobTitle);
         interlocutor.setActive(updateInterlocutorDto.getActive());
+        interlocutor.setUpdatedBy(SecurityUtils.getCurrentUser());
         // Save and return
         return interlocutorMapper.toResponseDto(interlocutorRepository.save(interlocutor));
     }
 
+    /**
+     * Retrieves an interlocutor by its unique identifier.
+     *
+     * @param id the unique identifier of the interlocutor to retrieve
+     * @return an InterlocutorResponseDto object containing details about the interlocutor
+     * @throws EntityNotFoundException if the interlocutor with the specified ID is not found
+     */
     public InterlocutorResponseDto getInterlocutorById(Long id){
         Interlocutor interlocutor = this.interlocutorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Interlocutor with id " + id.toString() + " not found"));
-
-        CustomerResponseDto prospectresponseDto = ProspectResponseDtoBuilder.fromEntity(interlocutor.getCustomer());
-
-        return InterlocutorResponseDto.builder()
-                .id(interlocutor.getId())
-                .fullName(interlocutor.getFullName())
-                .customer(prospectresponseDto)
-                .jobTitle(interlocutor.getJobTitle())
-                .department(interlocutor.getDepartment())
-                .phoneNumber(interlocutor.getPhoneNumber())
-                .emailAddress(interlocutor.getEmailAddress())
-                .active(interlocutor.getActive())
-                .build();
+        return interlocutorMapper.toResponseDto(interlocutor);
     }
 
+    /**
+     * Exports a list of interlocutors to an Excel file. The interlocutors can be filtered
+     * by a list of IDs or retrieved based on their associated company ID if no IDs are provided.
+     *
+     * @param interlocutorsIds a list of IDs representing the specific interlocutors to export; if null,
+     *                         retrieves all interlocutors associated with the given company ID.
+     * @param companyId the ID of the company whose interlocutors should be exported; used only
+     *                  if interlocutorsIds is null.
+     * @return a byte array containing the Excel file data with the list of interlocutors.
+     * @throws IOException if an error occurs during file creation or writing to the output stream.
+     */
+    public byte[] exportInterlocutorsToExcel(List<Long> interlocutorsIds,Long companyId) throws IOException {
 
-    public void exportFileExcel(List<Interlocutor> interlocutors, String filePath)throws IOException {
-        try(Workbook workbook = new XSSFWorkbook()){
-            Sheet sheet = workbook.createSheet("Interlocutor");
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            List<Interlocutor> interlocutors;
+            if (interlocutorsIds != null) {
+                interlocutors = interlocutorRepository.findAllById(interlocutorsIds);
+            }else {
+                interlocutors = interlocutorRepository.findByCustomer_CompanyIdAndDeletedAtIsNull(companyId);
+            }
+            Sheet sheet = workbook.createSheet("Interlocutors");
             Row headerRow = sheet.createRow(0);
-            String[] colmuns = {"Id","Full Name" , "Active","Email" , "Phone Number"
-                    , "Department","Job Title"  , "Prospect"};
+            String[] columns = {"id","Nom Complet", "Actif", "Email", "Numéro de Téléphone", "Département", "Titre du Poste", "Client"
+            };
 
-            for (int i = 0; i < colmuns.length; i++) {
+            for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
-                cell.setCellValue(colmuns[i]);
+                cell.setCellValue(columns[i]);
             }
 
-            int rowNum=1;
-            if( interlocutors == null){
-                 interlocutors = interlocutorRepository.findAll();
+            int rowNum = 1;
+            if (interlocutors == null) {
+                interlocutors = interlocutorRepository.findAll();
             }
 
-            for (Interlocutor interlocutor : interlocutors){
+            for (Interlocutor interlocutor : interlocutors) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(interlocutor.getId());
                 row.createCell(1).setCellValue(interlocutor.getFullName());
@@ -266,13 +275,22 @@ public class InterlocutorService {
                 row.createCell(6).setCellValue(interlocutor.getJobTitle().getName());
                 row.createCell(7).setCellValue(interlocutor.getCustomer().getName());
             }
-        }
 
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            workbook.write(outputStream);
+            return outputStream.toByteArray();
+        }
     }
 
     /**
-     * Soft delete an interlocutor by ID
-     * @param id Interlocutor ID
+     * Performs a soft delete on an interlocutor by setting its deletedAt timestamp
+     * to the current time. If the interlocutor with the given ID exists, it will
+     * be marked as deleted and saved back to the repository.
+     *
+     * @param id the ID of the interlocutor to be soft deleted
      */
     public void softDelete(Long id) {
         interlocutorRepository.findById(id).ifPresent(interlocutor -> {
@@ -282,8 +300,10 @@ public class InterlocutorService {
     }
 
     /**
-     * Restore a soft-deleted interlocutor by ID
-     * @param id Interlocutor ID
+     * Restores a previously soft-deleted interlocutor by setting its deletedAt field to null.
+     * If an interlocutor with the given ID is found, it will be restored and saved back to the repository.
+     *
+     * @param id the ID of the interlocutor to restore
      */
     public void restore(Long id) {
         interlocutorRepository.findById(id).ifPresent(interlocutor -> {
@@ -294,14 +314,24 @@ public class InterlocutorService {
 
 
     /**
-     * Bulk soft delete for a list of interlocutor IDs
-     * @param ids List of IDs to soft-delete
+     * Performs a soft delete on a list of interlocutors by setting their deletedAt
+     * timestamp to the current time. The interlocutors are identified using their IDs.
+     *
+     * @param ids a list of IDs of the interlocutors to be soft deleted
      */
-    public void bulkSoftDelete(List<Long> ids) {
+    @Transactional
+    public boolean bulkSoftDelete(List<Long> ids) throws Exception , TransactionSystemException{try {
         interlocutorRepository.findAllById(ids).forEach(interlocutor -> {
             interlocutor.setDeletedAt(java.time.LocalDateTime.now());
             interlocutorRepository.save(interlocutor);
         });
+        return true;
+    } catch (TransactionSystemException e) {
+        // Handle transaction-related errors
+        throw new TransactionSystemException("Error while deleting interlocutors", e);
+    } catch (Exception e) {
+        return false;
+    }
     }
 
     /**
@@ -348,7 +378,23 @@ public class InterlocutorService {
         }else {
             throw new EntityNotFoundException("Interlocutor with ID " + id + " not found or already restored.");
         }
-        }
+    }
+
+    /**
+     * Retrieves a list of interlocutors filtered by specified search fields.
+     * The filtering logic is determined based on the provided filterType (AND/OR condition).
+     *
+     * @param interlocutorFilerFields the DTO containing filtering criteria such as status, customer IDs, department IDs,
+     *                                job titles IDs, created by IDs, company ID, and filter type.
+     * @return a list of InterlocutorResponseDto objects matching the filtering criteria.
+     */
+    public List<InterlocutorResponseDto> getAllInterlocutorsBySearchFields(InterlocutorsFilterRequestDto interlocutorFilerFields) {
+        boolean UseOr = interlocutorFilerFields.getFilterType().equals("OR");
+        Specification<Interlocutor> specification = InterlocutorSpecification.hasInterlocutorFilter(interlocutorFilerFields,UseOr);
+        return interlocutorRepository.findAll(specification).stream()
+                .map(interlocutorMapper::toResponseDto).collect(Collectors.toList());
+
+    }
 
 }
 

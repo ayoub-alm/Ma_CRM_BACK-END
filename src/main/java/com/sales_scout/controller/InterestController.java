@@ -32,8 +32,35 @@ public class InterestController {
       **/
     @GetMapping("/prospect/{prospectId}")
     public ResponseEntity<List<InterestResponseDto>> getAllInterestByProspectId(@PathVariable Long prospectId){
-        List<InterestResponseDto> interestResponseDtos = interestService.getAllInterestByProspectId(prospectId);
+        List<InterestResponseDto> interestResponseDtos = interestService.getAllInterestByCutomerId(prospectId);
         return ResponseEntity.ok(interestResponseDtos);
+    }
+
+
+    /**
+     * Adds an interest to a customer.
+     *
+     * @param customerId The ID of the customer.
+     * @param interestId The ID of the interest to add.
+     * @return ResponseEntity indicating success or failure.
+     */
+    @PostMapping("/{customerId}/interests/{interestId}")
+    public ResponseEntity<String> addInterestToCustomer(@PathVariable Long customerId, @PathVariable Long interestId) {
+        interestService.addInterestToCustomer(customerId, interestId);
+        return ResponseEntity.ok("Interest added successfully.");
+    }
+
+    /**
+     * Removes an interest from a customer.
+     *
+     * @param customerId The ID of the customer.
+     * @param interestId The ID of the interest to remove.
+     * @return ResponseEntity indicating success or failure.
+     */
+    @DeleteMapping("/{customerId}/interests/{interestId}")
+    public ResponseEntity<String> removeInterestFromCustomer(@PathVariable Long customerId, @PathVariable Long interestId) {
+        interestService.removeInterestFromCustomer(customerId, interestId);
+        return ResponseEntity.ok("Interest removed successfully.");
     }
 
 

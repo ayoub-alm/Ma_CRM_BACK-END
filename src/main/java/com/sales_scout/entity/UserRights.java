@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+@Table(name = "user_rights")
 @Builder
 public class UserRights extends BaseEntity {
     @Id

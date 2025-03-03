@@ -3,6 +3,7 @@ package com.sales_scout.entity.leads;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
+import com.sales_scout.entity.UserEntity;
 import com.sales_scout.entity.data.*;
 import com.sales_scout.enums.ActiveInactiveEnum;
 import com.sales_scout.enums.ProspectStatus;
@@ -22,18 +23,18 @@ public class Customer extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
     private String sigle;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double capital;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String headOffice;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String legalRepresentative;
     private String yearOfCreation;
     private Date dateOfRegistration;
-    @Column(nullable = true, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false, unique = true)
     private String phone;
@@ -41,29 +42,27 @@ public class Customer extends BaseEntity {
     private String website;
     private String linkedin;
     private String whatsapp;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String ice;
     @Column(nullable = false)
     private String rc;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String ifm;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String patent;
     @Enumerated(EnumType.STRING)
      @Builder.Default
     private ActiveInactiveEnum active = ActiveInactiveEnum.ACTIVE;
 
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private ProspectStatus status = ProspectStatus.NEW;
+//    @Enumerated(EnumType.STRING)
+//    @Builder.Default
+//    private ProspectStatus status = ProspectStatus.NEW;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "prospect_interested",
-//            joinColumns = @JoinColumn(name = "prospect_id"),
-//            inverseJoinColumns = @JoinColumn(name = "interested_id")
-//    )
-//    private Set<Interest> interestedEntities = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "status_id", referencedColumnName = "id", nullable = true)
+    private CustomerStatus status;
+
 
     @Lob
     @Column(columnDefinition = "TEXT")
@@ -86,7 +85,7 @@ public class Customer extends BaseEntity {
     private CompanySize companySize;
 
     @ManyToOne
-    @JoinColumn(name = "company_id", nullable = true)
+    @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -97,6 +96,8 @@ public class Customer extends BaseEntity {
     @JoinColumn(name = "country_id", nullable = true)
     private Country country;
 
+
+
     @ManyToOne
     @JoinColumn(name = "proprietary_structure_id", nullable = true)
     private ProprietaryStructure proprietaryStructure;
@@ -104,6 +105,11 @@ public class Customer extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "job_title_id", nullable = true)
     private JobTitle reprosentaveJobTitle;
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "affected_to_id", nullable = true)
+    private UserEntity affectedTo;
 
     @ManyToOne
     @JoinColumn(name = "title_id", nullable = true)
@@ -119,7 +125,6 @@ public class Customer extends BaseEntity {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<TrackingLog> trackingLogs =  new ArrayList<>();
-
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomerInterest> customerInterests =  new ArrayList<>();

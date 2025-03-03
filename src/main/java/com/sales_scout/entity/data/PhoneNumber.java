@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "phone_numbers")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PhoneNumber extends BaseEntity {
 
     @Id

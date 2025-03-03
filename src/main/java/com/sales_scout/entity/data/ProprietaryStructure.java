@@ -3,6 +3,7 @@ package com.sales_scout.entity.data;
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Table(name = "proprietary_structures")
+@Builder
 public class ProprietaryStructure extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

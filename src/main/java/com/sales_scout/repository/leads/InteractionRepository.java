@@ -4,6 +4,7 @@ import com.sales_scout.entity.leads.Interaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,6 +16,29 @@ public interface InteractionRepository extends JpaRepository<Interaction, Long>,
      * @return {List<Interlocutor>} List of prospects
      */
     List<Interaction> findAllByDeletedAtIsNull();
+
+    @Query("SELECT i FROM Interaction i " +
+            "LEFT JOIN i.customer customer " +
+            "LEFT JOIN customer.company company " +
+            "LEFT JOIN i.interlocutor interlocutor " +
+            "LEFT JOIN i.agent agent " +
+            "LEFT JOIN i.affectedTo affectedTo " +
+            "WHERE (:searchValue IS NULL OR " +
+            "LOWER(i.report) LIKE LOWER(CONCAT('%', :searchValue, '%')) OR " +
+            "LOWER(i.address) LIKE LOWER(CONCAT('%', :searchValue, '%')) OR " +
+            "LOWER(CAST(i.interactionSubject AS string)) LIKE LOWER(CONCAT('%', :searchValue, '%')) OR " +
+            "LOWER(CAST(i.interactionType AS string)) LIKE LOWER(CONCAT('%', :searchValue, '%')) OR " +
+            "LOWER(COALESCE(interlocutor.fullName, '')) LIKE LOWER(CONCAT('%', :searchValue, '%')) OR " +
+            "LOWER(COALESCE(customer.name, '')) LIKE LOWER(CONCAT('%', :searchValue, '%')) OR " +
+            "LOWER(COALESCE(agent.name, '')) LIKE LOWER(CONCAT('%', :searchValue, '%')) OR " +
+            "LOWER(COALESCE(affectedTo.name, '')) LIKE LOWER(CONCAT('%', :searchValue, '%'))) " +
+            "AND i.deletedAt IS NULL " +
+            "AND company.id = :companyId")
+    List<Interaction> searchAllFields(@Param("searchValue") String searchValue, @Param("companyId") Long companyId);
+
+
+    List<Interaction> findByCustomer_Company_IdAndDeletedAtIsNull(Long companyId);
+
 
 
     /**

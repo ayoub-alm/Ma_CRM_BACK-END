@@ -1,32 +1,13 @@
 package com.sales_scout.controller.leads;
 
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sales_scout.dto.EntityFilters.InteractionFilterRequestDto;
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
-import com.sales_scout.entity.EntityFilters.InteractionFilter;
-import com.sales_scout.entity.leads.Interlocutor;
-import com.sales_scout.enums.InteractionSubject;
-import com.sales_scout.enums.InteractionType;
-import com.sales_scout.service.UserAgentService;
 import com.sales_scout.service.leads.InteractionService;
-import com.sales_scout.service.leads.InterlocutorService;
-import com.sales_scout.service.leads.ProspectService;
-
-
-import com.sales_scout.entity.leads.Interaction;
-
-import com.sales_scout.enums.InteractionSubject;
-import com.sales_scout.enums.InteractionType;
-
-import com.sales_scout.service.leads.InteractionService;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Date;
 import java.io.IOException;
 import java.util.List;
 
@@ -34,69 +15,31 @@ import java.util.List;
 @RequestMapping("/api/interactions")
 public class InteractionController {
     private final InteractionService interactionService;
-    private final ProspectService prospectService;
-    private final UserAgentService userAgentService;
-    private final InterlocutorService interlocutorService;
 
-    public InteractionController(InteractionService interactionService, ProspectService prospectService, UserAgentService userAgentService, InterlocutorService interlocutorService) {
+    public InteractionController(InteractionService interactionService) {
         this.interactionService = interactionService;
-        this.prospectService = prospectService;
-        this.userAgentService = userAgentService;
-        this.interlocutorService = interlocutorService;
     }
 
     /**
-     * Get all non-soft-deleted interactions with specification
-     * @return
+     * Retrieves all interactions related to a specific company, optionally filtered by a search term.
+     *
+     * @param companyId the ID of the company for which to retrieve interactions; this is a required parameter.
+     * @param searchValue an optional search term used to filter interactions based on matching fields such as report, address, subject, type, and other attributes.
+     * @return a ResponseEntity containing a list of InteractionResponseDto objects that represent the retrieved interactions.
      */
     @GetMapping("")
     ResponseEntity<List<InteractionResponseDto>> getAllInteractions(
-            @RequestParam(required = false) InteractionSubject interactionSubject,
-            @RequestParam(required = false) InteractionType interactionType,
-            @RequestParam(required = false) Date createdAtFrom,
-            @RequestParam(required = false) Date createdAtTo,
-            @RequestParam(required = false) Long id,
-            @RequestParam(required = false) Long interlocutorId,
-            @RequestParam(required = false) Date planningDate,
-            @RequestParam(required = false) String address,
-            @RequestParam(required = false) Long agentId,
-            @RequestParam(required = false) Long affectedToId,
-            @RequestParam(required = false) String report
+            @RequestParam(required = true) Long companyId , @RequestParam(required = false) String searchValue
     ){
-        // creation object interactionFilter
-        InteractionFilter interactionFilter = new InteractionFilter();
-        interactionFilter.setInteractionSubject(interactionSubject);
-        interactionFilter.setInteractionType(interactionType);
-        interactionFilter.setCreatedAtFrom(createdAtFrom);
-        interactionFilter.setCreatedAtTo(createdAtTo);
-        interactionFilter.setId(id);
-        // Handle interlocutorId
-        if (interlocutorId != null) {
-            Interlocutor interlocutor = new Interlocutor();
-            interlocutor.setId(interlocutorId);
-            interactionFilter.setInterlocutor(interlocutor);
-        }
-        interactionFilter.setPlanningDate(planningDate);
-        interactionFilter.setAddress(address);
-
-        // Handle agentId
-        if (agentId != null) {
-            interactionFilter.setAgent(userAgentService.findById(agentId));
-        }
-
-        // Handle affectedToId
-        if (affectedToId != null) {
-            interactionFilter.setAffectedTo(userAgentService.findById(affectedToId));
-        }interactionFilter.setReport(report);
-        List<InteractionResponseDto> interactions = this.interactionService.getAllInteractions(interactionFilter);
+        List<InteractionResponseDto> interactions = this.interactionService.getAllInteractions(companyId, searchValue);
         return new ResponseEntity<>(interactions, HttpStatus.OK);
     }
 
     /**
-     * get Interactions By Id
-     * @param id
-     * @return
-     */
+     * Retrieves a specific interaction by its ID.
+     *
+     * @param id the unique identifier of the interaction to be retrieved
+     * @return a ResponseEntity containing the InteractionResponse*/
     @GetMapping("/{id}")
     ResponseEntity<InteractionResponseDto> getInteractionById(@PathVariable Long id){
         InteractionResponseDto interactions = this.interactionService.getInteractionById(id);
@@ -104,10 +47,11 @@ public class InteractionController {
     }
 
     /**
-     * get all Interaction By interlocutor ID
-     * @param interlocutorId the ID of interlocutor
-     * @return ResponseEntity<List<InteractionResponseDto>>
-     */
+     * Retrieves all interactions associated with a specific interlocutor.
+     *
+     * @param interlocutorId the ID of the interlocutor for which to retrieve interactions
+     * @return a ResponseEntity containing a list of InteractionResponseDto objects that represent
+     *         the interactions associated with*/
     @GetMapping("/interlocutor/{interlocutorId}")
     ResponseEntity<List<InteractionResponseDto>> getAllInteractionsByInterlocutorId(@PathVariable Long interlocutorId){
         List<InteractionResponseDto> interactions = this.interactionService.getInteractionByInterlocutorId(interlocutorId);
@@ -115,10 +59,11 @@ public class InteractionController {
     }
 
     /**
-     * create interaction
-     * @param interactionRequestDto the interaction to create
-     * @return interactionRequestDto
-     * @throws IOException
+     * Creates or updates an interaction based on the provided request data.
+     *
+     * @param interactionRequestDto the request DTO containing interaction details to be created or updated
+     * @return a ResponseEntity containing the response DTO of the created or updated interaction
+     * @throws IOException if an I/O error occurs during processing
      */
     @PostMapping("")
     ResponseEntity<InteractionResponseDto> createInteraction(@RequestBody InteractionRequestDto interactionRequestDto) throws IOException {
@@ -126,24 +71,14 @@ public class InteractionController {
         return new ResponseEntity<>(interaction, HttpStatus.OK);
     }
 
-    @GetMapping("/export")
-    public ResponseEntity<String> exportProspectsToExcel(@RequestParam(required = false) String interactionsJson){
-        try{
-            List<Interaction> interactions = null;
-            if (interactionsJson != null && !interactionsJson.isEmpty()){
-                ObjectMapper objectMapper = new ObjectMapper();
-                interactions = objectMapper.readValue(interactionsJson, new TypeReference<List<Interaction>>() {
-                });
-            }
-            interactionService.exportFileExcel(interactions , "Interaction_File.xlsx");
-            return ResponseEntity.ok("Excel File exported successfuly: Interactions_file.xlsx");
-        }catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to export Excel file " + e.getMessage());
-        }
-    }
     /**
-     * Soft Delete Interaction By Id
-     * @param id
+     * Soft deletes a specific interaction by marking it with a deletion timestamp. If the interaction
+     * is already deleted or does not exist, a 404 NOT FOUND status is returned.
+     *
+     * @param id the ID of the interaction to be soft deleted
+     * @return a ResponseEntity containing a boolean value indicating whether the interaction was
+     *         successfully soft deleted (true) or not (false)
+     * @throws EntityNotFoundException if the interaction is not found or already deleted
      */
     @DeleteMapping("/soft-delete/{id}")
     ResponseEntity<Boolean>  softDeleteInteraction(@PathVariable Long id)throws EntityNotFoundException{
@@ -152,12 +87,28 @@ public class InteractionController {
        }catch(EntityNotFoundException e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
        }
-
     }
 
     /**
-     * Restore Interaction By Id
-     * @param id
+     * Soft deletes multiple interactions by marking them with a deletion timestamp.
+     * The operation updates the interactions identified by the provided IDs and persists the changes.
+     *
+     * @param ids a list of IDs representing the interactions to be soft deleted
+     * @return a ResponseEntity containing a boolean indicating whether the operation was successful
+     */
+    @PostMapping("/soft-delete/bulk")
+    ResponseEntity<Boolean> softDeleteInteractions(@RequestBody List<Long> ids){
+        return ResponseEntity.ok(interactionService.softDeleteInteractions(ids));
+    }
+
+    /**
+     * Restores a soft-deleted interaction by its ID. If the interaction is not found,
+     * a response with HTTP status 404 is returned.
+     *
+     * @param id the ID of the interaction to restore
+     * @return a ResponseEntity containing a boolean indicating success (true)
+     *         or failure (false) of the restoration operation
+     * @throws EntityNotFoundException if the interaction is not found
      */
     @PutMapping("/restore/{id}")
     ResponseEntity<Boolean> restoreInteraction(@PathVariable Long id) throws EntityNotFoundException{
@@ -165,6 +116,46 @@ public class InteractionController {
             return ResponseEntity.ok().body(interactionService.restoreInteraction(id));
         }catch (EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+        }
+    }
+
+    /**
+     * Exports interactions to an Excel file and returns the file as a byte array.
+     * The exported interactions can be filtered by a specific list of interaction IDs or by company.
+     *
+     * @param companyId the ID of the company whose interactions are being exported
+     * @param interactionIds optional list of interaction IDs to filter the exported interactions;
+     *        if null or empty, all non-soft-deleted interactions for the company will be included
+     * @return a ResponseEntity containing the Excel file as a byte array
+     * @throws RuntimeException if an IOException occurs during the export process
+     */
+    @PostMapping("/export")
+    public ResponseEntity<byte[]> exportInteractionsToExcel(@RequestParam Long companyId,
+                                                            @RequestBody(required = false) List<Long> interactionIds) {
+        try {
+            return ResponseEntity.ok(interactionService.exportInteractionsToExcel(interactionIds, companyId));
+        } catch (IOException e) {
+            throw new RuntimeException("Échec de l'exportation du fichier Excel: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Retrieves a list of interactions filtered by various criteria specified in the request body.
+     *
+     * @param interactionFilterRequestDto the request DTO containing filtering criteria, such as
+     *        company ID, customer IDs, interlocutor IDs, agent IDs, affectedTo IDs, interaction subjects,
+     *        interaction types, date range, and filter type ("AND" or "OR") for logical conditions
+     * @return a ResponseEntity containing a list of InteractionResponseDto objects representing
+     *         the filtered interactions
+     */
+    @PostMapping("/filter-by-fields")
+    public ResponseEntity<List<InteractionResponseDto>> getAllInteractionsByFilterFields(
+            @RequestBody InteractionFilterRequestDto interactionFilterRequestDto) {
+        try {
+            List<InteractionResponseDto> interactions = interactionService.getAllInteractionsBySearchFields(interactionFilterRequestDto);
+            return new ResponseEntity<>(interactions, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching interactions: " + e.getMessage());
         }
     }
 }

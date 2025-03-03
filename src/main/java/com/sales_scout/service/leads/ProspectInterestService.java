@@ -8,7 +8,7 @@ import com.sales_scout.entity.leads.CustomerInterest;
 import com.sales_scout.mapper.ProspectInterestDtoBuilder;
 import com.sales_scout.repository.InterestRepository;
 import com.sales_scout.repository.leads.CustomerRepository;
-import com.sales_scout.repository.leads.ProspectInterestRepository;
+import com.sales_scout.repository.leads.CustomerInterestRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +16,15 @@ import java.util.Optional;
 
 @Service
 public class ProspectInterestService {
-    private final ProspectInterestRepository prospectInterestRepository;
+    private final CustomerInterestRepository prospectInterestRepository;
     private final InterestRepository interestRepository;
     private final CustomerRepository customerRepository;
-    public ProspectInterestService(ProspectInterestRepository prospectInterestRepository, InterestRepository interestRepository, CustomerRepository customerRepository) {
+    private final CustomerInterestRepository customerInterestRepository;
+    public ProspectInterestService(CustomerInterestRepository prospectInterestRepository, InterestRepository interestRepository, CustomerRepository customerRepository, CustomerInterestRepository customerInterestRepository) {
         this.prospectInterestRepository = prospectInterestRepository;
         this.interestRepository = interestRepository;
         this.customerRepository = customerRepository;
+        this.customerInterestRepository = customerInterestRepository;
     }
 
 
@@ -48,11 +50,11 @@ public class ProspectInterestService {
             // Update the existing ProspectInterest
             CustomerInterest prospectInterest = matchingProspectInterest.get();
             prospectInterest.setStatus(prospectInterestDetails.getStatus());
-            customerRepository.save(customer); // Save the updated Prospect entity
+            customerInterestRepository.save(prospectInterest);
+            customerRepository.save(customer);
             return ProspectInterestDtoBuilder.fromEntity(prospectInterest);
         } else {
             // Create a new ProspectInterest if it doesn't exist
-
             Interest newInterest = this.interestRepository.findById(prospectInterestDetails.getInterestId())
                     .orElseThrow(() -> new EntityNotFoundException("Interest with id " + prospectInterestDetails.getInterestId() + " not found"));
             CustomerInterest newProspectInterest = CustomerInterest.builder()

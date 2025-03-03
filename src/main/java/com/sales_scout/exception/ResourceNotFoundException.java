@@ -1,5 +1,8 @@
 package com.sales_scout.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ResourceNotFoundException extends RuntimeException {
     private String resourceName;
     private String fieldName;
@@ -12,15 +15,4 @@ public class ResourceNotFoundException extends RuntimeException {
         this.fieldValue = fieldValue;
     }
 
-    public String getResourceName() {
-        return resourceName;
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public Object getFieldValue() {
-        return fieldValue;
-    }
 }

@@ -51,4 +51,5 @@ public class ProspectRequestDto {
     private Title title;
     private JobTitle reprosentaveJobTitle;
     private List<Interest> interest;
+    private Long companyId;
 }

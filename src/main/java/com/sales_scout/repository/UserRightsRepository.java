@@ -4,6 +4,7 @@ import com.sales_scout.entity.UserRights;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,4 +16,6 @@ public interface UserRightsRepository extends JpaRepository<UserRights,Long> {
      * @return {UserRights}
      */
     Optional<UserRights> findByUserIdAndRightIdAndDeletedAtIsNull(Long userId , Long rightId);
+
+    List<UserRights> findByUserId(Long userId);
 }

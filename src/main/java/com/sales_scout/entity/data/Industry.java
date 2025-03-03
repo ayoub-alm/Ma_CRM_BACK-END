@@ -3,10 +3,7 @@ package com.sales_scout.entity.data;
 
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
@@ -14,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name="industries")
+@Builder
 public class Industry extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

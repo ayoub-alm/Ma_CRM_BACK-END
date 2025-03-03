@@ -1,5 +1,8 @@
 package com.sales_scout.exception;
 
+import lombok.Getter;
+
+@Getter
 public class DataNotFoundException extends RuntimeException {
   private String message ;
   public Long code;
@@ -10,11 +13,4 @@ public class DataNotFoundException extends RuntimeException {
     this.code = code ;
   }
 
-  public String getMessage(){
-    return message;
-  }
-
-  public Long getCode(){
-    return code;
-  }
 }

@@ -31,9 +31,11 @@ public class CompanyService {
     private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
     private final CompanyRepository companyRepository;
     private final AuthenticationService authenticationService;
-    public CompanyService(CompanyRepository companyRepository, AuthenticationService authenticationService) {
+    private final CompanyDtoBuilder companyDtoBuilder;
+    public CompanyService(CompanyRepository companyRepository, AuthenticationService authenticationService, CompanyDtoBuilder companyDtoBuilder) {
         this.companyRepository = companyRepository;
         this.authenticationService = authenticationService;
+        this.companyDtoBuilder = companyDtoBuilder;
     }
 
     /**
@@ -43,7 +45,7 @@ public class CompanyService {
      */
     public List<CompanyResponseDto> findAllCompanies() {
 
-        return companyRepository.findAllByDeletedAtIsNull().stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
+        return companyRepository.findAllByDeletedAtIsNull().stream().map(companyDtoBuilder::fromEntity).collect(Collectors.toList());
     }
 
     /**
@@ -55,7 +57,7 @@ public class CompanyService {
     public CompanyResponseDto findCompanyById(Long id) throws DataNotFoundException {
         Optional<Company> company = companyRepository.findByDeletedAtIsNullAndId(id);
         if (company != null && !company.isEmpty()){
-            return company.map(CompanyDtoBuilder::fromEntity).orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas ou est supprimée"));
+            return company.map(companyDtoBuilder::fromEntity).orElseThrow(() -> new EntityNotFoundException("Entreprise n'existe pas ou est supprimée"));
         }else{
             throw new DataNotFoundException("Data of Companies Not Found : Company by Id "+ id +" Not Found",900L);
         }
@@ -135,7 +137,7 @@ public class CompanyService {
 
             Company updatedCompany = companyRepository.save(company);
 
-            return CompanyDtoBuilder.fromEntity(updatedCompany);
+            return companyDtoBuilder.fromEntity(updatedCompany);
         } catch (EntityExistsException e) {
             throw new EntityExistsException("Failed to add Company to data base "+ companyDetails+ " is already exists");
         }catch (DataIntegrityViolationException e) {
@@ -155,7 +157,7 @@ public class CompanyService {
     public List<CompanyResponseDto> findAllCompaniesIncludingDeleted() throws DataNotFoundException {
         List<Company> companies = companyRepository.findAllByDeletedAtIsNull();
         if (companies != null && !companies.isEmpty()){
-            return companies.stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
+            return companies.stream().map(companyDtoBuilder::fromEntity).collect(Collectors.toList());
         }else {
          throw new DataNotFoundException("Data of Companies Not Found : List Companies Not Found",1000L);
         }
@@ -231,7 +233,7 @@ public class CompanyService {
             newCompany.setStatus(ActiveInactiveEnum.ACTIVE);
             Company savedCompany = companyRepository.save(newCompany);
 
-            return CompanyDtoBuilder.fromEntity(savedCompany);
+            return companyDtoBuilder.fromEntity(savedCompany);
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to save company logo for: " + companyDTO.getName(), e);
@@ -292,7 +294,7 @@ public class CompanyService {
         UserEntity currentUser = authenticationService.getCurrentUser();
         List<Company> companies = companyRepository.findAllByDeletedAtIsNullAndEmployees(currentUser);
         if (companies != null && !companies.isEmpty()  ){
-            return companies.stream().map(CompanyDtoBuilder::fromEntity).collect(Collectors.toList());
+            return companies.stream().map(companyDtoBuilder::fromEntity).collect(Collectors.toList());
         }else {
             throw new DataNotFoundException("Data of Companies Not Found : List Companies by Current User Not Found",999L);
         }

@@ -1,5 +1,6 @@
 package com.sales_scout.dto.response;
 
+import com.sales_scout.dto.BaseDto;
 import com.sales_scout.enums.InteractionSubject;
 import com.sales_scout.enums.InteractionType;
 import lombok.AllArgsConstructor;
@@ -31,4 +32,9 @@ public class InteractionResponseDto {
     private Long affectedToId;
     private String affectedToName;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private CustomerResponseDto customer;
+    private UserResponseDto agent;
+    private UserResponseDto createdBy;
+    private UserResponseDto updatedBy;
 }

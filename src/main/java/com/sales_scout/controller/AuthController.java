@@ -52,6 +52,7 @@ public class AuthController {
         try {
             // Create a new user
             userRequestDto.setRole(roleRepository.findByRoleAndDeletedAtIsNull("User"));
+
             UserResponseDto userResponseDto = userService.createUser(userRequestDto);
 
             // Load user details to generate JWT

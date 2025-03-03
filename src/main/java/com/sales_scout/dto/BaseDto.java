@@ -1,5 +1,7 @@
 package com.sales_scout.dto;
 
+import com.sales_scout.dto.response.UserResponseDto;
+import com.sales_scout.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,15 +16,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BaseDto {
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
-
-    private String createdBy;
-
-    private String updatedBy;
-
-
-
+    private UserResponseDto createdBy;
+    private UserResponseDto updatedBy;
 }

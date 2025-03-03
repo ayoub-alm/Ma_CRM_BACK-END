@@ -1,21 +1,11 @@
 package com.sales_scout.controller.leads;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sales_scout.dto.EntityFilters.InterlocutorsFilterRequestDto;
 import com.sales_scout.dto.request.create.CreateInterlocutorDTO;
 import com.sales_scout.dto.request.update.UpdateInterlocutorDto;
 import com.sales_scout.dto.response.InterlocutorResponseDto;
-import com.sales_scout.entity.EntityFilters.InterlocutorFilter;
-import com.sales_scout.entity.data.Department;
-import com.sales_scout.entity.data.EmailAddress;
-import com.sales_scout.entity.data.JobTitle;
-import com.sales_scout.entity.data.PhoneNumber;
-import com.sales_scout.entity.leads.Interlocutor;
-import com.sales_scout.enums.ActiveInactiveEnum;
-import com.sales_scout.service.data.DepartmentService;
-import com.sales_scout.service.data.JobTitleService;
+import com.sales_scout.exception.DataNotFoundException;
 import com.sales_scout.service.leads.InterlocutorService;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.query.sqm.EntityTypeException;
 import org.springframework.http.HttpStatus;
@@ -24,63 +14,66 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/interlocutors")
 public class InterlocutorController {
     private final InterlocutorService interlocutorService;
-    private final DepartmentService departmentService;
-    private final JobTitleService jobTitleService;
-    public InterlocutorController(InterlocutorService interlocutorService, DepartmentService departmentService, JobTitleService jobTitleService) {
+
+    public InterlocutorController(InterlocutorService interlocutorService) {
         this.interlocutorService = interlocutorService;
-        this.departmentService = departmentService;
-        this.jobTitleService = jobTitleService;
     }
 
     /**
-     * Get Interlocutor Filter if RequestParam exist if not get allInterlocutor
+     * Retrieves all interlocutors associated with a given company ID. Optionally applies
+     * a search filter to match interlocutors based on specific fields like full name,
+     * customer name, department name, phone number, email address, or job title.
+     *
+     * @param companyId the ID of the company for which to retrieve the interlocutors
+     * @param searchValue an optional search string used to filter interlocutors based on various fields
+     * @return a ResponseEntity containing a list of InterlocutorResponseDto objects representing
+     *         the interlocutors associated with the specified company ID
+     * @throws DataNotFoundException if no data is found or an error occurs while retrieving the interlocutors
      */
     @GetMapping("")
     public ResponseEntity<List<InterlocutorResponseDto>> getAllInterlocutors(
-            @RequestParam(required = false) Long id ,
-            @RequestParam(required = false) String fullName ,
-            @RequestParam(required = false) Long department ,
-            @RequestParam(required = false) PhoneNumber phoneNumber,
-            @RequestParam(required = false) EmailAddress emailAddress,
-            @RequestParam(required = false) ActiveInactiveEnum active,
-            @RequestParam(required = false) Long jobTitle
-            ) {
-        // creation object interlocutorFilter
-        InterlocutorFilter interlocutorFilter = new InterlocutorFilter();
-        interlocutorFilter.setId(id);
-        interlocutorFilter.setFullName(fullName);
-        interlocutorFilter.setActive(active);
-        // checking department exist
-        if(department != null){
-            interlocutorFilter.setDepartment(departmentService.findById(department));
+            @RequestParam(required = true) Long companyId , @RequestParam(required = false) String searchValue ) {
+        try{
+            return ResponseEntity.ok(this.interlocutorService.getAllInterlocutorsByCompanyId(companyId, searchValue));
+        }catch (Exception e){
+            throw new DataNotFoundException(e.getMessage(),404L);
         }
-        // checking jobTitle exist
-        if(jobTitle != null){
-            Optional<JobTitle> jobTitleOptional = jobTitleService.getJobTitleById(jobTitle);
-            if (jobTitleOptional.isPresent()){
-                interlocutorFilter.setJobTitle(jobTitleOptional.get());
-            }
-        }
-        interlocutorFilter.setEmailAddress(emailAddress);
-        interlocutorFilter.setPhoneNumber(phoneNumber);
-        List<InterlocutorResponseDto> interlocutors = this.interlocutorService.getAllInterlocutors(interlocutorFilter);
-        return new ResponseEntity<>(interlocutors, HttpStatus.OK);
     }
 
     /**
-     * get all interlocutor By prospect Id
-     * @param prospectId
-     * @return
+     * Retrieves a list of interlocutors based on the specified filtering criteria.
+     * The filtering criteria include status, customer IDs, department IDs, job title IDs,
+     * created by IDs, company ID, and filter type (e.g., AND/OR conditions).
+     *
+     * @param interlocutorsFilterRequestDto the DTO containing the filtering criteria for retrieving interlocutors
+     * @return a ResponseEntity containing a list of InterlocutorResponseDto objects that match the filter criteria
+     * @throws RuntimeException if an error occurs during the retrieval process
      */
-    @GetMapping("/prospect/{prospectId}")
-    public ResponseEntity<List<InterlocutorResponseDto>> getAllInterlocutorsByProspectId(@PathVariable Long prospectId ) {
-        List<InterlocutorResponseDto> interlocutors = this.interlocutorService.getInterlocutorsByProspectId(prospectId);
+    @PostMapping("filter-by-fields")
+    public ResponseEntity<List<InterlocutorResponseDto>> getAllProspectByFilerFields(
+            @RequestBody InterlocutorsFilterRequestDto interlocutorsFilterRequestDto ) throws RuntimeException{
+        try{
+            List<InterlocutorResponseDto> interlocutors = this.interlocutorService.getAllInterlocutorsBySearchFields(interlocutorsFilterRequestDto);
+            return new ResponseEntity<>(interlocutors, HttpStatus.OK);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    /**
+     * Retrieves all interlocutors associated with a specific customer ID.
+     *
+     * @param customerId the ID of the customer for which to retrieve interlocutors
+     * @return a ResponseEntity containing a list of InterlocutorResponseDto objects representing the interlocutors
+     */
+    @GetMapping("/prospect/{customerId}")
+    public ResponseEntity<List<InterlocutorResponseDto>> getAllInterlocutorsByProspectId(@PathVariable Long customerId ) {
+        List<InterlocutorResponseDto> interlocutors = this.interlocutorService.getInterlocutorsByProspectId(customerId);
         return new ResponseEntity<>(interlocutors, HttpStatus.OK);
     }
 
@@ -96,12 +89,14 @@ public class InterlocutorController {
     }
 
     /**
-     * Create or update an interlocutor
+     * Creates or updates an interlocutor based on the provided details in the request body.
+     *
+     * @param interlocutor the DTO containing the information required to create or update an interlocutor
+     * @return a ResponseEntity containing the saved or updated InterlocutorResponseDto and the HTTP status
      */
-
     @PostMapping("")
     public ResponseEntity<InterlocutorResponseDto> saveOrUpdate(@RequestBody CreateInterlocutorDTO interlocutor) {
-        InterlocutorResponseDto saved = interlocutorService.saveOrUpdate(interlocutor);
+        InterlocutorResponseDto saved = interlocutorService.createInterlocutor(interlocutor);
         return new ResponseEntity<>(saved, HttpStatus.OK);
     }
 
@@ -129,19 +124,22 @@ public class InterlocutorController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/export")
-    public ResponseEntity<String> exportInterlocutorToExcel(@RequestParam(required = false) String interlocutorsJson){
+    /**
+     * Exports a list of interlocutors associated with a company to an Excel file.
+     *
+     * @param companyId the ID of the company whose interlocutors need to be exported.
+     * @param InterlocutorsIds an optional list of interlocutor IDs to specify which interlocutors to export;
+     *                         if not provided, exports all interlocutors related to the company ID.
+     * @return a ResponseEntity containing the byte array representation of the Excel file.
+     * @throws RuntimeException if an error occurs during the Excel export process.
+     */
+    @PostMapping("export")
+    public ResponseEntity<byte[]> exportInterlocutorToExcel(@RequestParam Long companyId,
+                                                            @RequestBody(required = false) List<Long> InterlocutorsIds) {
         try {
-            List<Interlocutor> interlocutors = null;
-            if (interlocutorsJson != null && !interlocutorsJson.isEmpty()) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                interlocutors = objectMapper.readValue(interlocutorsJson, new TypeReference<List<Interlocutor>>() {}
-                );
-            }
-            interlocutorService.exportFileExcel(interlocutors,"Interlocutor_file.xlsx");
-            return ResponseEntity.ok("Excel File exported successfuly : Interlocutors_file");
-        }catch (IOException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to export Excel File "+e.getMessage());
+            return ResponseEntity.ok( interlocutorService.exportInterlocutorsToExcel(InterlocutorsIds, companyId));
+        } catch (IOException e) {
+            throw new RuntimeException("Échec de l'exportation du fichier Excel" + e.getMessage());
         }
     }
 
@@ -155,12 +153,16 @@ public class InterlocutorController {
     }
 
     /**
-     * Bulk soft delete for a list of IDs
+     * Performs a bulk soft delete operation for a list of interlocutors based on their IDs.
+     * The operation marks the interlocutors as deleted without permanently removing them from the database.
+     *
+     * @param ids a list of IDs representing the interlocutors to be soft deleted
+     * @return a ResponseEntity containing a Boolean indicating whether the operation was successful
+     * @throws Exception if any error occurs during the soft delete process
      */
-    @PostMapping("/bulk-delete")
-    public ResponseEntity<Void> bulkSoftDelete(@RequestBody List<Long> ids) {
-        interlocutorService.bulkSoftDelete(ids);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PostMapping("/soft-delete/bulk")
+    public ResponseEntity<Boolean> bulkSoftDelete(@RequestBody List<Long> ids) throws Exception {
+        return ResponseEntity.ok(interlocutorService.bulkSoftDelete(ids));
     }
 
     /**

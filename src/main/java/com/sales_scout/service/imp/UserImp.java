@@ -60,12 +60,12 @@ public class UserImp implements UserService {
         UserEntity user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
 
-        System.out.println("Retrieved Data");
-        System.out.println("Password: " + user.getPassword());
-        System.out.println("Username: " + user.getUsername());
-        System.out.println("ID: " + user.getId());
-        System.out.println("Email: " + user.getEmail());
-        System.out.println("-----");
+//        System.out.println("Retrieved Data");
+//        System.out.println("Password: " + user.getPassword());
+//        System.out.println("Username: " + user.getUsername());
+//        System.out.println("ID: " + user.getId());
+//        System.out.println("Email: " + user.getEmail());
+//        System.out.println("-----");
 
         return user;
     }

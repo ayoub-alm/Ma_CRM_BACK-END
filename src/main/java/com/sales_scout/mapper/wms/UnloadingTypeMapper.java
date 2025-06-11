@@ -28,6 +28,7 @@ public class UnloadingTypeMapper {
                 .status(unloadingType.getStatus())
                 .companyId(unloadingType.getCompany().getId())
                 .companyName(unloadingType.getCompany().getName())
+                .order(unloadingType.getItemOrder())
                 .build();
     }
 

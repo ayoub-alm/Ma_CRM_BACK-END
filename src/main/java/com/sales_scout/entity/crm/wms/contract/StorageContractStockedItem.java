@@ -15,17 +15,17 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class storageContractStockedItem {
+public class StorageContractStockedItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private UUID ref = UUID.randomUUID();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "stocked_item_id", nullable = false)
     private StockedItem stockedItem;
 
     @ManyToOne
-    @JoinColumn(name = "contract_id", nullable = false)
+    @JoinColumn(name = "contract_id", nullable = false )
     private StorageContract storageContract;
 }

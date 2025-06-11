@@ -62,13 +62,12 @@ public interface InterlocutorRepository extends JpaRepository<Interlocutor, Long
             "LEFT JOIN i.department department " +
             "LEFT JOIN i.phoneNumber phoneNumber " +
             "LEFT JOIN i.emailAddress emailAddress " +
-            "LEFT JOIN i.jobTitle jobTitle " +
             "WHERE LOWER(i.fullName) LIKE %:keyword% " +
             "OR LOWER(customer.name) LIKE %:keyword% " +
             "OR LOWER(department.name) LIKE %:keyword% " +
             "OR LOWER(phoneNumber.number) LIKE %:keyword% " +
             "OR LOWER(emailAddress.address) LIKE %:keyword% " +
-            "OR LOWER(jobTitle.name) LIKE %:keyword% " +
+            "OR LOWER(jobTitle) LIKE %:keyword% " +
             "AND customer.company.id = :companyId")
     List<Interlocutor> searchAllFields(@Param("keyword") String keyword, @Param("companyId") Long companyId);
 }

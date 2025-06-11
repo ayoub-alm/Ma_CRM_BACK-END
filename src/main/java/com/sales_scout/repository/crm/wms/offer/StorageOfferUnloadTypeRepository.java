@@ -6,8 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StorageOfferUnloadTypeRepository extends JpaRepository<StorageOfferUnloadType, Long> {
      List<StorageOfferUnloadType> findAllByStorageOfferId(Long id);
+
+    Optional<StorageOfferUnloadType> findByStorageOfferIdAndUnloadingTypeId(Long storageOfferId, Long unloadingTypeId);
 }
+

@@ -26,7 +26,7 @@ public class CreateInterlocutorDTO {
 
     private EmailAddress emailAddress;
 
-    private Long jobTitleId; // Optional, can be null
+    private String jobTitle; // Optional, can be null
 
     @JsonDeserialize(using = ActiveInactiveEnumDeserializer.class)
     private ActiveInactiveEnum active = ActiveInactiveEnum.ACTIVE; // Default to ACTIVE

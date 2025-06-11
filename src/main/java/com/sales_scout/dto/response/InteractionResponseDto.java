@@ -25,6 +25,7 @@ public class InteractionResponseDto {
     private InteractionType interactionType;
     private Long previousInteractionId;
     private LocalDateTime planningDate;
+    private LocalDateTime interactionDate;
     private String joinFilePath;
     private String address;
     private Long agentId;

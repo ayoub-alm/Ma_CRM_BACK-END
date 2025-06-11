@@ -131,11 +131,11 @@ public class InterlocutorService {
         }
 
         // Fetch or set JobTitle (nullable)
-        JobTitle jobTitle = null;
-        if (interlocutorDto.getJobTitleId() != null) {
-            jobTitle = new JobTitle();
-            jobTitle.setId(interlocutorDto.getJobTitleId());
-        }
+//        JobTitle jobTitle = null;
+//        if (interlocutorDto.getJobTitleId() != null) {
+//            jobTitle = new JobTitle();
+//            jobTitle.setId(interlocutorDto.getJobTitleId());
+//        }
 
         // Create or fetch PhoneNumber
         PhoneNumber phoneNumber = new PhoneNumber();
@@ -154,7 +154,7 @@ public class InterlocutorService {
                 .phoneNumber(phoneNumber)
                 .emailAddress(emailAddress)
                 .department(department)
-                .jobTitle(jobTitle)
+                .jobTitle(interlocutorDto.getJobTitle())
                 .active(ActiveInactiveEnum.ACTIVE)
                 .build();
 
@@ -186,10 +186,10 @@ public class InterlocutorService {
         }
 
         // Fetch or create JobTitle
-        JobTitle jobTitle = updateInterlocutorDto.getJobTitleId() != null ?
-                jobTitleRepository.findById(updateInterlocutorDto.getJobTitleId())
-                        .orElseThrow(() -> new EntityNotFoundException("JobTitle with id " + updateInterlocutorDto.getJobTitleId() + " not found"))
-                : null;
+//        JobTitle jobTitle = updateInterlocutorDto.getJobTitleId() != null ?
+//                jobTitleRepository.findById(updateInterlocutorDto.getJobTitleId())
+//                        .orElseThrow(() -> new EntityNotFoundException("JobTitle with id " + updateInterlocutorDto.getJobTitleId() + " not found"))
+//                : null;
 
         // Fetch or persist PhoneNumber
         PhoneNumber phoneNumber = phoneNumberRepository.findById(updateInterlocutorDto.getPhoneNumber().getId())
@@ -209,7 +209,7 @@ public class InterlocutorService {
         interlocutor.setCustomer(customer);
         interlocutor.setDepartment(department);
         interlocutor.setPhoneNumber(phoneNumber); // Use persisted PhoneNumber
-        interlocutor.setJobTitle(jobTitle);
+        interlocutor.setJobTitle(updateInterlocutorDto.getJobTitle());
         interlocutor.setActive(updateInterlocutorDto.getActive());
         interlocutor.setUpdatedBy(SecurityUtils.getCurrentUser());
         // Save and return
@@ -272,7 +272,7 @@ public class InterlocutorService {
                 row.createCell(3).setCellValue(interlocutor.getEmailAddress().getAddress());
                 row.createCell(4).setCellValue(interlocutor.getPhoneNumber().getNumber());
                 row.createCell(5).setCellValue(interlocutor.getDepartment().getName());
-                row.createCell(6).setCellValue(interlocutor.getJobTitle().getName());
+                row.createCell(6).setCellValue(interlocutor.getJobTitle());
                 row.createCell(7).setCellValue(interlocutor.getCustomer().getName());
             }
 

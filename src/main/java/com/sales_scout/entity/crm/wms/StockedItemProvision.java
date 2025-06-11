@@ -24,6 +24,7 @@ public class StockedItemProvision extends BaseEntity {
     private DiscountTypeEnum discountType;
     private Double discountValue;
     private Double salesPrice;
+    private Double increaseValue;
     private UUID ref = UUID.randomUUID();
 
     @ManyToOne
@@ -33,6 +34,4 @@ public class StockedItemProvision extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "provision_id", nullable = false)
     private Provision provision;
-
-
 }

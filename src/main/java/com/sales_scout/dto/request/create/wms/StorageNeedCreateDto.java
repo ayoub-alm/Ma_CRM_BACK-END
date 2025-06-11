@@ -4,6 +4,7 @@ import com.sales_scout.dto.response.crm.wms.StorageRequirementResponseDto;
 import com.sales_scout.dto.response.crm.wms.UnloadingTypeResponseDto;
 import com.sales_scout.entity.crm.wms.Requirement;
 import com.sales_scout.entity.crm.wms.StockedItem;
+import com.sales_scout.entity.crm.wms.need.StorageNeedStatus;
 import com.sales_scout.enums.crm.wms.LivreEnum;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
 import com.sales_scout.enums.crm.wms.StorageReasonEnum;
@@ -21,7 +22,7 @@ import java.util.UUID;
 public class StorageNeedCreateDto {
         private UUID ref;
         private StorageReasonEnum storageReason;
-        private NeedStatusEnum status;
+        private StorageNeedStatus status;
         private LivreEnum liverStatus;
         private LocalDateTime expirationDate;
         private Long duration;

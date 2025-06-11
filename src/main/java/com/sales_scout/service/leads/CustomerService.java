@@ -228,20 +228,21 @@ public class CustomerService {
                         .ifm(prospectRequestDto.getIfm())
                         .patent(prospectRequestDto.getPatent())
                         .businessDescription(prospectRequestDto.getBusinessDescription())
-                        .legalStatus(prospectRequestDto.getLegalStatus())
-                        .city(prospectRequestDto.getCity())
-                        .court(prospectRequestDto.getCourt())
-                        .companySize(prospectRequestDto.getCompanySize())
-                        .industry(prospectRequestDto.getIndustry())
-                        .country(prospectRequestDto.getCountry())
-                        .proprietaryStructure(prospectRequestDto.getProprietaryStructure())
-                        .title(prospectRequestDto.getTitle())
-                        .reprosentaveJobTitle(prospectRequestDto.getReprosentaveJobTitle())
-//                        .logo(imagePath)
+                        .legalStatus(prospectRequestDto.getLegalStatus().getId() != null ? prospectRequestDto.getLegalStatus() : null)
+                        .city(prospectRequestDto.getCity().getId() != null ? prospectRequestDto.getCity() : null)
+                        .court(prospectRequestDto.getCourt().getId() != null ? prospectRequestDto.getCourt() : null)
+                        .companySize(prospectRequestDto.getCompanySize().getId() != null ? prospectRequestDto.getCompanySize(): null)
+                        .industry(prospectRequestDto.getIndustry().getId() != null ? prospectRequestDto.getIndustry() : null)
+                        .country(prospectRequestDto.getCountry().getId() != null ? prospectRequestDto.getCountry() : null )
+                        .proprietaryStructure(prospectRequestDto.getProprietaryStructure().getId() != null ? prospectRequestDto.getProprietaryStructure() : null)
+                        .title(prospectRequestDto.getTitle().getId() != null ? prospectRequestDto.getTitle() : null )
+                        .reprosentaveJobTitle(prospectRequestDto.getReprosentaveJobTitle().getId() != null ? prospectRequestDto.getReprosentaveJobTitle() : null)
                         .active(ActiveInactiveEnum.ACTIVE)
                         .company(Company.builder().id(prospectRequestDto.getCompanyId()).build())
+                        .status(CustomerStatus.builder().id(1L).build())
                         .build();
                 prospect.setCreatedBy(SecurityUtils.getCurrentUser());
+                prospect.setAffectedTo(SecurityUtils.getCurrentUser());
             }
 
 
@@ -391,7 +392,8 @@ public class CustomerService {
                     prospect.setCompany(Company.builder().id(companyId).build());
                     prospect.setCreatedAt(LocalDateTime.now());
                     prospect.setUpdatedAt(LocalDateTime.now());
-//                    prospect.setCreatedBy(SecurityUtils.getCurrentUser());
+                    prospect.setCreatedBy(SecurityUtils.getCurrentUser());
+                    prospect.setStatus(CustomerStatus.builder().id(1L).build());
                     prospects.add(prospect);
                 }else{
                     break;

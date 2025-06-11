@@ -59,7 +59,7 @@ public class CustomerMapper {
                 .status(customer.getActive())
                 .deletedAt(customer.getDeletedAt())
                 .legalStatus(customer.getLegalStatus())
-                .city(customer.getCity())
+                .city(customer.getCity() != null ? customer.getCity() : null)
                 .court(customer.getCourt())
                 .companySize(customer.getCompanySize())
                 .industry(customer.getIndustry())

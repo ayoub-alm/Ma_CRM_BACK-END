@@ -14,4 +14,6 @@ public interface StorageOfferStockedItemRepository extends JpaRepository<Storage
     List<StorageOfferStockedItem> findAllByStorageOfferId(Long id);
 
     List<StorageOfferStockedItem> findAllByStorageOfferIdAndDeletedAtIsNull(Long id);
+
+    void deleteByStockedItemIdAndStorageOfferId(long stockedItemId,long storageOfferId);
 }

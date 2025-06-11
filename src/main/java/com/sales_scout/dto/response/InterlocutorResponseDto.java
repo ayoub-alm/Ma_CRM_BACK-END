@@ -23,7 +23,7 @@ public class InterlocutorResponseDto {
     private Department department;
     private PhoneNumber phoneNumber;
     private EmailAddress emailAddress;
-    private JobTitle jobTitle;
+    private String jobTitle;
     private ActiveInactiveEnum active ;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

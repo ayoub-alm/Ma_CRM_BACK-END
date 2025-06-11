@@ -17,5 +17,7 @@ public class StorageRequirementRequestDto {
     private Double salesPrice;
     private Double discountValue;
     private String notes;
+    private Double increaseValue;
     private Long companyId;
+    private Integer order;
 }

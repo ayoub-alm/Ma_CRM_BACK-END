@@ -18,6 +18,8 @@ public class StorageRequirementCreateDto {
     private Double initPrice;
     private String unitOfMeasurement;
     private Boolean status;
+    private Double increaseValue;
     private Long companyId;
+    private Integer order;
 
 }

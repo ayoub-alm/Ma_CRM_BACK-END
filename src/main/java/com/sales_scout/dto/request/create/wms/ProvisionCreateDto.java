@@ -17,7 +17,7 @@ public class ProvisionCreateDto {
     private String name;
     private Double initPrice;
     private String unitOfMeasurement;
+    private Integer order;
     private Boolean status;
     private Long companyId;
-
 }

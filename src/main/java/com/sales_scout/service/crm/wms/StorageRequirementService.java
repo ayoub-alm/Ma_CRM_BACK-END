@@ -2,10 +2,15 @@ package com.sales_scout.service.crm.wms;
 
 
 import com.sales_scout.dto.request.create.wms.StorageRequirementCreateDto;
+import com.sales_scout.dto.request.create.wms.UnloadingTypeCreateDto;
 import com.sales_scout.dto.response.crm.wms.StorageRequirementResponseDto;
+import com.sales_scout.dto.response.crm.wms.UnloadingTypeResponseDto;
 import com.sales_scout.entity.Company;
 import com.sales_scout.entity.crm.wms.Requirement;
+import com.sales_scout.entity.crm.wms.UnloadingType;
+import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.mapper.StorageRequirementMapper;
+import com.sales_scout.mapper.UnloadingTypeMapper;
 import com.sales_scout.repository.crm.wms.StorageRequirementRepository;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +48,19 @@ public class StorageRequirementService {
                 .unitOfMeasurement(storageRequirementCreateDto.getUnitOfMeasurement())
                 .company(Company.builder().id(storageRequirementCreateDto.getCompanyId()).build())
                 .initPrice(storageRequirementCreateDto.getInitPrice())
+                .itemOrder(storageRequirementCreateDto.getOrder())
                 .build());
         return StorageRequirementMapper.toDto(requirement);
+    }
+
+    public StorageRequirementResponseDto updateRequirement(StorageRequirementCreateDto storageRequirementCreateDto){
+        Requirement requirement = this.storageRequirementRepository.findById(storageRequirementCreateDto.getId())
+                .orElseThrow(() ->  new ResourceNotFoundException("unloading type not found with id"+ storageRequirementCreateDto.getId(),"",""));
+        requirement.setName(storageRequirementCreateDto.getName());
+        requirement.setItemOrder(storageRequirementCreateDto.getOrder());
+        requirement.setInitPrice(storageRequirementCreateDto.getInitPrice());
+        requirement.setUnitOfMeasurement(storageRequirementCreateDto.getUnitOfMeasurement());
+
+        return StorageRequirementMapper.toDto(this.storageRequirementRepository.save(requirement));
     }
 }

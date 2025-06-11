@@ -16,13 +16,14 @@ import java.util.UUID;
 @Setter
 @Getter
 public class StorageOfferCreateDto {
+        private Long id;
         private UUID ref;
         private StorageReasonEnum storageReason;
         private NeedStatusEnum status;
         private LivreEnum liverStatus;
         private LocalDateTime expirationDate;
         private Long duration;
-        private int numberOfSku;
+        private Long numberOfSku;
         private String productType;
         private Long customerId;
         private Long companyId;
@@ -31,7 +32,12 @@ public class StorageOfferCreateDto {
         private List<StorageRequirementRequestDto> requirements;
         private Double price;
         private Long storageNeedId;
-        private Long paymentTypeId;
+        private List<Long> paymentTypeIds;
         private int paymentDeadline;
         private Long interlocutorId;
+        private String note;
+        private Double managementFees;
+        private Long numberOfReservedPlaces;
+        private Double minimumBillingGuaranteed;
+        private boolean withRevision;
 }

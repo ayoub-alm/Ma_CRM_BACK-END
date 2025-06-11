@@ -32,6 +32,8 @@ public class UnloadingType extends BaseEntity {
     private Double initPrice;
     private String unitOfMeasurement;
     private Boolean status;
+    @Column(name = "item_order")
+    private Integer itemOrder = 0;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;

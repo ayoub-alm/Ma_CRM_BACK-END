@@ -26,6 +26,7 @@ public class RequirementMapper {
                 .unitOfMeasurement(requirement.getUnitOfMeasurement())
                 .companyId(requirement.getCompany().getId())
                 .companyName(requirement.getCompany().getName())
+                .order(requirement.getItemOrder())
                 .build();
     }
 

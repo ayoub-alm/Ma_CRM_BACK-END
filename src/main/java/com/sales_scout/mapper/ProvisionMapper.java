@@ -24,7 +24,9 @@ public class ProvisionMapper {
         dto.setCompanyId(provision.getCompany() != null ? provision.getCompany().getId() : null);
         dto.setDiscountType(provision.getDiscountTypeEnum() );
         dto.setDiscountValue(provision.getDiscountValue());
-        dto.setSalesPrice(dto.getSalesPrice());
+        dto.setSalesPrice(provision.getSalesPrice());
+        dto.setIsStoragePrice(provision.getIsStoragePrice());
+        dto.setOrder(provision.getItemOrder());
         return dto;
     }
 

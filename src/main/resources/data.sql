@@ -410,7 +410,7 @@ VALUES (CURRENT_TIMESTAMP(6), NULL, NULL, NULL, b'1', 'Mem');
 
 INSERT INTO `users` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `email`, `name`, `password`, `phone`, `refresh_token`, `role_id`) VALUES
 (1, '2024-11-20 09:51:08.000000', NULL, NULL, NULL, 'alayoub33@gmail.com', 'ayoub', '$2a$12$QizMzonMA2.z9nSvkvmqLOVlBzGB3owV2j8TVE0EFzudK35WeaWcC', NULL, NULL, NULL),
-(2, '2024-11-20 09:51:08.000000', NULL, NULL, NULL, 'alayoub44@gmail.com', 'Admin', '$2a$12$QizMzonMA2.z9nSvkvmqLOVlBzGB3owV2j8TVE0EFzudK35WeaWcCd', '0619903092', NULL, NULL),
+(2, '2024-11-20 09:51:08.000000', NULL, NULL, NULL, 'alayoub44@gmail.com', 1, '$2a$12$QizMzonMA2.z9nSvkvmqLOVlBzGB3owV2j8TVE0EFzudK35WeaWcCd', '0619903092', NULL, NULL),
 (3, '2024-11-20 09:51:08.000000', NULL, NULL, NULL, 'test@3abc.com', 'test', '$2a$12$.l8b515xr2SP1JjUYhEDFeCqxVvUKpmXFD.akLSLNLcv/Tp5shv8i', NULL, NULL, NULL);
 
 
@@ -425,75 +425,76 @@ INSERT INTO `users` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at
 
 INSERT INTO provisions (id, created_at, created_by, deleted_at, updated_at, updated_by, init_price, name, notes, ref, unit_of_measurement, company_id)
 VALUES
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 17.00, 'Réception', 'Prix pour réception', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Contrôle qualité en', 'Prix pour contrôle qualité', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE',1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 51.00, 'Cross-docking', 'Prix pour cross-docking', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Tri de marchandises en', 'Prix pour tri de marchandises', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Kitting', 'Prix pour kitting', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Emballage primaire', 'Prix pour emballage primaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Emballage secondaire', 'Prix pour emballage secondaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Emballage tertiaire', 'Prix pour emballage tertiaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Étiquetage primaire', 'Prix pour étiquetage primaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Étiquetage secondaire', 'Prix pour étiquetage secondaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Étiquetage tertiaire', 'Prix pour étiquetage tertiaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Palettisation', 'Prix pour palettisation', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 3.12, 'Stockage', 'Prix pour stockage', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 1.25, 'Picking', 'Prix pour picking', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 17.00, 'Expédition', 'Prix pour expédition', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.50, 'Mise en stock', 'Prix pour mise en stock', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Forfait mensuel (IN/STORAGE/OUT)', 'Prix pour forfait mensuel', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Forfait mensuel (stockage, manutention et assurance inclus)', 'Prix pour forfait mensuel stockage', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Préparation commande', 'Prix pour préparation commande', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Étiquetage promotionnelles', 'Prix pour étiquetage promotionnelles', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Forfait Stockage Mensuel (Chambre 70 m³)', 'Prix pour forfait stockage mensuel', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Forfait mensuel Zone de TRI et de stockage (externe)', 'Prix pour forfait stockage externe', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'Mise en palette', 'Prix pour mise en palette', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
-    (NULL, NOW(), 'admin', NULL, NOW(), 'admin', 0.00, 'TRI et lavage', 'Prix pour TRI et lavage', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1);
+    (NULL, NOW(), 1, NULL, NOW(), 1, 17.00, 'Réception', 'Prix pour réception', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Contrôle qualité en', 'Prix pour contrôle qualité', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE',1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 51.00, 'Cross-docking', 'Prix pour cross-docking', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Tri de marchandises en', 'Prix pour tri de marchandises', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Kitting', 'Prix pour kitting', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Emballage primaire', 'Prix pour emballage primaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Emballage secondaire', 'Prix pour emballage secondaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Emballage tertiaire', 'Prix pour emballage tertiaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Étiquetage primaire', 'Prix pour étiquetage primaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Étiquetage secondaire', 'Prix pour étiquetage secondaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Étiquetage tertiaire', 'Prix pour étiquetage tertiaire', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Palettisation', 'Prix pour palettisation', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 3.12, 'Stockage', 'Prix pour stockage', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 1.25, 'Picking', 'Prix pour picking', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 17.00, 'Expédition', 'Prix pour expédition', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.50, 'Mise en stock', 'Prix pour mise en stock', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Forfait mensuel (IN/STORAGE/OUT)', 'Prix pour forfait mensuel', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Forfait mensuel (stockage, manutention et assurance inclus)', 'Prix pour forfait mensuel stockage', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Préparation commande', 'Prix pour préparation commande', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Étiquetage promotionnelles', 'Prix pour étiquetage promotionnelles', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Forfait Stockage Mensuel (Chambre 70 m³)', 'Prix pour forfait stockage mensuel', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Forfait mensuel Zone de TRI et de stockage (externe)', 'Prix pour forfait stockage externe', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'Mise en palette', 'Prix pour mise en palette', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1),
+    (NULL, NOW(), 1, NULL, NOW(), 1, 0.00, 'TRI et lavage', 'Prix pour TRI et lavage', UNHEX(REPLACE(UUID(), '-', '')), 'UNITE', 1);
 
 INSERT INTO `structures` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `updated_by`,  `name`, `ref`, `company_id`) VALUES
 (1, '2025-01-24 11:28:25.000000', NULL, NULL, NULL, NULL,  'Homogène', 0x00000000000000000000000000000000, 2),
 (2, '2025-01-24 11:28:25.000000', NULL, NULL, NULL, NULL, 'Hétérogène', 0x00000000000000000000000000000000, 2);
 
-INSERT INTO `structures` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `updated_by`, `name`, `ref`, `company_id`) VALUES (1, '2025-01-24 11:28:25.000000', NULL, NULL, NULL, NULL, 'Homogène', 0x00000000000000000000000000000000, 2),
- (2, '2025-01-24 11:28:25.000000', NULL, NULL, NULL, NULL, 'Hétérogène', 0x00000000000000000000000000000000, 2);
+INSERT INTO `structures` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `updated_by`, `name`, `ref`, `company_id`) VALUES (3, '2025-01-24 11:28:25.000000', NULL, NULL, NULL, NULL, 'Homogène', 0x00000000000000000000000000000000, 2),
+ (3, '2025-01-24 11:28:25.000000', NULL, NULL, NULL, NULL, 'Hétérogène', 0x00000000000000000000000000000000, 2);
 
- INSERT INTO `requirements` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `last_updated_by`, `init_price`, `name`, `notes`, `ref`, `unit_of_measurement`, `company_id`) VALUES
- (1, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Gestion en FEFO (Premier périmé, Premier sorti)', 'Notes for FEFO', 0x0c1374f9d18c11efa399482ae33417ab, 'MOIS', 2),
- (2, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Gestion en FIFO (Premier entré, Premier sorti)', 'Notes for FIFO', 0x0c13c76ad18c11efa399482ae33417ab, 'MOIS', 2),
- (3, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Gestion de stock via notre système WMS', 'Notes for WMS stock management', 0x0c13c916d18c11efa399482ae33417ab, 'MOIS', 2),
- (4, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Conseils en logistique', 'Notes for logistic advice', 0x0c13c9aad18c11efa399482ae33417ab, 'MOIS', 2),
- (5, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Tour de contrôle mensuel', 'Monthly control tour', 0x0c13ca3ed18c11efa399482ae33417ab, 'MOIS', 2),
- (6, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Images de stock journalière', 'Daily stock images', 0x0c13cac2d18c11efa399482ae33417ab, 'JOUR', 2),
- (7, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Images de stock hebdomadaire', 'Weekly stock images', 0x0c13cbddd18c11efa399482ae33417ab, 'SEMAINE', 2),
- (8, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Tour de contrôle trimestriel', 'Quarterly control tour', 0x0c13cd51d18c11efa399482ae33417ab, 'TRIMESTRE', 2),
- (9, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Tour de contrôle semestriel', 'Semi-annual control tour', 0x0c13cec7d18c11efa399482ae33417ab, 'SEMESTRE', 2),
- (10, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Inventaire tournant', 'Rotating inventory', 0x0c13cf7dd18c11efa399482ae33417ab, 'MOIS', 2),
- (11, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Inventaire annuel', 'Annual inventory', 0x0c13d038d18c11efa399482ae33417ab, 'ANNÉE', 2),
- (12, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Gestion en LIFO (Dernier entré, Premier sorti)', 'Notes for LIFO', 0x0c13d139d18c11efa399482ae33417ab, 'MOIS', 2),
- (13, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Gestion en DLIO (Date limite d\'utilisation optimale)', 'Notes for DLIO', 0x0c13d280d18c11efa399482ae33417ab, 'MOIS', 2),
- (14, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Extension des heures de service', 'Service hours extension', 0x0c13d345d18c11efa399482ae33417ab, 'HEURE', 2),
- (15, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Location palette', 'Pallet rental', 0x0c13d3bbd18c11efa399482ae33417ab, 'MOIS', 2),
- (16, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Situation quotidienne de suivi des mouvements IN / OUT', 'Daily movement tracking', 0x0c13d42fd18c11efa399482ae33417ab, 'MOIS', 2),
- (17, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 1, 'Manipulation spéciale/heure', 'Special handling per hour', 0x0c13d4d4d18c11efa399482ae33417ab, 'HEURE', 2),
- (18, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 80, 'Support palette EURO', 'Euro pallet support', 0x0c13d566d18c11efa399482ae33417ab, 'PALETTE', 2),
- (19, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 120, 'SUPPORT PALETTE ISO', 'ISO pallet support', 0x0c13d5d7d18c11efa399482ae33417ab, 'PALETTE', 2),
- (20, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 80, 'Support palettes Américaines occasionnelles', 'Occasional American pallet support', 0x0c13d649d18c11efa399482ae33417ab, 'PALETTE', 2),
- (21, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 50, 'Support Palette EURO occasionnel', 'Occasional Euro pallet support', 0x0c13d6b9d18c11efa399482ae33417ab, '1', 2),
- (22, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 1200, 'PROLONGATION SAMEDI', 'Saturday extension', 0x0c13d728d18c11efa399482ae33417ab, '1', 2),
- (23, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Re-Palettisation OUTBOUND Palette Euro Homogène samedi', 'Re-palletization Euro Saturday', 0x0c13e851d18c11efa399482ae33417ab, 'Palette Euro', 2),
- (24, '2025-01-13 09:54:39.000000', 'admin', NULL, '2025-01-13 09:54:39.000000', 'admin', 0, 'Re-Palettisation OUTBOUND Palette ISO Homogène samedi', 'Re-palletization ISO Saturday', 0x0c13e942d18c11efa399482ae33417ab, 'Palette ISO', 2);
+
+ INSERT INTO `requirements` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `updated_by`, `init_price`, `name`, `notes`, `ref`, `unit_of_measurement`, `company_id`) VALUES
+ (1, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Gestion en FEFO (Premier périmé, Premier sorti)', 'Notes for FEFO', 0x0c1374f9d18c11efa399482ae33417ab, 'MOIS', 2),
+ (2, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Gestion en FIFO (Premier entré, Premier sorti)', 'Notes for FIFO', 0x0c13c76ad18c11efa399482ae33417ab, 'MOIS', 2),
+ (3, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Gestion de stock via notre système WMS', 'Notes for WMS stock management', 0x0c13c916d18c11efa399482ae33417ab, 'MOIS', 2),
+ (4, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Conseils en logistique', 'Notes for logistic advice', 0x0c13c9aad18c11efa399482ae33417ab, 'MOIS', 2),
+ (5, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Tour de contrôle mensuel', 'Monthly control tour', 0x0c13ca3ed18c11efa399482ae33417ab, 'MOIS', 2),
+ (6, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Images de stock journalière', 'Daily stock images', 0x0c13cac2d18c11efa399482ae33417ab, 'JOUR', 2),
+ (7, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Images de stock hebdomadaire', 'Weekly stock images', 0x0c13cbddd18c11efa399482ae33417ab, 'SEMAINE', 2),
+ (8, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Tour de contrôle trimestriel', 'Quarterly control tour', 0x0c13cd51d18c11efa399482ae33417ab, 'TRIMESTRE', 2),
+ (9, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Tour de contrôle semestriel', 'Semi-annual control tour', 0x0c13cec7d18c11efa399482ae33417ab, 'SEMESTRE', 2),
+ (10, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Inventaire tournant', 'Rotating inventory', 0x0c13cf7dd18c11efa399482ae33417ab, 'MOIS', 2),
+ (11, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Inventaire annuel', 'Annual inventory', 0x0c13d038d18c11efa399482ae33417ab, 'ANNÉE', 2),
+ (12, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Gestion en LIFO (Dernier entré, Premier sorti)', 'Notes for LIFO', 0x0c13d139d18c11efa399482ae33417ab, 'MOIS', 2),
+ (13, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Gestion en DLIO (Date limite d\'utilisation optimale)', 'Notes for DLIO', 0x0c13d280d18c11efa399482ae33417ab, 'MOIS', 2),
+ (14, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Extension des heures de service', 'Service hours extension', 0x0c13d345d18c11efa399482ae33417ab, 'HEURE', 2),
+ (15, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Location palette', 'Pallet rental', 0x0c13d3bbd18c11efa399482ae33417ab, 'MOIS', 2),
+ (16, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Situation quotidienne de suivi des mouvements IN / OUT', 'Daily movement tracking', 0x0c13d42fd18c11efa399482ae33417ab, 'MOIS', 2),
+ (17, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 1, 'Manipulation spéciale/heure', 'Special handling per hour', 0x0c13d4d4d18c11efa399482ae33417ab, 'HEURE', 2),
+ (18, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 80, 'Support palette EURO', 'Euro pallet support', 0x0c13d566d18c11efa399482ae33417ab, 'PALETTE', 2),
+ (19, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 120, 'SUPPORT PALETTE ISO', 'ISO pallet support', 0x0c13d5d7d18c11efa399482ae33417ab, 'PALETTE', 2),
+ (20, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 80, 'Support palettes Américaines occasionnelles', 'Occasional American pallet support', 0x0c13d649d18c11efa399482ae33417ab, 'PALETTE', 2),
+ (21, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 50, 'Support Palette EURO occasionnel', 'Occasional Euro pallet support', 0x0c13d6b9d18c11efa399482ae33417ab, '1', 2),
+ (22, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 1200, 'PROLONGATION SAMEDI', 'Saturday extension', 0x0c13d728d18c11efa399482ae33417ab, '1', 2),
+ (23, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Re-Palettisation OUTBOUND Palette Euro Homogène samedi', 'Re-palletization Euro Saturday', 0x0c13e851d18c11efa399482ae33417ab, 'Palette Euro', 2),
+ (24, '2025-01-13 09:54:39.000000', 1, NULL, '2025-01-13 09:54:39.000000', 1, 0, 'Re-Palettisation OUTBOUND Palette ISO Homogène samedi', 'Re-palletization ISO Saturday', 0x0c13e942d18c11efa399482ae33417ab, 'Palette ISO', 2);
 
 INSERT INTO `unloading_types` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `updated_by`, `init_price`, `name`, `ref`, `status`, `unit_of_measurement`, `company_id`) VALUES
-(10, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 600, 'Dépottage TC 20 Pieds Palettisé', 0x74b09bded18911efa399482ae33417ab, b'1', 'TC', 2),
-(21, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 2200, 'Dépottage TC 40 Pieds Vrac', 0x74b13e56d18911efa399482ae33417ab, b'1', 'TC', 2),
-(31, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1200, 'Dépottage TC 40 Pieds Palettisé', 0x74b1402fd18911efa399482ae33417ab, b'1', 'TC', 2),
-(4, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1100, 'Dépottage TC 20 Pieds Vrac', 0x74b140c0d18911efa399482ae33417ab, b'1', 'TC', 2),
-(5, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 2200, 'Dépottage Semi-remorque Vrac', 0x74b14136d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
-(6, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1200, 'Dépottage Semi-remorque Palettisé', 0x74b141e1d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
-(7, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 600, 'Dépottage Camion Palettisé', 0x74b14259d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
-(8, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1100, 'Dépottage Camion Vrac', 0x74b142c2d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
-(9, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 600, 'TRI camion/TC 20 (palettes)', 0x74b1434ad18911efa399482ae33417ab, b'1', 'TRUCK/TC', 2),
-(10, '2025-01-13 09:36:06.000000', 'admin', NULL, '2025-01-13 09:36:06.000000', 'admin', 1200, 'TRI camion/TC 40 (palettes)', 0x74b143b6d18911efa399482ae33417ab, b'1', 'TRUCK/TC', 2);
+(1, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 600, 'Dépottage TC 20 Pieds Palettisé', 0x74b09bded18911efa399482ae33417ab, b'1', 'TC', 2),
+(21, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 2200, 'Dépottage TC 40 Pieds Vrac', 0x74b13e56d18911efa399482ae33417ab, b'1', 'TC', 2),
+(31, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 1200, 'Dépottage TC 40 Pieds Palettisé', 0x74b1402fd18911efa399482ae33417ab, b'1', 'TC', 2),
+(4, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 1100, 'Dépottage TC 20 Pieds Vrac', 0x74b140c0d18911efa399482ae33417ab, b'1', 'TC', 2),
+(5, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 2200, 'Dépottage Semi-remorque Vrac', 0x74b14136d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
+(6, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 1200, 'Dépottage Semi-remorque Palettisé', 0x74b141e1d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
+(7, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 600, 'Dépottage Camion Palettisé', 0x74b14259d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
+(8, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 1100, 'Dépottage Camion Vrac', 0x74b142c2d18911efa399482ae33417ab, b'1', 'TRUCK', 2),
+(9, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 600, 'TRI camion/TC 20 (palettes)', 0x74b1434ad18911efa399482ae33417ab, b'1', 'TRUCK/TC', 2),
+(10, '2025-01-13 09:36:06.000000', 1, NULL, '2025-01-13 09:36:06.000000', 1, 1200, 'TRI camion/TC 40 (palettes)', 0x74b143b6d18911efa399482ae33417ab, b'1', 'TRUCK/TC', 2);
 
 
 INSERT INTO `temperatures` (`id`, `created_at`, `created_by`, `deleted_at`, `updated_at`, `updated_by`,`name`, `ref`, `company_id`) VALUES
@@ -514,3 +515,39 @@ INSERT INTO `supports` (`id`, `created_at`, `created_by`, `deleted_at`, `updated
 (10, '2025-01-24 10:47:00.000000', NULL, NULL, NULL, NULL,  'Plastic Crate', 0x00000000000000000000000000000000, 2),
 (11, '2025-01-24 10:50:00.000000', NULL, NULL, NULL, NULL,'Steel Rack', 0x00000000000000000000000000000000, 2),
 (12, '2025-01-24 10:52:00.000000', NULL, NULL, NULL, NULL,  'Wooden Rack', 0x00000000000000000000000000000000, 2);
+
+
+
+INSERT INTO `storage_need_status` (`id`, `background_color`, `color`, `css_class`, `display_order`, `name`, `ref`) VALUES
+(1, '#E3F2FD', '#0D47A1', 'status-new', 1, 'Nouvelle', 0x00000000000000000000000000000000),
+(2, '#C8E6C9', '#1B5E20', 'status-qualified', 2, 'En traitment', 0x00000000000000000000000000000000),
+(3, '#FFF3E0', '#E65100', 'status-interested', 3, 'Validé', 0x00000000000000000000000000000000),
+(4, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Envoye', 0x00000000000000000000000000000000);
+
+
+
+INSERT INTO `storage_offer_status` (`id`, `background_color`, `color`, `css_class`, `display_order`, `name`, `ref`) VALUES
+(1, '#E3F2FD', '#0D47A1', 'status-new', 1, 'Nouvelle', 0x00000000000000000000000000000000),
+(2, '#C8E6C9', '#1B5E20', 'status-qualified', 2, 'En traitment', 0x00000000000000000000000000000000),
+(3, '#FFF3E0', '#E65100', 'status-interested', 3, 'Validé', 0x00000000000000000000000000000000),
+(4, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Envoye', 0x00000000000000000000000000000000);
+
+INSERT INTO `storage_contract_status` (`id`, `background_color`, `color`, `css_class`, `display_order`, `name`, `ref`) VALUES
+(1, '#E3F2FD', '#0D47A1', 'status-new', 1, 'Nouvelle', 0x00000000000000000000000000000000),
+(2, '#C8E6C9', '#1B5E20', 'status-qualified', 2, 'En traitment', 0x00000000000000000000000000000000),
+(3, '#FFF3E0', '#E65100', 'status-interested', 3, 'Validé', 0x00000000000000000000000000000000),
+(4, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Envoye', 0x00000000000000000000000000000000);
+
+
+
+INSERT INTO `storage_delivery_note_status` (`id`, `background_color`, `color`, `css_class`, `display_order`, `name`, `ref`) VALUES
+(1, '#E3F2FD', '#0D47A1', 'status-new', 1, 'Nouvelle', 0x00000000000000000000000000000000),
+(2, '#C8E6C9', '#1B5E20', 'status-qualified', 2, 'En traitment', 0x00000000000000000000000000000000),
+(3, '#FFF3E0', '#E65100', 'status-interested', 3, 'Validé', 0x00000000000000000000000000000000),
+(4, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Envoye', 0x00000000000000000000000000000000);
+
+INSERT INTO `storage_invoice_status` (`id`, `background_color`, `color`, `css_class`, `display_order`, `name`, `ref`) VALUES
+(1, '#E3F2FD', '#0D47A1', 'status-new', 1, 'Nouvelle', 0x00000000000000000000000000000000),
+(2, '#C8E6C9', '#1B5E20', 'status-qualified', 2, 'En traitment', 0x00000000000000000000000000000000),
+(3, '#FFF3E0', '#E65100', 'status-interested', 3, 'Validé', 0x00000000000000000000000000000000),
+(4, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Envoye', 0x00000000000000000000000000000000);

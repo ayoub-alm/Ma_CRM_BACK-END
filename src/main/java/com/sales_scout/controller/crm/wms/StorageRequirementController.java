@@ -46,4 +46,15 @@ public class StorageRequirementController {
         }
     }
 
+
+    @PutMapping("")
+    public ResponseEntity<StorageRequirementResponseDto> updateStorageRequirement(@RequestBody StorageRequirementCreateDto storageRequirementCreateDto)
+            throws ResourceNotFoundException {
+        try {
+            return ResponseEntity.ok(this.storageRequirementService.updateRequirement(storageRequirementCreateDto));
+        }catch (Exception e){
+            throw new ResourceNotFoundException(e.getMessage(),"requirement", "");
+        }
+    }
+
 }

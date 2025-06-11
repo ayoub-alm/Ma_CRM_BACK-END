@@ -24,4 +24,5 @@ public class CreatedStorageOfferDto {
     private Long storageNeedId;
     private Long paymentTypeId;
     private int paymentDeadline;
+    private String number;
 }

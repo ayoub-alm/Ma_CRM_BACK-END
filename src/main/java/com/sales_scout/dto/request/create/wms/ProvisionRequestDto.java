@@ -3,8 +3,10 @@ package com.sales_scout.dto.request.create.wms;
 import com.sales_scout.enums.crm.DiscountTypeEnum;
 import lombok.*;
 
+
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor @Getter @Setter
+@Getter @Setter
 @Builder
 public class ProvisionRequestDto {
     private Long id;
@@ -13,8 +15,10 @@ public class ProvisionRequestDto {
     private Double initPrice;
     private DiscountTypeEnum discountType;
     private Double discountValue;
+    private Double increaseValue;
     private Double salesPrice;
     private String unitOfMeasurement;
     private String notes;
     private Long companyId;
+    private Integer order;
 }

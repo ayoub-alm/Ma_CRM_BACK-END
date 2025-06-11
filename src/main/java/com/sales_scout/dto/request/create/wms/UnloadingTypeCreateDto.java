@@ -20,5 +20,5 @@ public class UnloadingTypeCreateDto {
     private String unitOfMeasurement;
     private Boolean status;
     private Long companyId;
-
+    private Integer order;
 }

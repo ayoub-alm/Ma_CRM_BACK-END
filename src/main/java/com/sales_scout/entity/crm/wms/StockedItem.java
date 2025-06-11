@@ -42,7 +42,11 @@ public class StockedItem extends BaseEntity {
     @JoinColumn(name = "dimension_id")
     private Dimension dimension;
     private Double weight;
-    private Double price;
+    @Column(nullable = true)
+    @Builder.Default
+    private Double price = 0D;
+    private Integer quantity;
+
     @ManyToOne
     @JoinColumn(name = "storage_offer_id") // Reference to the StorageOffer entity
     private StorageOffer storageOffer;
@@ -50,6 +54,6 @@ public class StockedItem extends BaseEntity {
     @JoinColumn(name = "storage_need_id") // Reference to the StorageOffer entity
     private StorageNeed storageNeed;
 
-    @OneToMany(mappedBy = "stockedItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "stockedItem", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<StockedItemProvision> stockedItemProvisions;
 }

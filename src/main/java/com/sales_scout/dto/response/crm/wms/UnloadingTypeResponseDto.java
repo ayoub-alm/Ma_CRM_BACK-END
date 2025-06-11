@@ -23,7 +23,8 @@ public class UnloadingTypeResponseDto {
     private Long companyId;
     private Double discountValue;
     private DiscountTypeEnum discountType;
+    private Double increaseValue;
     private Double salesPrice;
     private String companyName;
-
+    private Integer order;
 }

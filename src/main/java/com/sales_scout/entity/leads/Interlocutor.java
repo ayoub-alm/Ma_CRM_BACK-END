@@ -43,8 +43,8 @@ public class Interlocutor extends BaseEntity {
     @Builder.Default
     private ActiveInactiveEnum active = ActiveInactiveEnum.ACTIVE;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "job_title_id", nullable = true)
-    private JobTitle jobTitle;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "job_title_id", nullable = true)
+    private String jobTitle;
 
 }

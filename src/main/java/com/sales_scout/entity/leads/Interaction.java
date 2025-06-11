@@ -53,6 +53,9 @@ public class Interaction extends BaseEntity {
     private LocalDateTime planningDate;
 
     @Column(nullable = true)
+    private LocalDateTime interactionDate;
+
+    @Column(nullable = true)
     private String joinFilePath;
 
     @Column(nullable = true)

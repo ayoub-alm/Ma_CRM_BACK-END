@@ -2,14 +2,12 @@ package com.sales_scout.entity.crm.wms.contract;
 
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
+import com.sales_scout.entity.crm.wms.deliveryNote.StorageDeliveryNote;
 import com.sales_scout.entity.crm.wms.offer.StorageOffer;
-import com.sales_scout.entity.crm.wms.offer.StorageOfferRequirement;
-import com.sales_scout.entity.crm.wms.offer.StorageOfferUnloadType;
 import com.sales_scout.entity.data.PaymentMethod;
 import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.enums.crm.wms.LivreEnum;
-import com.sales_scout.enums.crm.wms.NeedStatusEnum;
 import com.sales_scout.enums.crm.wms.StorageReasonEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,7 +15,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,27 +33,35 @@ public class StorageContract extends BaseEntity {
     private Long id;
     @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
-    private String startDate;
-    private String endDate;
-    private String notes;
+    private String number;
+    private LocalDate initialDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalDate renewalDate;
+    private String note;
+    private int noticePeriod;
+    private Double managementFees;
+    private Long numberOfReservedPlaces;
+    private Double minimumBillingGuaranteed;
+    private Double declaredValueOfStock;
+    private Double insuranceValue;
     private String productType;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LivreEnum liverStatus;
-    private LocalDateTime expirationDate = LocalDateTime.now();
-    private String duration;
+    private LocalDate expirationDate;
+    private Long duration;
     private int numberOfSku;
+    private String pdfUrl;
     // Enum for the reason for storage (TEMPORARY, PERMANENT, SEASONAL)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StorageReasonEnum storageReason;
-    // Enum for the status (created, negotiation, canceled)
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private NeedStatusEnum status;
     @ManyToOne
-    @JoinColumn(name = "offer_id")
-    private StorageOffer offer;
+    @JoinColumn(name = "status_id", referencedColumnName = "id", nullable = false)
+    private StorageContractStatus status;
+    @OneToMany(mappedBy = "storageContract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StorageOffer> storageOffers;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
@@ -71,4 +79,15 @@ public class StorageContract extends BaseEntity {
     @JoinColumn(name = "payment_method_id", nullable = false)
     private PaymentMethod paymentMethod;
     private int paymentDeadline;
+    // Child contracts (annexes)
+    @OneToMany(mappedBy = "parentContract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StorageContract> annexes;
+
+    @OneToMany(mappedBy = "storageContract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StorageDeliveryNote> notes;
+    // Parent contract
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_contract_id")
+    private StorageContract parentContract;
+
 }

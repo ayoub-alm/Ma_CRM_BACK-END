@@ -29,4 +29,5 @@ public class InteractionRequestDto  {
     private String address;
     private Long agentId;
     private Long affectedToId;
+    private LocalDateTime interactionDate;
 }

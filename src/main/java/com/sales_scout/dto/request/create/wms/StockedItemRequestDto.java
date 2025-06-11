@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class StockedItemRequestDto {
-
     private Long supportId;
     private Long structureId;
     private Long stackedLevel;
@@ -26,6 +25,7 @@ public class StockedItemRequestDto {
     private double weight;
     private double length;
     private Double price;
-    private Double Volume;
+    private Double volume;
+    private Integer quantity;
     private List<ProvisionRequestDto> provisions;
 }

@@ -5,6 +5,7 @@ import com.sales_scout.dto.request.create.wms.UnloadingTypeCreateDto;
 import com.sales_scout.dto.response.crm.wms.UnloadingTypeResponseDto;
 import com.sales_scout.entity.Company;
 import com.sales_scout.entity.crm.wms.UnloadingType;
+import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.mapper.UnloadingTypeMapper;
 import com.sales_scout.repository.crm.wms.UnloadingTypeRepository;
 import org.springframework.stereotype.Service;
@@ -43,8 +44,24 @@ public class UnloadingTypeService {
                 .unitOfMeasurement(unloadingTypeCreateDto.getUnitOfMeasurement())
                 .company(Company.builder().id(unloadingTypeCreateDto.getCompanyId()).build())
                 .initPrice(unloadingTypeCreateDto.getInitPrice())
+                .itemOrder(unloadingTypeCreateDto.getOrder())
                 .build());
 
         return UnloadingTypeMapper.toResponseDto(unloadingType);
+    }
+
+    /**
+     * This function allows us to update unloading type
+     * @param unloadingTypeCreateDto updated data
+     * @return {UnloadingTypeResponseDto} updated unloading type
+     */
+    public UnloadingTypeResponseDto updateUnloadingType(UnloadingTypeCreateDto unloadingTypeCreateDto){
+        UnloadingType unloadingType = this.unloadingTypeRepository.findById(unloadingTypeCreateDto.getId())
+                .orElseThrow(() ->  new ResourceNotFoundException("unloading type not found with id"+ unloadingTypeCreateDto.getId(),"",""));
+        unloadingType.setName(unloadingTypeCreateDto.getName());
+        unloadingType.setItemOrder(unloadingTypeCreateDto.getOrder());
+        unloadingType.setInitPrice(unloadingTypeCreateDto.getInitPrice());
+        unloadingType.setUnitOfMeasurement(unloadingTypeCreateDto.getUnitOfMeasurement());
+        return UnloadingTypeMapper.toResponseDto(unloadingTypeRepository.save(unloadingType));
     }
 }

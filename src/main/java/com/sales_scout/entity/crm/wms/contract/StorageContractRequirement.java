@@ -5,19 +5,16 @@ import com.sales_scout.entity.Company;
 import com.sales_scout.entity.crm.wms.Requirement;
 import com.sales_scout.enums.crm.DiscountTypeEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "contract_requirements")
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter @Setter
 public class StorageContractRequirement extends BaseEntity {
 
     @Id

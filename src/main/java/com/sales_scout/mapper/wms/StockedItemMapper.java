@@ -36,9 +36,15 @@ public class StockedItemMapper {
                 .temperatureName(stockedItem.getTemperature() != null ? stockedItem.getTemperature().getName() : null)
                 .isFragile(stockedItem.getIsFragile())
                 .uvc(stockedItem.getUvc())
+                .uc(stockedItem.getUc())
+                .weight(stockedItem.getWeight())
                 .numberOfPackages(stockedItem.getNumberOfPackages())
                 .dimension(stockedItem.getDimension()) // Assuming Dimension is directly serializable
                 .price(stockedItem.getPrice())
+                .quantity(stockedItem.getQuantity())
+                .volume(stockedItem.getVolume())
+                .uc(stockedItem.getUc())
+                .uvc(stockedItem.getUvc())
 //                .storageOffer(stockedItem.getStorageOffer()) // Assuming StorageOffer is directly serializable
 //                .storageNeed(stockedItem.getStorageNeed()) // Assuming StorageNeed is directly serializable
                 .provisionResponseDto(provisionResponseDtos) // Map if provisions are required; else leave null

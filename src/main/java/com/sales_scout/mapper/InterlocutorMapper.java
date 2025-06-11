@@ -26,7 +26,8 @@ public class InterlocutorMapper {
                 .department(interlocutor.getDepartment())
                 .phoneNumber(PhoneNumber.builder().id(interlocutor.getPhoneNumber().getId()).number(interlocutor.getPhoneNumber().getNumber()).build())
                 .emailAddress(EmailAddress.builder().id(interlocutor.getEmailAddress().getId())
-                        .address(interlocutor.getEmailAddress().getAddress()).build()).jobTitle(interlocutor.getJobTitle())
+                .address(interlocutor.getEmailAddress().getAddress()).build())
+                .jobTitle(interlocutor.getJobTitle())
                 .customer(CustomerResponseDto.builder().id(interlocutor.getCustomer().getId()).name(interlocutor.getCustomer().getName()).build())
                 .active(interlocutor.getActive()).build();
         interlocutorResponseDto.setCreatedAt(interlocutor.getCreatedAt());

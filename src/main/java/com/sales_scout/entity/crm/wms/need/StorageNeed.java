@@ -3,6 +3,7 @@ package com.sales_scout.entity.crm.wms.need;
 import com.sales_scout.entity.BaseEntity;
 import com.sales_scout.entity.Company;
 import com.sales_scout.entity.leads.Customer;
+import com.sales_scout.entity.leads.CustomerStatus;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.enums.crm.wms.LivreEnum;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
@@ -27,6 +28,7 @@ public class StorageNeed extends BaseEntity {
     private Long id;
     @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
+    private String number;
     // Enum for the status of the storage need (OPEN/CLOSE)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -35,10 +37,10 @@ public class StorageNeed extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StorageReasonEnum storageReason;
-    // Enum for the status (created, negotiation, canceled)
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private NeedStatusEnum status;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id", referencedColumnName = "id", nullable = false)
+    private StorageNeedStatus status;
     private LocalDateTime expirationDate;
     private Long duration ;
     private int numberOfSku;

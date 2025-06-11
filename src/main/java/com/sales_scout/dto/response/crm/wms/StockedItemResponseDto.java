@@ -23,10 +23,14 @@ public class StockedItemResponseDto {
     private String temperatureName;
     private Boolean isFragile;
     private Integer uvc;
+    private Integer uc;
+    private Double weight;
+    private Double volume;
     private Integer numberOfPackages;
     private Dimension dimension;
     private Double price;
     private StorageOffer storageOffer;
     private StorageNeed storageNeed;
+    private Integer quantity;
     private List<ProvisionResponseDto> provisionResponseDto;
 }

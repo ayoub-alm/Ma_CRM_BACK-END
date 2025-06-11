@@ -17,7 +17,7 @@ public class PaymentMethod extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name; // Ensure name is unique if it's a predefined set of values
+    private String name;
 
     @Column(nullable = false)
     private boolean active = true;

@@ -27,7 +27,7 @@ public class UpdateInterlocutorDto {
 
     private EmailAddress emailAddress;
 
-    private Long jobTitleId; // Optional, can be null
+    private String jobTitle; // Optional, can be null
 
     private ActiveInactiveEnum active;
 

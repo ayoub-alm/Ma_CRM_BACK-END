@@ -1,24 +1,33 @@
 package com.sales_scout.dto.response.crm.wms;
 
 import com.sales_scout.dto.response.InterlocutorResponseDto;
+import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.crm.wms.contract.StorageContract;
+import com.sales_scout.entity.crm.wms.contract.StorageContractStatus;
 import com.sales_scout.entity.data.PaymentMethod;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Setter
 @Getter
-public class StorageContractResponseDto {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class StorageContractResponseDto extends BaseEntity {
     // Getters and Setters
     private Long id;
     private UUID ref;
+    private String number;
     private String liverStatus;  // LivreEnum as String
     private String storageReason; // StorageReasonEnum as String
-    private String status; // NeedStatusEnum as String
-    private LocalDateTime expirationDate;
+    private StorageContractStatus status; // NeedStatusEnum as String
+    private LocalDate expirationDate;
+    private LocalDate initialDate;
+    private LocalDate startDate;
     private Long duration;
     private int numberOfSku;
     private String productType;
@@ -31,4 +40,16 @@ public class StorageContractResponseDto {
     private PaymentMethod paymentType;
     private int paymentDeadline;
     private InterlocutorResponseDto interlocutor;
+    private String note;
+    private Double managementFees;
+    private Long numberOfReservedPlaces;
+    private Double minimumBillingGuaranteed;
+    private int noticePeriod;
+    private LocalDate renewalDate;
+    private Double declaredValueOfStock;
+    private Double insuranceValue;
+    private String pdfUrl;
+    private StorageContractResponseDto parentContract;
+    private List<StorageContractResponseDto> annexes;
+    private StorageOfferResponseDto offer;
 }

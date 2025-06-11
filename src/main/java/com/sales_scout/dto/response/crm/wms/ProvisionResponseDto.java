@@ -18,6 +18,11 @@ public class ProvisionResponseDto {
     private String notes;
     private Long companyId;
     private DiscountTypeEnum discountType;
+    private Double increaseValue;
     private Double discountValue;
     private Double salesPrice;
+    private Long stockedItemProvisionId;
+    private Boolean isStoragePrice;
+    private Long quantity;
+    private Integer order;
 }

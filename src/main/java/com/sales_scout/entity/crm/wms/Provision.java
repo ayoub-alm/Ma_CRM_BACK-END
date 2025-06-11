@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -32,13 +31,11 @@ public class Provision extends BaseEntity {
     private DiscountTypeEnum discountTypeEnum;
     private double discountValue;
     private double salesPrice;
-
-
+    @Column(name = "item_order")
+    private Integer itemOrder = 0;
+    private Boolean isStoragePrice;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-
-//    @OneToMany(mappedBy = "provision", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<StockedItemProvision> stockedItemProvisions;
 }

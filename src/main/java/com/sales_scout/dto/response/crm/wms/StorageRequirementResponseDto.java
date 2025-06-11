@@ -19,7 +19,9 @@ public class StorageRequirementResponseDto {
     private DiscountTypeEnum discountType;
     private Double salesPrice;
     private Double discountValue;
+    private Double increaseValue;
     private String unitOfMeasurement;
     private Long companyId;
     private String companyName;
+    private Integer order;
 }

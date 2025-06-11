@@ -13,6 +13,7 @@ import com.sales_scout.entity.crm.wms.need.StorageNeedUnloadingType;
 import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.mapper.InterlocutorMapper;
 import com.sales_scout.mapper.UnloadingTypeMapper;
+import com.sales_scout.mapper.UserMapper;
 import com.sales_scout.repository.crm.wms.StockedItemRepository;
 import com.sales_scout.repository.crm.wms.need.StorageNeedRequirementRepository;
 import com.sales_scout.repository.crm.wms.need.StorageNeedStockedItemRepository;
@@ -33,14 +34,15 @@ public class StorageNeedMapper {
     private final StorageNeedRequirementRepository storageNeedRequirementRepository;
     private final StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository;
     private final InterlocutorMapper interlocutorMapper;
-
-    public StorageNeedMapper(CustomerRepository customerRepository, StockedItemRepository stockedItemRepository, StockedItemRepository stockedItemRepository1, StorageNeedStockedItemRepository storageNeedStockedItemRepository, StorageNeedRequirementRepository storageNeedRequirementRepository, StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository, InterlocutorMapper interlocutorMapper) {
+    private final UserMapper userMapper;
+    public StorageNeedMapper(CustomerRepository customerRepository, StockedItemRepository stockedItemRepository, StockedItemRepository stockedItemRepository1, StorageNeedStockedItemRepository storageNeedStockedItemRepository, StorageNeedRequirementRepository storageNeedRequirementRepository, StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository, InterlocutorMapper interlocutorMapper, UserMapper userMapper) {
         this.customerRepository = customerRepository;
         this.stockedItemRepository = stockedItemRepository1;
         this.storageNeedStockedItemRepository = storageNeedStockedItemRepository;
         this.storageNeedRequirementRepository = storageNeedRequirementRepository;
         this.storageNeedUnloadingTypeRepository = storageNeedUnloadingTypeRepository;
         this.interlocutorMapper = interlocutorMapper;
+        this.userMapper = userMapper;
     }
 
     /**
@@ -101,17 +103,16 @@ public class StorageNeedMapper {
                 .stream()
                 .map(StorageNeedUnloadingType::getUnloadingType)
                 .toList();
-//                List<UnloadingType> unloadingTypes = storageNeed.getStorageNeedUnloadingTypes().stream()
-//                        .map(storageNeedUnloadingType -> storageNeedUnloadingType.getUnloadingType())
-//                        .collect(Collectors.toList());
+
 
         // Create DTO and set properties
         StorageNeedResponseDto dto = new StorageNeedResponseDto();
         dto.setId(storageNeed.getId());
         dto.setRef(storageNeed.getRef());
+        dto.setNumber(storageNeed.getNumber());
         dto.setLiverStatus(storageNeed.getLiverStatus().name()); // Convert Enum to String
         dto.setStorageReason(storageNeed.getStorageReason().name()); // Convert Enum to String
-        dto.setStatus(storageNeed.getStatus().name()); // Convert Enum to String
+        dto.setStatus(storageNeed.getStatus()); // Convert Enum to String
         dto.setExpirationDate(storageNeed.getExpirationDate());
         dto.setDuration(storageNeed.getDuration());
         dto.setNumberOfSku(storageNeed.getNumberOfSku());
@@ -120,7 +121,10 @@ public class StorageNeedMapper {
         dto.setUnloadingTypes(unloadingTypes.stream().map(UnloadingTypeMapper::toResponseDto).collect(Collectors.toList()));
         dto.setRequirements(requirements.stream().map(RequirementMapper::toResponseDto).collect(Collectors.toList()));
         dto.setInterlocutor(interlocutorMapper.toResponseDto(storageNeed.getInterlocutor()));
-
+        dto.setCreatedAt(storageNeed.getCreatedAt());
+        dto.setUpdatedAt(storageNeed.getUpdatedAt());
+        dto.setCreatedBy(storageNeed.getCreatedBy() != null ? userMapper.fromEntity(storageNeed.getCreatedBy()) : null);
+        dto.setUpdatedBy(storageNeed.getUpdatedBy() != null ? userMapper.fromEntity(storageNeed.getUpdatedBy()) : null);
 //         Map nested customer details if present
         if (storageNeed.getCustomer() != null) {
             CustomerDto customerDto = CustomerDto.builder()
@@ -142,7 +146,7 @@ public class StorageNeedMapper {
         dto.setRef(storageNeed.getRef());
         dto.setLiverStatus(storageNeed.getLiverStatus().name()); // Convert Enum to String
         dto.setStorageReason(storageNeed.getStorageReason().name()); // Convert Enum to String
-        dto.setStatus(storageNeed.getStatus().name()); // Convert Enum to String
+        dto.setStatus(storageNeed.getStatus()); // Convert Enum to String
         dto.setExpirationDate(storageNeed.getExpirationDate());
         dto.setDuration(storageNeed.getDuration());
         dto.setNumberOfSku(storageNeed.getNumberOfSku());

@@ -9,6 +9,7 @@ import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.enums.ProspectStatus;
 import com.sales_scout.exception.DataAlreadyExistsException;
 import com.sales_scout.exception.DataNotFoundException;
+import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.repository.leads.CustomerRepository;
 import com.sales_scout.service.leads.CustomerService;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,11 +25,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/prospects")
-public class ProspectController {
+public class CustomerController {
      @Autowired
     private final CustomerService customerService;
     private final CustomerRepository customerRepository;
-    public ProspectController(CustomerService customerService, CustomerRepository customerRepository) {
+    public CustomerController(CustomerService customerService, CustomerRepository customerRepository) {
         this.customerService = customerService;
         this.customerRepository = customerRepository;
     }
@@ -111,10 +112,14 @@ public class ProspectController {
      */
     @PostMapping("")
     public ResponseEntity<Customer> createProspect(@RequestBody ProspectRequestDto prospectRequestDto) {
-        // Call the service method to create the Prospect
-        Customer prospect = customerService.saveOrUpdateProspect(prospectRequestDto);
-        // Return a ResponseEntity with the created Prospect and a 201 CREATED status
-        return new ResponseEntity<>(prospect, HttpStatus.CREATED);
+      try {
+          // Call the service method to create the Prospect
+          Customer prospect = customerService.saveOrUpdateProspect(prospectRequestDto);
+          // Return a ResponseEntity with the created Prospect and a 201 CREATED status
+          return new ResponseEntity<>(prospect, HttpStatus.CREATED);
+      } catch (Exception e) {
+          throw new DataNotFoundException(e.getMessage(),404L);
+      }
     }
 
     /**

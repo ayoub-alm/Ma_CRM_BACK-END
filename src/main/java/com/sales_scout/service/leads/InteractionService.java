@@ -148,6 +148,7 @@ public class InteractionService {
                 .planningDate(interactionRequestDto.getPlanningDate())
                 .joinFilePath(filePath)
                 .address(interactionRequestDto.getAddress())
+                .interactionDate(interactionRequestDto.getInteractionDate())
                 .build();
 
         if (interactionRequestDto.getAgentId() == null ){
@@ -321,6 +322,7 @@ public class InteractionService {
                 .affectedToName(interaction.getAffectedTo() != null ? interaction.getAffectedTo().getName() : null)
                 .createdAt(interaction.getCreatedAt())
                 .agentName(interaction.getAgent().getName())
+                .interactionDate(interaction.getInteractionDate())
                 .createdBy(interaction.getCreatedBy() != null ? userMapper.fromEntity(interaction.getCreatedBy()) : null)
                 .updatedBy(interaction.getUpdatedBy() != null ? userMapper.fromEntity(interaction.getUpdatedBy()) : null)
                 .build();

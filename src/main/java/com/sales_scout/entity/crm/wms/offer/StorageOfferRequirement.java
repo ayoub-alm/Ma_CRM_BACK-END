@@ -28,6 +28,9 @@ public class StorageOfferRequirement extends BaseEntity {
     private DiscountTypeEnum discountType;
     private Double discountValue;
     private Double salesPrice;
+    private Double increaseValue;
+    @Column(name = "item_order")
+    private Integer itemOrder = 0;
     @ManyToOne
     @JoinColumn(name = "storage_offer_id")
     private StorageOffer storageOffer;

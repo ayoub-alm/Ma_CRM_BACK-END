@@ -18,6 +18,7 @@ public class StorageRequirementMapper {
         dto.setRef(storageRequirement.getRef());
         dto.setInitPrice(storageRequirement.getInitPrice());
         dto.setUnitOfMeasurement(storageRequirement.getUnitOfMeasurement());
+        dto.setOrder(storageRequirement.getItemOrder());
         dto.setCompanyId(storageRequirement.getCompany() != null ? storageRequirement.getCompany().getId() : null);
         return dto;
     }

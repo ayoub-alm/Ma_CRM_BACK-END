@@ -42,11 +42,11 @@ public class Customer extends BaseEntity {
     private String website;
     private String linkedin;
     private String whatsapp;
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true, unique = false)
     private String ice;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String rc;
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true,unique = false)
     private String ifm;
     @Column(nullable = true)
     private String patent;
@@ -68,11 +68,11 @@ public class Customer extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String businessDescription;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name = "legal_status_id", nullable = true)
     private LegalStatus legalStatus;
 
-    @ManyToOne(fetch = FetchType.EAGER )
+    @ManyToOne()
     @JoinColumn(name = "city_id", nullable = true)
     private City city;
 
@@ -88,7 +88,7 @@ public class Customer extends BaseEntity {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name = "industry_id", nullable = true)
     private Industry industry;
 
@@ -102,7 +102,7 @@ public class Customer extends BaseEntity {
     @JoinColumn(name = "proprietary_structure_id", nullable = true)
     private ProprietaryStructure proprietaryStructure;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name = "job_title_id", nullable = true)
     private JobTitle reprosentaveJobTitle;
 

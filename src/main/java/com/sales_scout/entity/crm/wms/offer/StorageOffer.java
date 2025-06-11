@@ -8,6 +8,7 @@ import com.sales_scout.entity.Company;
 import com.sales_scout.entity.crm.wms.StockedItem;
 import com.sales_scout.entity.crm.wms.contract.StorageContract;
 import com.sales_scout.entity.crm.wms.need.StorageNeed;
+import com.sales_scout.entity.crm.wms.need.StorageNeedStatus;
 import com.sales_scout.entity.data.PaymentMethod;
 import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interlocutor;
@@ -36,13 +37,20 @@ public class StorageOffer extends BaseEntity {
     private Long id;
     @Column(nullable = false, updatable = false)
     private UUID ref = UUID.randomUUID();
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private NeedStatusEnum status;
+    private String number;
+    @ManyToOne
+    @JoinColumn(name = "status_id", referencedColumnName = "id", nullable = false)
+    private StorageOfferStatus status;
     private LocalDateTime expirationDate;
     private Long duration ;
-    private int numberOfSku;
+    private Long numberOfSku;
     private String productType;
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String note;
+    private Double managementFees;
+    private Long numberOfReservedPlaces;
+    private Double minimumBillingGuaranteed;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -58,8 +66,9 @@ public class StorageOffer extends BaseEntity {
     @OneToMany(mappedBy = "storageOffer", cascade = CascadeType.ALL)
     private Set<StockedItem> stockedItems;
 
-    @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL)
-    private Set<StorageContract> contracts;
+    @ManyToOne
+    @JoinColumn(name = "storage_contract_id", nullable = true)
+    private StorageContract storageContract;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
@@ -79,8 +88,12 @@ public class StorageOffer extends BaseEntity {
     @OneToMany(mappedBy = "storageOffer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StorageOfferUnloadType> storageOfferUnloadingTypes;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_method_id", nullable = false)
-    private PaymentMethod paymentMethod;
+    @OneToMany(mappedBy = "storageOffer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<StorageOfferPaymentMethod> storageOfferPaymentMethods;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "payment_method_id", nullable = false)
+//    private PaymentMethod paymentMethod;
     private int paymentDeadline;
+
+    private Long maxDisCountValue;
 }

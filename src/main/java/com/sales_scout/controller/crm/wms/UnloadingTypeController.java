@@ -50,4 +50,15 @@ public class UnloadingTypeController {
           throw new  ResourceNotFoundException(e.getCause().getMessage(),"unloadingType","unloadingType");
       }
     }
+
+    @PutMapping("")
+    public ResponseEntity<UnloadingTypeResponseDto> updateUnloadingType(@RequestBody UnloadingTypeCreateDto unloadingTypeCreateDto)
+            throws ResourceNotFoundException{
+        try{
+            return ResponseEntity.ok(this.unloadingTypeService.updateUnloadingType(unloadingTypeCreateDto));
+        }catch (ResourceNotFoundException e){
+            throw new  ResourceNotFoundException(e.getCause().getMessage(),"unloadingType","unloadingType");
+        }
+    }
+
 }

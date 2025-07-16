@@ -8,7 +8,12 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -69,6 +74,40 @@ public class InteractionController {
     ResponseEntity<InteractionResponseDto> createInteraction(@RequestBody InteractionRequestDto interactionRequestDto) throws IOException {
         InteractionResponseDto interaction = this.interactionService.saveOrUpdateInteraction(interactionRequestDto);
         return new ResponseEntity<>(interaction, HttpStatus.OK);
+    }
+
+    /**
+     *
+     * @param interactionId
+     * @param file
+     * @return
+     */
+    @PostMapping("/{interactionId}/upload-pdf")
+    public ResponseEntity<String> uploadContractPdf(
+            @PathVariable Long interactionId,
+            @RequestParam("file") MultipartFile file) {
+
+        try {
+            // Resolve absolute path (during dev only!)
+            Path resourcePath = Paths.get("src/main/resources/interactions");
+            if (!Files.exists(resourcePath)) {
+                Files.createDirectories(resourcePath);
+            }
+
+            String fileName = "interactions-" + interactionId + "-" + System.currentTimeMillis() + ".pdf";
+            Path filePath = resourcePath.resolve(fileName);
+
+            Files.write(filePath, file.getBytes());
+
+            // Save the URL that matches the static resource handler
+            String fileUrl = "/files/interactions/" + fileName;
+            interactionService.uploadInteractionFileReport(interactionId, fileUrl);
+
+            return ResponseEntity.ok(fileUrl);
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("Error while saving file: " + e.getMessage());
+        }
     }
 
     /**
@@ -158,4 +197,7 @@ public class InteractionController {
             throw new RuntimeException("Error fetching interactions: " + e.getMessage());
         }
     }
+
+
+
 }

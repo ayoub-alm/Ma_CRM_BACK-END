@@ -51,6 +51,8 @@ public class StorageOffer extends BaseEntity {
     private Double managementFees;
     private Long numberOfReservedPlaces;
     private Double minimumBillingGuaranteed;
+    @Column(nullable = true)
+    private Double minimumBillingGuaranteedFixed ;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -96,4 +98,5 @@ public class StorageOffer extends BaseEntity {
     private int paymentDeadline;
 
     private Long maxDisCountValue;
+    private String devise;
 }

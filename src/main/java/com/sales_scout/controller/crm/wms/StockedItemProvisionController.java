@@ -34,12 +34,12 @@ public class StockedItemProvisionController {
         return ResponseEntity.ok(service.createStockedItemProvision(provision));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<StockedItemProvisionResponseDto> update(@PathVariable Long id, @RequestBody StockedItemProvision provision)
-    throws ResourceNotFoundException
+    @PutMapping("/{id}/{stockedItemId}")
+    public ResponseEntity<StockedItemProvisionResponseDto> update(@PathVariable Long id, @PathVariable Long stockedItemId,
+                                          @RequestBody StockedItemProvision provision) throws ResourceNotFoundException
     {
         try {
-            return ResponseEntity.ok(service.updateStockedItemProvision(id, provision));
+            return ResponseEntity.ok(service.updateStockedItemProvision(id, provision, stockedItemId));
         }catch (EntityNotFoundException e){
             throw new ResourceNotFoundException(e.getMessage(),"Stocked item not found","");
         }

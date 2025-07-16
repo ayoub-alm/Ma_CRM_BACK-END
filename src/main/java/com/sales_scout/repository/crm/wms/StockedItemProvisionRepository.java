@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Repository
 public interface StockedItemProvisionRepository extends JpaRepository<StockedItemProvision, Long> {
     void deleteByStockedItemId(Long stockedItemId);
@@ -15,4 +18,5 @@ public interface StockedItemProvisionRepository extends JpaRepository<StockedIte
     @Query("DELETE FROM StockedItemProvision p WHERE p.id = :id")
     void hardDeleteById(@Param("id") Long id);
 
+    List<StockedItemProvision> findByStockedItemId(Long id);
 }

@@ -1,7 +1,6 @@
 package com.sales_scout.entity.crm.wms.invoice;
 
-import com.sales_scout.entity.crm.wms.contract.StorageContractRequirement;
-import com.sales_scout.entity.crm.wms.deliveryNote.StorageDeliveryNote;
+import com.sales_scout.entity.crm.wms.contract.StorageAnnexeRequirement;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +17,7 @@ public class StorageInvoiceStorageContractRequirement {
     private Double totalHt;
     @ManyToOne
     @JoinColumn(name = "storage_contract_requirement_id")
-    private StorageContractRequirement storageContractRequirement;
+    private StorageAnnexeRequirement storageContractRequirement;
     @ManyToOne
     @JoinColumn(name = "storage_delivery_note_id")
     private StorageInvoice storageInvoice;

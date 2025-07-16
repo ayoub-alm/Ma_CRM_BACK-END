@@ -18,6 +18,4 @@ public interface StorageContractRepository extends JpaRepository<StorageContract
 
     @Query("SELECT c FROM StorageContract c WHERE c.customer.id = :customerId AND (c.expirationDate IS NULL OR c.expirationDate > CURRENT_DATE) AND c.deletedAt IS NULL")
     List<StorageContract> findActiveContractsByCustomerId(Long customerId);
-
-    List<StorageContract> findByParentContractId(Long id);
 }

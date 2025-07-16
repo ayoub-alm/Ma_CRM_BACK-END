@@ -4,10 +4,12 @@ import com.sales_scout.Auth.SecurityUtils;
 import com.sales_scout.dto.EntityFilters.InteractionFilterRequestDto;
 import com.sales_scout.dto.request.create.InteractionRequestDto;
 import com.sales_scout.dto.response.InteractionResponseDto;
+import com.sales_scout.entity.crm.wms.contract.StorageContract;
 import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interaction;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.entity.UserEntity;
+import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.mapper.UserMapper;
 import com.sales_scout.repository.leads.CustomerRepository;
 import com.sales_scout.specification.InteractionSpecification;
@@ -107,7 +109,7 @@ public class InteractionService {
         // Validate required fields in InteractionRequestDto
         Objects.requireNonNull(interactionRequestDto, "InteractionRequestDto cannot be null.");
         Objects.requireNonNull(interactionRequestDto.getCustomerId(), "Prospect ID is required.");
-
+        Optional<Interaction> existInteraction = this.interactionRepository.findById(interactionRequestDto.getId());
         // Fetch the associated Prospect (Customer)
         Customer prospect = prospectRepository.findById(interactionRequestDto.getCustomerId())
                 .orElseThrow(() -> new EntityNotFoundException("Prospect not found for ID: " + interactionRequestDto.getCustomerId()));
@@ -130,10 +132,10 @@ public class InteractionService {
         }
 
         // Handle file path saving
-        String filePath = null;
-        if (interactionRequestDto.getJoinFilePath() != null && !interactionRequestDto.getJoinFilePath().isEmpty()) {
-            filePath = saveFile(interactionRequestDto.getJoinFilePath());
-        }
+//        String filePath = null;
+//        if (interactionRequestDto.getJoinFilePath() != null && !interactionRequestDto.getJoinFilePath().isEmpty()) {
+//            filePath = saveFile(interactionRequestDto.getJoinFilePath());
+//        }
 
         // Build the Interaction entity
         Interaction interaction = Interaction.builder()
@@ -146,7 +148,7 @@ public class InteractionService {
                 .interactionSubject(interactionRequestDto.getInteractionSubject())
                 .interactionType(interactionRequestDto.getInteractionType())
                 .planningDate(interactionRequestDto.getPlanningDate())
-                .joinFilePath(filePath)
+                .joinFilePath(existInteraction.isPresent() ? existInteraction.get().getJoinFilePath() : "")
                 .address(interactionRequestDto.getAddress())
                 .interactionDate(interactionRequestDto.getInteractionDate())
                 .build();
@@ -155,9 +157,9 @@ public class InteractionService {
             interaction.setCreatedBy(SecurityUtils.getCurrentUser());
         }else{
             interaction.setUpdatedBy(SecurityUtils.getCurrentUser());
-            interaction.setUpdatedAt(LocalDateTime.now());
-        }
 
+        }
+        interaction.setUpdatedAt(LocalDateTime.now());
         // Save the interaction entity
         interaction = interactionRepository.save(interaction);
 
@@ -341,5 +343,19 @@ public class InteractionService {
         return interactionRepository.findAll(specification).stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * This function allows to update interaction file report
+     * @param interactionId the interaction file ID
+     * @param fileUrl File URL
+     */
+    public void uploadInteractionFileReport(Long interactionId, String fileUrl) {
+        Interaction interaction = interactionRepository.findById(interactionId)
+                .orElseThrow(() -> new ResourceNotFoundException("interaction", "id", interactionId.toString()));
+        interaction.setUpdatedAt(LocalDateTime.now());
+        interaction.setUpdatedBy(SecurityUtils.getCurrentUser());
+        interaction.setJoinFilePath(fileUrl);
+        interactionRepository.save(interaction);
     }
 }

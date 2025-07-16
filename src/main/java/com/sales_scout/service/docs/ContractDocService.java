@@ -4,6 +4,7 @@ import com.sales_scout.entity.Company;
 import com.sales_scout.entity.crm.wms.contract.*;
 import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interlocutor;
+import com.sales_scout.repository.crm.wms.contract.ContractRequirementRepository;
 import com.sales_scout.repository.crm.wms.contract.ContractStockedItemRepository;
 import com.sales_scout.repository.crm.wms.contract.ContractUnloadingTypeRepository;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -21,9 +22,11 @@ import java.util.*;
 public class ContractDocService {
     private final ContractStockedItemRepository contractStockedItemRepository;
     private final ContractUnloadingTypeRepository contractUnloadingTypeRepository;
-    public ContractDocService(ContractStockedItemRepository contractStockedItemRepository, ContractUnloadingTypeRepository contractUnloadingTypeRepository) {
+    private final ContractRequirementRepository contractRequirementRepository;
+    public ContractDocService(ContractStockedItemRepository contractStockedItemRepository, ContractUnloadingTypeRepository contractUnloadingTypeRepository, ContractRequirementRepository contractRequirementRepository) {
         this.contractStockedItemRepository = contractStockedItemRepository;
         this.contractUnloadingTypeRepository = contractUnloadingTypeRepository;
+        this.contractRequirementRepository = contractRequirementRepository;
     }
 
     public byte[] generateContractDocx(StorageContract contract) throws IOException {
@@ -76,14 +79,14 @@ public class ContractDocService {
         placeholders.put("Valeur_de_frais_de_gestion", String.valueOf(Optional.ofNullable(contract.getManagementFees()).orElse(0.0)));
         placeholders.put("Assurance_AD_Valorem_en_sus", "0.15%");
         placeholders.put("Notes", Optional.ofNullable(contract.getNote()).orElse("Aucune"));
-//        placeholders.put("parent_contract", Optional.ofNullable(contract.getParentContract().getNumber()).orElse("Aucune"));
+        placeholders.put("Duree_Tacite_Reconduction", Optional.of(contract.getDuration() + "Mois").orElse("Aucune"));
 
         return placeholders;
     }
 
     private List<List<String>> extractDepotage(StorageContract contract) {
         List<List<String>> rows = new ArrayList<>();
-        for (StorageContractUnloadingType unloadingType : contractUnloadingTypeRepository.findAllByStorageContractId(contract.getId())) {
+        for (StorageAnnexeUnloadingType unloadingType : contractUnloadingTypeRepository.findAllByAnnexeStorageContractId(contract.getId())) {
             rows.add(List.of(
                     unloadingType.getUnloadingType().getName(),
                     unloadingType.getUnloadingType().getUnitOfMeasurement(),
@@ -95,7 +98,7 @@ public class ContractDocService {
 
     private List<List<String>> extractLogisticsOperations(StorageContract contract) {
         List<List<String>> rows = new ArrayList<>();
-        for (StorageContractStockedItem item :contractStockedItemRepository.findAllByStorageContractId(contract.getId())) {
+        for (StorageAnnexeStockedItem item :contractStockedItemRepository.findAllByAnnexeId(contract.getId())) {
             item.getStockedItem().getStockedItemProvisions().forEach(prv -> {
                 rows.add(List.of(
                         prv.getProvision().getName(),
@@ -109,7 +112,7 @@ public class ContractDocService {
 
     private List<List<String>> extractValueAddedServices(StorageContract contract) {
         List<List<String>> rows = new ArrayList<>();
-        for (StorageContractRequirement req : contract.getStorageContractRequirements()) {
+        for (StorageAnnexeRequirement req : contractRequirementRepository.findAllByAnnexeStorageContractId(contract.getId())) {
             rows.add(List.of(
                     req.getRequirement().getName(),
                     req.getRequirement().getUnitOfMeasurement(),

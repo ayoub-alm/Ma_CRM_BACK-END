@@ -1,6 +1,7 @@
 package com.sales_scout.controller.crm.wms;
 
 import com.sales_scout.dto.request.create.wms.StorageDeliveryNoteCreateDto;
+import com.sales_scout.dto.request.create.wms.UpdateRequestForDeliveryNoteDto;
 import com.sales_scout.dto.request.update.crm.UpdateDeliveryNoteQuantity;
 import com.sales_scout.dto.response.crm.wms.StorageDeliveryNoteResponseDto;
 import com.sales_scout.exception.ResourceNotFoundException;
@@ -84,6 +85,19 @@ public class storageDeliveryNoteController {
     public ResponseEntity<StorageDeliveryNoteResponseDto> createStorageDeliveryNote(@RequestBody StorageDeliveryNoteCreateDto storageDeliveryNoteCreateDto){
         try {
             return ResponseEntity.ok(this.storageDeliveryNoteService.createStorageDeliveryNote(storageDeliveryNoteCreateDto));
+        }catch (Exception e){
+            throw new ResourceNotFoundException(e.getMessage(),e.getCause().toString(),"");
+        }
+    }
+
+
+    @PutMapping("/update-request/{storageDeliveryNoteId}")
+    public ResponseEntity<StorageDeliveryNoteResponseDto> createUpdateRequestForDeliveryNote(
+            @RequestBody UpdateRequestForDeliveryNoteDto updateRequestForDeliveryNoteDto,
+            @PathVariable Long storageDeliveryNoteId){
+        try {
+            return ResponseEntity.ok(
+                    this.storageDeliveryNoteService.createUpdateRequestForDeliveryNote(storageDeliveryNoteId,updateRequestForDeliveryNoteDto.getNote()));
         }catch (Exception e){
             throw new ResourceNotFoundException(e.getMessage(),e.getCause().toString(),"");
         }

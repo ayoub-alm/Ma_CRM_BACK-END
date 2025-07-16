@@ -1,13 +1,14 @@
 package com.sales_scout.entity.crm.wms.invoice;
 
+import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "storage_invoice_entity")
+@Table(name = "storage_invoice_payments")
 @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter @Builder
-public class InvoicePayment {
+public class InvoicePayment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

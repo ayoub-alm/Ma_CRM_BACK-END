@@ -17,4 +17,11 @@ public class StorageContractUpdateDto {
     private int noticePeriod;
     private Double declaredValueOfStock;
     private Double insuranceValue;
+    private Long paymentMethodId;
+    private int paymentDeadLine;
+    private boolean automaticRenewal;
+
+    public boolean getAutomaticRenewal() {
+        return this.automaticRenewal;
+    }
 }

@@ -1,9 +1,11 @@
 package com.sales_scout.controller.docs;
 
 import com.sales_scout.dto.response.crm.wms.StorageContractResponseDto;
+import com.sales_scout.entity.crm.wms.contract.StorageAnnexe;
 import com.sales_scout.entity.crm.wms.contract.StorageContract;
 import com.sales_scout.entity.crm.wms.invoice.StorageInvoice;
 import com.sales_scout.entity.crm.wms.offer.StorageOffer;
+import com.sales_scout.repository.crm.wms.contract.StorageAnnexeRepository;
 import com.sales_scout.repository.crm.wms.contract.StorageContractRepository;
 import com.sales_scout.repository.crm.wms.invoice.StorageInvoiceRepository;
 import com.sales_scout.repository.crm.wms.offer.StorageOfferRepository;
@@ -29,7 +31,8 @@ public class PrintController {
     private final ContractAnnexDocService contractAnnexDocService;
     private final StorageInvoiceRepository storageInvoiceRepository;
     private final InvoiceDocService invoiceDocService;
-    public PrintController(DocxService docxService, StorageOfferRepository storageOfferRepository, StorageContractRepository storageContractRepository, ContractDocService contractDocService, OfferDocService offerDocService, ContractAnnexDocService contractAnnexDocService, StorageInvoiceRepository storageInvoiceRepository, InvoiceDocService invoiceDocService) {
+    private final StorageAnnexeRepository storageAnnexeRepository;
+    public PrintController(DocxService docxService, StorageOfferRepository storageOfferRepository, StorageContractRepository storageContractRepository, ContractDocService contractDocService, OfferDocService offerDocService, ContractAnnexDocService contractAnnexDocService, StorageInvoiceRepository storageInvoiceRepository, InvoiceDocService invoiceDocService, StorageAnnexeRepository storageAnnexeRepository) {
         this.docxService = docxService;
         this.storageOfferRepository = storageOfferRepository;
         this.storageContractRepository = storageContractRepository;
@@ -38,6 +41,7 @@ public class PrintController {
         this.contractAnnexDocService = contractAnnexDocService;
         this.storageInvoiceRepository = storageInvoiceRepository;
         this.invoiceDocService = invoiceDocService;
+        this.storageAnnexeRepository = storageAnnexeRepository;
     }
 
     @GetMapping("/generate-contract/{contract_id}")
@@ -95,11 +99,11 @@ public class PrintController {
      */
     @GetMapping("/contract-annexe/{contractAnnexeId}")
     public ResponseEntity<byte[]> generateOfferDoc(@PathVariable Long contractAnnexeId) {
-        StorageContract storageContract = storageContractRepository.findById(contractAnnexeId)
-                .orElseThrow(() -> new RuntimeException("Storage Offer not found"));
+        StorageAnnexe storageAnnexe = storageAnnexeRepository.findById(contractAnnexeId)
+                .orElseThrow(() -> new RuntimeException("Storage annexe not found"));
 
         try {
-            byte[] document = contractAnnexDocService.generateAnnexDocx(storageContract);
+            byte[] document = contractAnnexDocService.generateAnnexDocx(storageAnnexe);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentDispositionFormData("attachment", "annexe_contract" + contractAnnexeId + ".docx");

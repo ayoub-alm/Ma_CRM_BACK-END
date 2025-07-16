@@ -1,6 +1,6 @@
 package com.sales_scout.entity.crm.wms.deliveryNote;
 
-import com.sales_scout.entity.crm.wms.contract.StorageContractUnloadingType;
+import com.sales_scout.entity.crm.wms.contract.StorageAnnexeUnloadingType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +20,7 @@ public class StorageDeliveryNoteStorageContractUnloadingType {
     private UUID ref;
     @ManyToOne
     @JoinColumn(name = "storage_contract_unload_type_id")
-    private StorageContractUnloadingType storageContractUnloadingType;
+    private StorageAnnexeUnloadingType storageContractUnloadingType;
     @ManyToOne
     @JoinColumn(name = "storage_delivery_note_id")
     private StorageDeliveryNote storageDeliveryNote;

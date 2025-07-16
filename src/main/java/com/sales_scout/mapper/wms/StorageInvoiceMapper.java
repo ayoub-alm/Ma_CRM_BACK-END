@@ -1,15 +1,19 @@
 package com.sales_scout.mapper.wms;
 
+import com.sales_scout.dto.request.create.wms.StorageInvoicePaymentRequestDto;
 import com.sales_scout.dto.response.crm.wms.*;
 import com.sales_scout.entity.crm.wms.Requirement;
 import com.sales_scout.entity.crm.wms.UnloadingType;
 import com.sales_scout.entity.crm.wms.deliveryNote.StorageDeliveryNote;
 import com.sales_scout.entity.crm.wms.invoice.StorageInvoice;
 import com.sales_scout.mapper.UserMapper;
-import com.sales_scout.repository.crm.wms.StorageDeliveryNoteStorageContractStockedItemProvisionRepository;
+import com.sales_scout.repository.crm.wms.delivery_note.StorageDeliveryNoteStorageContractStockedItemProvisionRepository;
+import com.sales_scout.repository.crm.wms.invoice.InvoicePaymentRepository;
 import com.sales_scout.repository.crm.wms.invoice.StorageInvoiceNoteStorageContractStockedItemProvisionRepository;
+import com.sales_scout.repository.crm.wms.invoice.StoragePaymentRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,15 +24,19 @@ public class StorageInvoiceMapper {
     private final UserMapper userMapper;
     private final StorageDeliveryNoteMapper storageDeliveryNoteMapper;
     private final StorageInvoiceNoteStorageContractStockedItemProvisionRepository storageInvoiceNoteStorageContractStockedItemProvisionRepository;
+    private final StoragePaymentRepository storagePaymentRepository;
+    private final InvoicePaymentRepository invoicePaymentRepository;
     public StorageInvoiceMapper(StorageContractMapper storageContractMapper, ProvisionMapper provisionMapper,
                                 StorageDeliveryNoteStorageContractStockedItemProvisionRepository storageDeliveryNoteStorageContractStockedItemProvisionRepository,
-                                UserMapper userMapper, StorageDeliveryNoteMapper storageDeliveryNoteMapper, StorageInvoiceNoteStorageContractStockedItemProvisionRepository storageInvoiceNoteStorageContractStockedItemProvisionRepository) {
+                                UserMapper userMapper, StorageDeliveryNoteMapper storageDeliveryNoteMapper, StorageInvoiceNoteStorageContractStockedItemProvisionRepository storageInvoiceNoteStorageContractStockedItemProvisionRepository, StoragePaymentRepository storagePaymentRepository, InvoicePaymentRepository invoicePaymentRepository) {
         this.storageContractMapper = storageContractMapper;
         this.provisionMapper = provisionMapper;
         this.storageDeliveryNoteStorageContractStockedItemProvisionRepository = storageDeliveryNoteStorageContractStockedItemProvisionRepository;
         this.userMapper = userMapper;
         this.storageDeliveryNoteMapper = storageDeliveryNoteMapper;
         this.storageInvoiceNoteStorageContractStockedItemProvisionRepository = storageInvoiceNoteStorageContractStockedItemProvisionRepository;
+        this.storagePaymentRepository = storagePaymentRepository;
+        this.invoicePaymentRepository = invoicePaymentRepository;
     }
 
     public StorageInvoiceResponseDto toResponse(StorageInvoice invoice){
@@ -36,6 +44,8 @@ public class StorageInvoiceMapper {
         StorageInvoiceResponseDto storageInvoiceResponseDto = StorageInvoiceResponseDto.builder()
                 .id(invoice.getId())
                 .number(invoice.getNumber())
+                .dueDate(invoice.getDueDate())
+                .invoiceDate(invoice.getInvoiceDate())
                 .storageDeliveryNote(storageDeliveryNoteMapper.toResponse(invoice.getStorageDeliveryNote()))
                 .status(invoice.getStatus())
                 .stockedItemResponseDtos(
@@ -86,7 +96,20 @@ public class StorageInvoiceMapper {
         storageInvoiceResponseDto.setTotalHt(invoice.getTotalHt());
         storageInvoiceResponseDto.setTva(invoice.getTva());
         storageInvoiceResponseDto.setTotalTtc(invoice.getTotalTtc());
-
+        Set<StorageInvoicePaymentRequestDto> storageInvoicePayment = invoicePaymentRepository.findByStorageInvoiceId(invoice.getId()).stream()
+                .map(invoicePayment -> {
+                  return   StorageInvoicePaymentRequestDto.builder()
+                          .amount(invoicePayment.getPayment().getAmount())
+                          .ref(invoicePayment.getPayment().getRef())
+                          .paymentMethod(invoicePayment.getPayment().getPaymentMethod())
+                          .createdAt(invoicePayment.getCreatedAt())
+                          .build();
+                }).collect(Collectors.toSet());
+        storageInvoiceResponseDto.setSendDate(invoice.getSendDate());
+        storageInvoiceResponseDto.setSendStatus(invoice.getSendStatus());
+        storageInvoiceResponseDto.setReturnDate(invoice.getReturnDate());
+        storageInvoiceResponseDto.setReturnStatus(invoice.getReturnStatus());
+        storageInvoiceResponseDto.setStorageInvoicePaymentRequestDtos(storageInvoicePayment);
         storageInvoiceResponseDto.setCreatedAt(invoice.getCreatedAt());
         storageInvoiceResponseDto.setCreatedBy(invoice.getCreatedBy() != null ? userMapper.fromEntity(invoice.getCreatedBy()): null);
         storageInvoiceResponseDto.setUpdatedAt(invoice.getUpdatedAt());

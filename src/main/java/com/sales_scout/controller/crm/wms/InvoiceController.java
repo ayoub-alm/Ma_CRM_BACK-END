@@ -1,6 +1,7 @@
 package com.sales_scout.controller.crm.wms;
 
 import com.sales_scout.dto.request.create.wms.CreateInvoiceRequestDto;
+import com.sales_scout.dto.request.update.crm.StorageInvoiceUpdateDto;
 import com.sales_scout.dto.response.crm.wms.StorageInvoiceResponseDto;
 import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.service.crm.wms.invoice.StorageInvoiceService;
@@ -71,7 +72,55 @@ public class InvoiceController {
                     this.storageInvoiceService.createStorageInvoiceFromStorageDeliveryNote(dto.getStorageDeliveryNoteId())
             );
         }catch (Exception e){
-            throw new ResourceNotFoundException("storage delivery note  not found", e.getMessage(),e.getCause());
+            throw new ResourceNotFoundException("storage invoice not found", e.getMessage(),e.getCause());
+        }
+    }
+
+
+    @PutMapping("/{invoiceId}")
+    public ResponseEntity<StorageInvoiceResponseDto> updateStorageInvoiceById(@PathVariable Long invoiceId,@RequestBody StorageInvoiceUpdateDto updatedData)
+    throws ResourceNotFoundException
+    {
+        try {
+            return ResponseEntity.ok(this.storageInvoiceService.updateStorageInvoice(invoiceId, updatedData));
+        }catch (Exception e){
+            throw new ResourceNotFoundException("storage invoice not found", e.getMessage(),e.getCause());
+        }
+    }
+
+    @PutMapping("/update-from-delivery-note-update-request/{invoiceId}/{storageDeliveryNoteId}/{requestId}")
+    public ResponseEntity<StorageInvoiceResponseDto> updateStorageInvoiceFromDeliveryNoteUpdateRequest(
+            @PathVariable Long invoiceId,@PathVariable Long storageDeliveryNoteId,@PathVariable Long requestId)
+            throws ResourceNotFoundException
+    {
+        try {
+            return ResponseEntity.ok(this.storageInvoiceService.updateInvoiceItemsFromDeliveryNote(invoiceId, storageDeliveryNoteId,requestId));
+        }catch (Exception e){
+            throw new ResourceNotFoundException("storage invoice not found", e.getMessage(),e.getCause());
+        }
+    }
+
+    @GetMapping("/validate/{invoiceId}")
+    public ResponseEntity<StorageInvoiceResponseDto> validateInvoice(
+            @PathVariable Long invoiceId)
+            throws ResourceNotFoundException
+    {
+        try {
+            return ResponseEntity.ok(this.storageInvoiceService.validateInvoice(invoiceId));
+        }catch (Exception e){
+            throw new ResourceNotFoundException("storage invoice not found", e.getMessage(),e.getCause());
+        }
+    }
+
+    @GetMapping("/validate-sales/{invoiceId}")
+    public ResponseEntity<StorageInvoiceResponseDto> validateInvoiceSales(
+            @PathVariable Long invoiceId)
+            throws ResourceNotFoundException
+    {
+        try {
+            return ResponseEntity.ok(this.storageInvoiceService.validateSalesInvoice(invoiceId));
+        }catch (Exception e){
+            throw new ResourceNotFoundException("storage invoice not found", e.getMessage(),e.getCause());
         }
     }
 }

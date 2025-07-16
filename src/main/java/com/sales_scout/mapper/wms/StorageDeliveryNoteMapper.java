@@ -5,8 +5,11 @@ import com.sales_scout.dto.response.crm.wms.*;
 import com.sales_scout.entity.crm.wms.Requirement;
 import com.sales_scout.entity.crm.wms.UnloadingType;
 import com.sales_scout.entity.crm.wms.deliveryNote.StorageDeliveryNote;
+import com.sales_scout.entity.crm.wms.deliveryNote.StorageDeliveryNoteUpdateRequest;
 import com.sales_scout.mapper.UserMapper;
-import com.sales_scout.repository.crm.wms.StorageDeliveryNoteStorageContractStockedItemProvisionRepository;
+import com.sales_scout.repository.crm.wms.delivery_note.DeliveryNoteUpdateRequestRepository;
+import com.sales_scout.repository.crm.wms.delivery_note.StorageDeliveryNoteStorageContractStockedItemProvisionRepository;
+import com.sales_scout.repository.crm.wms.invoice.StorageInvoiceRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -17,14 +20,18 @@ public class StorageDeliveryNoteMapper {
     private final ProvisionMapper provisionMapper;
     private final StorageDeliveryNoteStorageContractStockedItemProvisionRepository storageDeliveryNoteStorageContractStockedItemProvisionRepository;
     private final UserMapper userMapper;
+    private final DeliveryNoteUpdateRequestRepository deliveryNoteUpdateRequestRepository;
+    private final StorageInvoiceRepository storageInvoiceRepository;
 
     public StorageDeliveryNoteMapper(StorageContractMapper storageContractMapper, ProvisionMapper provisionMapper,
                                      StorageDeliveryNoteStorageContractStockedItemProvisionRepository storageDeliveryNoteStorageContractStockedItemProvisionRepository,
-                                     UserMapper userMapper) {
+                                     UserMapper userMapper, DeliveryNoteUpdateRequestRepository deliveryNoteUpdateRequestRepository, StorageInvoiceRepository storageInvoiceRepository) {
         this.storageContractMapper = storageContractMapper;
         this.provisionMapper = provisionMapper;
         this.storageDeliveryNoteStorageContractStockedItemProvisionRepository = storageDeliveryNoteStorageContractStockedItemProvisionRepository;
         this.userMapper = userMapper;
+        this.deliveryNoteUpdateRequestRepository = deliveryNoteUpdateRequestRepository;
+        this.storageInvoiceRepository = storageInvoiceRepository;
     }
 
     public StorageDeliveryNoteResponseDto toResponse(StorageDeliveryNote storageDeliveryNote){
@@ -48,7 +55,7 @@ public class StorageDeliveryNoteMapper {
                 .storageContract(this.storageContractMapper.toResponseDto(storageDeliveryNote.getStorageContract()))
                 .build();
 
-
+       // set unloading types
         storageDeliveryNoteResponseDto.setUnloadingTypeResponseDtos(
               storageDeliveryNote.getStorageDeliveryNoteStorageContractUnloadingTypes().stream().map(storageDeliveryNoteStorageContractUnloadingType -> {
                   UnloadingType unloadingType = storageDeliveryNoteStorageContractUnloadingType.getStorageContractUnloadingType().getUnloadingType();
@@ -64,7 +71,7 @@ public class StorageDeliveryNoteMapper {
                           .build();
               }).collect(Collectors.toSet())
         );
-
+        // set requirements
         storageDeliveryNoteResponseDto.setRequirementResponseDtos(storageDeliveryNote.getStorageDeliveryNoteStorageContractRequirements().stream().map(storageDeliveryNoteStorageContractRequirement -> {
             Requirement requirement = storageDeliveryNoteStorageContractRequirement.getStorageContractRequirement().getRequirement();
             return StorageDeliveryNoteRequirementQuantity.builder()
@@ -77,12 +84,36 @@ public class StorageDeliveryNoteMapper {
                     .id(storageDeliveryNoteStorageContractRequirement.getId())
                     .build();
         }).collect(Collectors.toSet()));
-
-
+        // set storage invoices
+        storageDeliveryNoteResponseDto.setStorageInvoiceResponseDtos(
+                this.storageInvoiceRepository.findByStorageDeliveryNoteId(storageDeliveryNote.getId()).stream()
+                        .map(invoice -> {
+                            return StorageInvoiceResponseDto.builder()
+                                    .id(invoice.getId())
+                                    .number(invoice.getNumber())
+                                    .build();
+                        })
+                        .collect(Collectors.toSet())
+        );
         storageDeliveryNoteResponseDto.setCreatedAt(storageDeliveryNote.getCreatedAt());
         storageDeliveryNoteResponseDto.setCreatedBy(storageDeliveryNote.getCreatedBy() != null ? userMapper.fromEntity(storageDeliveryNote.getCreatedBy()): null);
         storageDeliveryNoteResponseDto.setUpdatedAt(storageDeliveryNote.getUpdatedAt());
         storageDeliveryNoteResponseDto.setUpdatedBy(storageDeliveryNote.getUpdatedBy() != null ? userMapper.fromEntity(storageDeliveryNote.getUpdatedBy()): null);
+        // set update requests
+        storageDeliveryNoteResponseDto.setStorageDeliveryNoteUpdateRequests(
+                deliveryNoteUpdateRequestRepository.findByStorageDeliveryNoteId(storageDeliveryNote.getId()).stream()
+                        .map(storageDeliveryNoteUpdateRequest -> {
+                            StorageDeliveryNoteUpdateRequest sdn = StorageDeliveryNoteUpdateRequest.builder()
+                                    .id(storageDeliveryNoteUpdateRequest.getId())
+                                    .note(storageDeliveryNoteUpdateRequest.getNote())
+                                    .status(storageDeliveryNoteUpdateRequest.getStatus())
+                                    .build();
+                            sdn.setCreatedAt(storageDeliveryNoteUpdateRequest.getCreatedAt());
+                            sdn.setCreatedAt(storageDeliveryNoteUpdateRequest.getCreatedAt());
+                            sdn.setCreatedBy(storageDeliveryNoteUpdateRequest.getCreatedBy());
+                            sdn.setUpdatedBy(storageDeliveryNoteUpdateRequest.getUpdatedBy());
+                            return sdn;
+                        }).collect(Collectors.toSet()));
         return storageDeliveryNoteResponseDto;
     }
 }

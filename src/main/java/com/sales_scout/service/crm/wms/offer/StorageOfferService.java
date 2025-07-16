@@ -215,8 +215,8 @@ public class StorageOfferService {
         double length = (dimension.getLength() != null ? dimension.getLength() : 0) / 100.0;
         double width = (dimension.getWidth() != null ? dimension.getWidth() : 0) / 100.0;
         double height = (dimension.getHeight() != null ? dimension.getHeight() : 0) / 100.0;
-
-        double calculatedPrice = length * width * height * 2.5;
+        double storagePrice = this.provisionRepository.findByCompanyIdAndIsStoragePriceIsTrue(savedStorageOffer.getCompany().getId()).getInitPrice();
+        double calculatedPrice = dimension.getVolume() * storagePrice;
 
         Structure structure = structureRepository.findById(stockedItemDto.getStructureId())
                 .orElseThrow(() -> new EntityNotFoundException("Structure not found"));
@@ -236,6 +236,7 @@ public class StorageOfferService {
                             .increaseValue(provisionDto.getIncreaseValue())
                             .discountValue(provisionDto.getDiscountValue())
                             .salesPrice(provision.getSalesPrice())
+                            .isStoragePrice(provision.getIsStoragePrice())
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -347,11 +348,11 @@ public class StorageOfferService {
                             .sum() * 0.2 // Calculate 20%
             );
         }
+
         // calculate minimal billing
         AtomicReference<Double> minimalBilling = new AtomicReference<>(0.0);
-        // #TODO  find storage price and multible it in quantity of stocked item
         needStockedItems.forEach(item ->{
-            minimalBilling.updateAndGet(v -> v + (item.getQuantity() * 0.2) * 0.5);
+            minimalBilling.updateAndGet(v -> v + (item.getQuantity() * 0.2) * item.getPrice());
         });
         StorageOffer storageOffer = StorageOffer.builder()
                 .ref(UUID.randomUUID())
@@ -372,6 +373,7 @@ public class StorageOfferService {
                 .customer(storageNeed.getCustomer())
                 .numberOfReservedPlaces(numberOfReservedPlaces)
                 .minimumBillingGuaranteed(minimalBilling.get())
+                .devise("Dirham") // default devise
                 .build();
         storageOffer.setCreatedBy(SecurityUtils.getCurrentUser());
         storageOffer.setUpdatedBy(SecurityUtils.getCurrentUser());
@@ -407,12 +409,51 @@ public class StorageOfferService {
         // get Stocked item from Need and add it to Offer
         List<StorageOfferStockedItem> storageOfferStockedItems = new ArrayList<>();
         needStockedItems.forEach(item -> {
-            storageOfferStockedItems.add(StorageOfferStockedItem.builder()
+            // Clone the original stocked item
+            StockedItem clonedItem = StockedItem.builder()
+                    .ref(UUID.randomUUID())
+                    .price(item.getPrice())
+                    .support(item.getSupport())
+                    .structure(item.getStructure())
+                    .uvc(item.getUvc())
+                    .dimension(item.getDimension())
+                    .uc(item.getUc())
+                    .weight(item.getWeight())
+                    .stackedLevel(item.getStackedLevel())
+                    .numberOfPackages(item.getNumberOfPackages())
+                    .temperature(item.getTemperature())
+                    .volume(item.getVolume())
+                    .quantity(item.getQuantity())
+                    .isFragile(item.getIsFragile())
+                    .build();
 
-                            .storageOffer(savedStorageOffer)
-                            .ref(UUID.randomUUID())
-                            .stockedItem(item)
+// Save new stocked item
+            StockedItem savedClonedItem = stockedItemRepository.save(clonedItem);
+
+// Clone provisions
+            List<StockedItemProvision> clonedProvisions = stockedItemProvisionRepository.findByStockedItemId(item.getId()).stream()
+                    .map(prv -> StockedItemProvision.builder()
+                            .provision(prv.getProvision())
+                            .salesPrice(prv.getInitPrice())
+                            .initPrice(prv.getInitPrice())
+                            .isStoragePrice(prv.getIsStoragePrice())
+                            .stockedItem(savedClonedItem)
+                            .build())
+                    .collect(Collectors.toList());
+
+            clonedProvisions.forEach(stockedItemProvision -> {
+                stockedItemProvision.setSalesPrice(stockedItemProvision.getProvision().getInitPrice());
+            });
+
+            stockedItemProvisionRepository.saveAll(clonedProvisions);
+
+// Save association with offer
+            storageOfferStockedItems.add(StorageOfferStockedItem.builder()
+                    .storageOffer(savedStorageOffer)
+                    .ref(UUID.randomUUID())
+                    .stockedItem(savedClonedItem)
                     .build());
+
         });
 
         this.storageOfferStockedItemRepository.saveAll(storageOfferStockedItems);
@@ -457,6 +498,7 @@ public class StorageOfferService {
         // Fetch all storage needs by company ID
         Optional<StorageOffer> storageNeed = storageOfferRepository.findByIdAndDeletedAtIsNull(storageNeedId);
         if (storageNeed.isPresent()) {
+            this.updateMinimalBilling(storageNeed.get());
             return storageOfferMapper.toResponseDto(storageNeed.get());
         }else {
             throw new EntityNotFoundException("No storage needs found for ID: " + storageNeedId);
@@ -488,7 +530,7 @@ public class StorageOfferService {
             AtomicReference<Double> minimalBilling = new AtomicReference<>(0.0);
             List<StorageOfferStockedItem> stockedItems1 = storageOfferStockedItemRepository.findAllByStorageOfferId(storageOffer.get().getId());
             stockedItems1.forEach(item ->{
-                minimalBilling.updateAndGet(v -> v + (item.getStockedItem().getQuantity() * 0.2) * (item.getStockedItem().getPrice() != null ? item.getStockedItem().getPrice() : 0));
+                minimalBilling.updateAndGet(v -> v + (item.getStockedItem().getQuantity() * 0.2) * item.getStockedItem().getPrice());
             });
             storageOffer.get().setMinimumBillingGuaranteed(minimalBilling.get());
             // calculate number of reserved places
@@ -499,7 +541,7 @@ public class StorageOfferService {
             storageOffer.get().setNumberOfReservedPlaces(numberOfReservedPlaces.get());
             storageOfferRepository.save(storageOffer.get());
             // Vérifier que stockedItem.getStockedItemProvisions() n'est pas null
-            List<StockedItemProvision> stockedItemProvisions = Optional.ofNullable(stockedItem.getStockedItemProvisions())
+            List<StockedItemProvision> stockedItemProvisions = Optional.ofNullable(stockedItemProvisionRepository.findByStockedItemId(stockedItem.getId()))
                     .orElse(Collections.emptyList());
 
 
@@ -553,9 +595,10 @@ public class StorageOfferService {
 
         // calculate minimal billing
         AtomicReference<Double> minimalBilling = new AtomicReference<>(0.0);
+        double storagePrice = this.provisionRepository.findByCompanyIdAndIsStoragePriceIsTrue(storageOffer.getCompany().getId()).getSalesPrice();
         List<StorageOfferStockedItem> stockedItems1 = storageOfferStockedItemRepository.findAllByStorageOfferId(storageOffer.getId());
         stockedItems1.forEach(item ->{
-            minimalBilling.updateAndGet(v -> v + (item.getStockedItem().getQuantity() * 0.2) * (item.getStockedItem().getPrice() != null ? item.getStockedItem().getPrice() : 0));
+            minimalBilling.updateAndGet(v -> v + (item.getStockedItem().getQuantity() * 0.2) * item.getStockedItem().getPrice());
         });
         storageOffer.setMinimumBillingGuaranteed(minimalBilling.get());
         // calculate number of reserved places
@@ -676,6 +719,10 @@ public class StorageOfferService {
 
         Requirement requirement = storageRequirementRepository.findById(requirementId)
                 .orElseThrow(() -> new EntityNotFoundException("Requirement not found"));
+        // check if offer already has the requirement
+        Optional<StorageOfferRequirement> existRequirement = this.storageOfferRequirementRepository
+                .findByStorageOfferIdAndRequirementId(storageOffer.getId(),requirement.getId());
+        if (existRequirement.isPresent()) throw new ResourceNotFoundException("Requirement already exist ","","");
 
         StorageOfferRequirement newRequirement = StorageOfferRequirement.builder()
                 .storageOffer(storageOffer)
@@ -723,6 +770,17 @@ public class StorageOfferService {
 
         storageOffer.setNote(note);
         storageOfferRepository.save(storageOffer);
+        storageOffer.setUpdatedBy(SecurityUtils.getCurrentUser());
+        return storageOfferMapper.toResponseDto(storageOffer);
+    }
+
+    public StorageOfferResponseDto updateStorageOfferDevise(Long storageOfferId,String devise) {
+        StorageOffer storageOffer = this.storageOfferRepository.findById(storageOfferId)
+                .orElseThrow(() -> new EntityNotFoundException("Storage Offer not found"));
+
+        storageOffer.setDevise(devise);
+        storageOffer.setUpdatedBy(SecurityUtils.getCurrentUser());
+        storageOfferRepository.save(storageOffer);
         return storageOfferMapper.toResponseDto(storageOffer);
     }
 
@@ -737,6 +795,7 @@ public class StorageOfferService {
 
         storageOffer.setStatus(StorageOfferStatus.builder().id(2L).build());
         storageOfferRepository.save(storageOffer);
+        storageOffer.setUpdatedBy(SecurityUtils.getCurrentUser());
         return storageOfferMapper.toResponseDto(storageOffer);
     }
 
@@ -839,7 +898,7 @@ public class StorageOfferService {
         StorageOffer storageOffer = storageOfferRepository.findById(storageOfferId)
                 .orElseThrow(() -> new EntityNotFoundException("Storage Offer not found"));
 
-        storageOffer.setMinimumBillingGuaranteed(minimalBillingAmount);
+        storageOffer.setMinimumBillingGuaranteedFixed(minimalBillingAmount);
         return storageOfferMapper.toResponseDto(storageOfferRepository.save(storageOffer));
     }
 
@@ -851,7 +910,45 @@ public class StorageOfferService {
         return storageOfferMapper.toResponseDto(storageOfferRepository.save(storageOffer));
     }
 
-//    public Void deleteProvsionFromStorageOffer(Long storageOfferId, Long provisionId) {
-//        this.storageOfferStockedItemRepository.findAllByStorageOfferIdAndStockedItem()
-//    }
+    /**
+     * This function allows to update Storage offer requirement prices values
+     * @param storageOfferRequirementId the storage offer requirement to update
+     * @param storageOfferRequirement new data for update
+     * @return Boolean
+     * @throws EntityNotFoundException if storage offer requirement not found
+     */
+    @Transactional
+    public Boolean updateStorageOfferRequirement(Long storageOfferRequirementId, StorageOfferRequirement storageOfferRequirement)
+            throws EntityNotFoundException
+    {
+        try{
+            StorageOfferRequirement storageOfferRequirementExist = storageOfferRequirementRepository.findById(storageOfferRequirementId)
+                    .orElseThrow(() -> new EntityNotFoundException("Storage Offer requirement not found"));
+
+            storageOfferRequirementExist.setDiscountType(storageOfferRequirement.getDiscountType());
+            storageOfferRequirementExist.setDiscountValue(storageOfferRequirement.getDiscountValue());
+            storageOfferRequirementExist.setInitPrice(storageOfferRequirement.getInitPrice());
+            storageOfferRequirementExist.setSalesPrice(storageOfferRequirement.getSalesPrice());
+            storageOfferRequirementExist.setIncreaseValue(storageOfferRequirement.getIncreaseValue());
+
+            storageOfferRequirementRepository.save(storageOfferRequirementExist);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    /**
+     * This function allows to update minimal billing for offer
+     * @param storageOffer
+     */
+    public void updateMinimalBilling(StorageOffer storageOffer){
+        AtomicReference<Double> minimalBilling = new AtomicReference<>(0.0);
+        List<StorageOfferStockedItem> stockedItems1 = storageOfferStockedItemRepository.findAllByStorageOfferId(storageOffer.getId());
+        stockedItems1.forEach(item ->{
+            minimalBilling.updateAndGet(v -> v + (item.getStockedItem().getQuantity() * 0.2) * item.getStockedItem().getPrice());
+        });
+        storageOffer.setMinimumBillingGuaranteed(minimalBilling.get());
+        storageOfferRepository.save(storageOffer);
+    }
 }

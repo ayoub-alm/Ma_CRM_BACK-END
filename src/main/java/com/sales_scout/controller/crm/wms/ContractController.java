@@ -1,13 +1,16 @@
 package com.sales_scout.controller.crm.wms;
 
 import com.sales_scout.dto.request.update.crm.StorageContractUpdateDto;
+import com.sales_scout.dto.response.crm.wms.StorageAnnexeResponseDto;
 import com.sales_scout.dto.response.crm.wms.StorageContractResponseDto;
+import com.sales_scout.entity.crm.wms.contract.StorageAnnexe;
 import com.sales_scout.entity.crm.wms.contract.StorageContract;
 import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.service.crm.wms.contract.StorageContractService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/wms/contracts")
@@ -154,4 +158,34 @@ public class ContractController {
             throw new ResourceNotFoundException(e.getMessage(),e.getCause().toString(), customerId.toString());
         }
     }
+
+    @PostMapping("/update-payment-infos/{contractId}")
+    public ResponseEntity<StorageContractResponseDto> updateStorageContractPaymentInfos(
+            @PathVariable Long contractId,
+            @RequestBody Map<String, Object> paymentInfo) {
+        try {
+            Long paymentMethodId = ((Number) paymentInfo.get("paymentMethodId")).longValue();
+            int deadline = ((Number) paymentInfo.get("paymentMethodAmount")).intValue();
+
+            StorageContractResponseDto updated = storageContractService.updateStorageContractPaymentInfos(
+                    contractId, paymentMethodId, deadline);
+
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Contract", "id", contractId.toString());
+        }
+    }
+
+
+    @GetMapping("/storage-annexe/{storageAnnexeId}")
+    public ResponseEntity<StorageAnnexeResponseDto> getStorageAnnexeById(
+            @PathVariable Long storageAnnexeId
+    ) throws ResourceNotFoundException{
+        try {
+            return ResponseEntity.ok(this.storageContractService.getStorageAnnexeById(storageAnnexeId));
+        }catch (Exception e){
+            throw new ResourceNotFoundException(e.getMessage(), e.getCause().toString(),"");
+        }
+    }
+
 }

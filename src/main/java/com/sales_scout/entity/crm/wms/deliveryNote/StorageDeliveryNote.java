@@ -27,6 +27,7 @@ public class StorageDeliveryNote extends BaseEntity {
     private StorageContract storageContract;
 
 
+
     @OneToMany(mappedBy = "storageDeliveryNote", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<StorageDeliveryNoteStorageContractStockedItemProvision> storageDeliveryNoteStorageContractStockedItems;
 

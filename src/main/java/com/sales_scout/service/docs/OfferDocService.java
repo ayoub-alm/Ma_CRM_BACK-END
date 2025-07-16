@@ -99,9 +99,13 @@ public class OfferDocService {
         placeholders.put("storage_reason", offer.getStorageReason() != StorageReasonEnum.OUTSOURCING ? "Débord" : "Extérnalisation");
         placeholders.put("SKU_value", offer.getNumberOfSku() > 0 ? String.valueOf(offer.getNumberOfSku()) : "0");
         placeholders.put("Livre", offer.getLiverStatus() != LivreEnum.CLOSE ? "Ouvert" : "Fermé");
-        placeholders.put("Facturation_minimale_assuree", offer.getMinimumBillingGuaranteed().toString());
+
+        placeholders.put("Facturation_minimale_assuree", String.format("%.2f", offer.getMinimumBillingGuaranteedFixed() != null ?
+                offer.getMinimumBillingGuaranteedFixed() : offer.getMinimumBillingGuaranteed()));
+
         placeholders.put("Emplacements_palettes_reserves", offer.getNumberOfReservedPlaces().toString());
         placeholders.put("Valeur_de_frais_de_gestion", offer.getManagementFees().toString());
+        placeholders.put("devise", offer.getDevise());
         if (offer.getNote() != null){
             placeholders.put("Notes", !Objects.equals(offer.getNote(), "") ? offer.getNote():"");
         }else{

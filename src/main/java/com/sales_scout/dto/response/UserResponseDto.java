@@ -22,4 +22,5 @@ public class UserResponseDto  {
     private long  id;
     private Role role;
     private List<RightsResponseDto> rights;
+    private List<CompanyResponseDto> companies;
 }

@@ -15,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UnloadingTypeResponseDto {
     private Long id;
+    private Long storageOfferUnloadTypeId;
     private UUID ref;
     private String name;
     private Double initPrice;

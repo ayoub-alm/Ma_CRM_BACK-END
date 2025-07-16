@@ -5,16 +5,15 @@ import com.sales_scout.Auth.SecurityUtils;
 import com.sales_scout.dto.response.crm.wms.*;
 
 
-import com.sales_scout.entity.crm.wms.offer.StorageOfferPaymentMethod;
 import com.sales_scout.entity.crm.wms.offer.StorageOfferStockedItem;
 
-import com.sales_scout.entity.data.PaymentMethod;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.enums.crm.wms.LivreEnum;
 import com.sales_scout.mapper.InterlocutorMapper;
 import com.sales_scout.mapper.ProvisionMapper;
 
 import com.sales_scout.mapper.UserMapper;
+import com.sales_scout.repository.crm.wms.StockedItemProvisionRepository;
 import com.sales_scout.repository.crm.wms.offer.StorageOfferPaymentTypeRepository;
 import com.sales_scout.repository.crm.wms.offer.StorageOfferRequirementRepository;
 import com.sales_scout.repository.crm.wms.offer.StorageOfferStockedItemRepository;
@@ -44,11 +43,12 @@ public class StorageOfferMapper {
     private final InterlocutorMapper interlocutorMapper;
     private final UserMapper userMapper;
     private final StorageOfferPaymentTypeRepository storageOfferPaymentTypeRepository;
+    private final StockedItemProvisionRepository stockedItemProvisionRepository;
     @Autowired
     public StorageOfferMapper(CustomerRepository customerRepository,
                               StorageOfferUnloadTypeRepository storageOfferUnloadTypeRepository,
                               StorageOfferRequirementRepository storageOfferRequirementRepository,
-                              StorageOfferStockedItemRepository storageOfferStockedItemRepository, StorageNeedMapper storageNeedMapper, InterlocutorMapper interlocutorMapper, UserMapper userMapper, StorageOfferPaymentTypeRepository storageOfferPaymentTypeRepository) {
+                              StorageOfferStockedItemRepository storageOfferStockedItemRepository, StorageNeedMapper storageNeedMapper, InterlocutorMapper interlocutorMapper, UserMapper userMapper, StorageOfferPaymentTypeRepository storageOfferPaymentTypeRepository, StockedItemProvisionRepository stockedItemProvisionRepository) {
         this.customerRepository = customerRepository;
         this.storageOfferUnloadTypeRepository = storageOfferUnloadTypeRepository;
         this.storageOfferRequirementRepository = storageOfferRequirementRepository;
@@ -57,6 +57,7 @@ public class StorageOfferMapper {
         this.interlocutorMapper = interlocutorMapper;
         this.userMapper = userMapper;
         this.storageOfferPaymentTypeRepository = storageOfferPaymentTypeRepository;
+        this.stockedItemProvisionRepository = stockedItemProvisionRepository;
     }
 
     /**
@@ -89,7 +90,8 @@ public class StorageOfferMapper {
                 .stream()
                 .map(storageRequirement -> {
                     return StorageRequirementResponseDto.builder()
-                            .id(storageRequirement.getId())
+                            .id(storageRequirement.getRequirement().getId())
+                            .storageOfferRequirementId(storageRequirement.getId())
                             .name(storageRequirement.getRequirement().getName())
                             .ref(storageRequirement.getRequirement().getRef())
                             .initPrice(storageRequirement.getRequirement().getInitPrice())
@@ -108,7 +110,8 @@ public class StorageOfferMapper {
                 .stream()
                 .map(storageOfferUnloadType -> {
                    return UnloadingTypeResponseDto.builder()
-                           .id(storageOfferUnloadType.getId())
+                           .storageOfferUnloadTypeId(storageOfferUnloadType.getId())
+                           .id(storageOfferUnloadType.getUnloadingType().getId())
                            .name(storageOfferUnloadType.getUnloadingType().getName())
                            .ref(storageOfferUnloadType.getUnloadingType().getRef())
                            .initPrice(storageOfferUnloadType.getUnloadingType().getInitPrice())
@@ -135,6 +138,7 @@ public class StorageOfferMapper {
         dto.setProductType(storageOffer.getProductType());
         dto.setPaymentTypes(paymentMethods);
         dto.setPaymentDeadline(storageOffer.getPaymentDeadline());
+        dto.setDevise(storageOffer.getDevise());
         dto.setInterlocutor(interlocutorMapper.toResponseDto(storageOffer.getInterlocutor()));
         if (storageOffer.getCustomer() != null) {
             CustomerDto customerDto = CustomerDto.builder()
@@ -148,7 +152,7 @@ public class StorageOfferMapper {
 
         dto.setStockedItems(
                 stockedItems.stream().map(item -> {
-                    List<ProvisionResponseDto> provisionResponseDtos = item.getStockedItemProvisions().stream()
+                    List<ProvisionResponseDto> provisionResponseDtos = stockedItemProvisionRepository.findByStockedItemId(item.getId()).stream()
                             .map((prv) -> {
                               ProvisionResponseDto provisionResponse = ProvisionMapper.toDto(prv.getProvision());
                               provisionResponse.setStockedItemProvisionId(prv.getId());
@@ -181,7 +185,7 @@ public class StorageOfferMapper {
                             .build();
                 }).collect(Collectors.toList())
         );
-
+        dto.setMinimumBillingGuaranteedFixed(storageOffer.getMinimumBillingGuaranteedFixed());
         dto.setUnloadingTypes(unloadingTypes);
         dto.setRequirements(requirements);
         dto.setCreatedAt(storageOffer.getCreatedAt());

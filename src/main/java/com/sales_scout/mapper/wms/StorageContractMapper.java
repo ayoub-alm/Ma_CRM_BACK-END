@@ -3,18 +3,15 @@
 
     import com.sales_scout.dto.response.crm.wms.*;
     import com.sales_scout.entity.crm.wms.StockedItem;
+    import com.sales_scout.entity.crm.wms.contract.StorageAnnexe;
     import com.sales_scout.entity.crm.wms.contract.StorageContract;
-    import com.sales_scout.entity.crm.wms.contract.StorageContractStockedItem;
+    import com.sales_scout.entity.crm.wms.contract.StorageAnnexeStockedItem;
     import com.sales_scout.entity.data.PaymentMethod;
     import com.sales_scout.enums.crm.wms.LivreEnum;
     import com.sales_scout.mapper.InterlocutorMapper;
     import com.sales_scout.mapper.ProvisionMapper;
     import com.sales_scout.mapper.UserMapper;
-    import com.sales_scout.repository.crm.wms.contract.ContractRequirementRepository;
-    import com.sales_scout.repository.crm.wms.contract.ContractStockedItemRepository;
-    import com.sales_scout.repository.crm.wms.contract.ContractUnloadingTypeRepository;
-    import com.sales_scout.repository.crm.wms.contract.StorageContractRepository;
-    import com.sales_scout.repository.crm.wms.offer.StorageOfferRepository;
+    import com.sales_scout.repository.crm.wms.contract.*;
     import com.sales_scout.repository.crm.wms.offer.StorageOfferRequirementRepository;
     import com.sales_scout.repository.crm.wms.offer.StorageOfferStockedItemRepository;
     import com.sales_scout.repository.crm.wms.offer.StorageOfferUnloadTypeRepository;
@@ -37,6 +34,7 @@
         private final InterlocutorMapper interlocutorMapper;
         private final UserMapper userMapper;
         public final StorageContractRepository storageContractRepository;
+        private final StorageAnnexeRepository storageAnnexeRepository;
         @Autowired
         public StorageContractMapper(CustomerRepository customerRepository,
                                      StorageOfferUnloadTypeRepository storageOfferUnloadTypeRepository,
@@ -45,7 +43,7 @@
                                      ContractUnloadingTypeRepository contractUnloadingTypeRepository,
                                      ContractRequirementRepository contractRequirementRepository,
                                      ContractStockedItemRepository contractStockedItemRepository, StorageNeedMapper storageNeedMapper,
-                                     InterlocutorMapper interlocutorMapper, UserMapper userMapper, StorageContractRepository storageContractRepository) {
+                                     InterlocutorMapper interlocutorMapper, UserMapper userMapper, StorageContractRepository storageContractRepository, StorageAnnexeRepository storageAnnexeRepository) {
             this.customerRepository = customerRepository;
             this.contractUnloadingTypeRepository = contractUnloadingTypeRepository;
             this.contractRequirementRepository = contractRequirementRepository;
@@ -54,6 +52,7 @@
             this.interlocutorMapper = interlocutorMapper;
             this.userMapper = userMapper;
             this.storageContractRepository = storageContractRepository;
+            this.storageAnnexeRepository = storageAnnexeRepository;
         }
 
 
@@ -67,14 +66,14 @@
                 return null;
             }
 
-            List<StockedItem> stockedItems = contractStockedItemRepository.findAllByStorageContractId(storageContract.getId())
+            List<StockedItem> stockedItems = contractStockedItemRepository.findByAnnexeStorageContractId(storageContract.getId())
                     .stream()
-                    .map(StorageContractStockedItem::getStockedItem)
+                    .map(StorageAnnexeStockedItem::getStockedItem)
                     .toList();
 
 
             // Get all requirements
-            List<StorageRequirementResponseDto> requirements = contractRequirementRepository.findAllByStorageContractId(storageContract.getId())
+            List<StorageRequirementResponseDto> requirements = contractRequirementRepository.findAllByAnnexeStorageContractId(storageContract.getId())
                     .stream()
                     .map(storageRequirement -> {
                         return StorageRequirementResponseDto.builder()
@@ -92,12 +91,10 @@
                     .toList();
 
             // Get all unloading types
-            List<UnloadingTypeResponseDto> unloadingTypes = contractUnloadingTypeRepository.findAllByStorageContractId(storageContract.getId())
+            List<UnloadingTypeResponseDto> unloadingTypes = contractUnloadingTypeRepository.findAllByAnnexeStorageContractId(storageContract.getId())
                     .stream()
                     .map(storageOfferUnloadType -> {
                        return UnloadingTypeResponseDto.builder()
-
-
                                .id(storageOfferUnloadType.getUnloadingType().getId())
                                .name(storageOfferUnloadType.getUnloadingType().getName())
                                .unitOfMeasurement(storageOfferUnloadType.getUnloadingType().getUnitOfMeasurement())
@@ -110,7 +107,7 @@
                     })
                     .toList();
 
-
+            PaymentMethod paymentMethod = storageContract.getPaymentMethod() != null ? PaymentMethod.builder().id(storageContract.getPaymentMethod().getId()).name(storageContract.getPaymentMethod().getName()).build() : PaymentMethod.builder().build() ;
             StorageContractResponseDto dto = new StorageContractResponseDto();
             dto.setId(storageContract.getId());
             dto.setRef(storageContract.getRef());
@@ -125,10 +122,11 @@
             dto.setLiverStatus(!Objects.equals(storageContract.getLiverStatus().toString(), "") ? storageContract.getLiverStatus().toString(): LivreEnum.OPEN.getStatus());
             dto.setNumberOfSku(storageContract.getNumberOfSku());
             dto.setProductType(storageContract.getProductType());
-            dto.setPaymentType(PaymentMethod.builder().id(storageContract.getPaymentMethod().getId()).name(storageContract.getPaymentMethod().getName()).build());
+            dto.setPaymentType(paymentMethod);
             dto.setPaymentDeadline(storageContract.getPaymentDeadline());
             dto.setInterlocutor(interlocutorMapper.toResponseDto(storageContract.getInterlocutor()));
             dto.setPdfUrl(storageContract.getPdfUrl());
+            dto.setAutomaticRenewal(storageContract.isAutomaticRenewal());
             if (storageContract.getCustomer() != null) {
                 CustomerDto customerDto = CustomerDto.builder()
                         .id(storageContract.getCustomer().getId())
@@ -137,9 +135,6 @@
                 dto.setCustomer(customerDto);
             }
 
-    //        dto.setStorageNeed(storageNeedMapper.toResponseDto(storageContract.getOffer().getNeed()));
-
-    //        dto.setStockedItems(stockedItems.stream().map(StockedItemMapper::toResponseDto).collect(Collectors.toList()));
             dto.setStockedItems(
                     stockedItems.stream().map(item -> {
                         List<ProvisionResponseDto> provisionResponseDtos = item.getStockedItemProvisions().stream()
@@ -181,14 +176,12 @@
             dto.setCreatedBy(storageContract.getCreatedBy());
             dto.setUpdatedAt(storageContract.getUpdatedAt());
             dto.setUpdatedBy(storageContract.getUpdatedBy());
-            dto.setParentContract(storageContract.getParentContract() != null ? StorageContractResponseDto.builder()
-                    .number(storageContract.getParentContract()
-                            .getNumber())
-                            .id(storageContract.getParentContract().getId())
-                    .build() : null);
-            List<StorageContract> annexes = this.storageContractRepository.findByParentContractId(storageContract.getId());
+            List<StorageAnnexe> annexes = this.storageAnnexeRepository.findByStorageContractId(storageContract.getId());
             if(!annexes.isEmpty()){
-                dto.setAnnexes( annexes.stream().map(this::toResponseDto).toList());
+                dto.setAnnexes(annexes.stream().map(storageAnnexe -> StorageAnnexe.builder()
+                        .number(storageAnnexe.getNumber())
+                        .id(storageAnnexe.getId())
+                        .build()).toList());
             }
             return dto;
         }

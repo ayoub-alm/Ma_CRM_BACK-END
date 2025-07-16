@@ -44,8 +44,9 @@ public class StorageNeedService {
     private final StorageNeedStockedItemRepository storageNeedStockedItemRepository;
     private final UnloadingTypeRepository unloadingTypeRepository;
     private final StorageOfferRepository storageOfferRepository;
+    private final ProvisionRepository provisionRepository;
 
-    public StorageNeedService(StorageNeedRepository storageNeedRepository, StorageNeedMapper storageNeedMapper, StorageRequirementRepository storageRequirementRepository, StorageNeedRequirementRepository storageNeedRequirementRepository, StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository, StockedItemRepository stockedItemRepository, CustomerRepository customerRepository, DimensionRepository dimensionRepository, StockedItemProvisionRepository stockedItemProvisionRepository, StructureRepository structureRepository, StorageNeedStockedItemRepository storageNeedStockedItemRepository, UnloadingTypeRepository unloadingTypeRepository, StorageOfferRepository storageOfferRepository) {
+    public StorageNeedService(StorageNeedRepository storageNeedRepository, StorageNeedMapper storageNeedMapper, StorageRequirementRepository storageRequirementRepository, StorageNeedRequirementRepository storageNeedRequirementRepository, StorageNeedUnloadingTypeRepository storageNeedUnloadingTypeRepository, StockedItemRepository stockedItemRepository, CustomerRepository customerRepository, DimensionRepository dimensionRepository, StockedItemProvisionRepository stockedItemProvisionRepository, StructureRepository structureRepository, StorageNeedStockedItemRepository storageNeedStockedItemRepository, UnloadingTypeRepository unloadingTypeRepository, StorageOfferRepository storageOfferRepository, ProvisionRepository provisionRepository) {
         this.storageNeedRepository = storageNeedRepository;
         this.storageNeedMapper = storageNeedMapper;
         this.storageRequirementRepository = storageRequirementRepository;
@@ -58,6 +59,7 @@ public class StorageNeedService {
         this.storageNeedStockedItemRepository = storageNeedStockedItemRepository;
         this.unloadingTypeRepository = unloadingTypeRepository;
         this.storageOfferRepository = storageOfferRepository;
+        this.provisionRepository = provisionRepository;
     }
 
     /**
@@ -78,10 +80,10 @@ public class StorageNeedService {
             storageNeed.setCreatedBy(SecurityUtils.getCurrentUser());
             storageNeed.setUpdatedBy(SecurityUtils.getCurrentUser());
             storageNeed.setStatus(StorageNeedStatus.builder().id(1L).build());
-            storageNeed.setNumber("BEN-"+(
-                    String.format("%04d",storageNeedRepository.findByCompanyIdAndDeletedAtIsNull(storageNeedDto.getCompanyId()).size() + 1))
+            storageNeed.setNumber("BEN-" + (
+                    String.format("%04d", storageNeedRepository.findByCompanyIdAndDeletedAtIsNull(storageNeedDto.getCompanyId()).size() + 1))
                     + "/"
-                    + LocalDateTime.now().getYear() );
+                    + LocalDateTime.now().getYear());
             StorageNeed savedStorageNeed = storageNeedRepository.save(storageNeed);
 
             // Process and save StockedItems
@@ -120,7 +122,8 @@ public class StorageNeedService {
                 .volume(stockedItemDto.getLength() * stockedItemDto.getWidth() * stockedItemDto.getHeight())
                 .build());
 
-
+        double storagePrice = this.provisionRepository.findByCompanyIdAndIsStoragePriceIsTrue(savedStorageNeed.getCompany().getId()).getInitPrice();
+        double calculatedPrice = stockedItemDto.getVolume() * storagePrice;
         // Find the related Structure
         Structure structure = structureRepository.findById(stockedItemDto.getStructureId())
                 .orElseThrow(() -> new EntityNotFoundException("Structure not found"));
@@ -141,6 +144,7 @@ public class StorageNeedService {
                 .numberOfPackages(stockedItemDto.getNumberOfPackages())
                 .quantity(stockedItemDto.getQuantity())
                 .temperature(Temperature.builder().id(stockedItemDto.getTemperatureId()).build())
+                .price(calculatedPrice)
                 .build();
 
         // Save StockedItem
@@ -161,7 +165,10 @@ public class StorageNeedService {
         provisions.forEach(provisionDto -> {
             StockedItemProvision provision = StockedItemProvision.builder()
                     .stockedItem(savedStockedItem)
-                    .provision(Provision.builder().id(provisionDto.getId()).build())
+                    .provision(Provision.builder()
+                            .salesPrice(provisionDto.getInitPrice())
+                            .id(provisionDto.getId()).build())
+                    .isStoragePrice(provisionDto.getIsStoragePrice())
                     .build();
             stockedItemProvisionRepository.save(provision);
         });
@@ -241,8 +248,9 @@ public class StorageNeedService {
 
     /**
      * this function allows to add new item to store to storage need
+     *
      * @param stockedItemRequestDto the item to store
-     * @param needId the id that we will add the new item
+     * @param needId                the id that we will add the new item
      * @return {StockedItemResponseDto}
      */
     public StockedItemResponseDto addStockedItemToNeed(StockedItemRequestDto stockedItemRequestDto, Long needId) {
@@ -258,8 +266,6 @@ public class StorageNeedService {
             // Vérifier que stockedItem.getStockedItemProvisions() n'est pas null
             List<StockedItemProvision> stockedItemProvisions = Optional.ofNullable(stockedItem.getStockedItemProvisions())
                     .orElse(Collections.emptyList());
-
-
 
 
             return StockedItemResponseDto.builder()
@@ -289,7 +295,8 @@ public class StorageNeedService {
 
     /**
      * Supprime un unloading type d'un storage need
-     * @param storageNeedId ID du besoin de stockage
+     *
+     * @param storageNeedId   ID du besoin de stockage
      * @param unloadingTypeId ID du type de déchargement à supprimer
      * @throws EntityNotFoundException si le besoin ou le type de déchargement n'existe pas
      */
@@ -309,7 +316,8 @@ public class StorageNeedService {
 
     /**
      * Ajoute un unloading type à un storage need
-     * @param storageNeedId ID du besoin de stockage
+     *
+     * @param storageNeedId   ID du besoin de stockage
      * @param unloadingTypeId ID du type de déchargement à ajouter
      * @return StorageNeedResponseDto mis à jour
      * @throws EntityNotFoundException si le besoin ou le type de déchargement n'existe pas
@@ -336,6 +344,7 @@ public class StorageNeedService {
 
     /**
      * Supprime un requirement d'un storage need
+     *
      * @param storageNeedId ID du besoin de stockage
      * @param requirementId ID de l'exigence à supprimer
      */
@@ -355,6 +364,7 @@ public class StorageNeedService {
 
     /**
      * Ajoute un requirement à un storage need
+     *
      * @param storageNeedId ID du besoin de stockage
      * @param requirementId ID de l'exigence à ajouter
      * @return StorageNeedResponseDto mis à jour
@@ -378,8 +388,10 @@ public class StorageNeedService {
         storageNeedRequirementRepository.save(newRequirement);
         return storageNeedMapper.toResponseDto(storageNeed);
     }
+
     /**
      * Delete a Stocked Item and its provisions from a Storage Need
+     *
      * @param storageNeedId ID of the storage need
      * @param stockedItemId ID of the stocked item to delete
      */
@@ -407,6 +419,7 @@ public class StorageNeedService {
 
     /**
      * this function allows to soft-delete  storageNeed
+     *
      * @param storageNeedId the id of storage Need to Be soft-deleted
      * @return Boolean
      * @throws EntityNotFoundException if storage Need Not Exist
@@ -420,7 +433,8 @@ public class StorageNeedService {
         return true;
     }
 
-    /** check if need has offer
+    /**
+     * check if need has offer
      *
      * @param storageNeedId the storage need id
      * @return boolean

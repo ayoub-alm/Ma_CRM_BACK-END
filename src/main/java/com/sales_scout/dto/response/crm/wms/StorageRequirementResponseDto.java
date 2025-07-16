@@ -13,6 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class StorageRequirementResponseDto {
     private Long id;
+    private Long storageOfferRequirementId;
     private UUID ref;
     private String name;
     private Double initPrice;

@@ -21,4 +21,5 @@ public class ProvisionRequestDto {
     private String notes;
     private Long companyId;
     private Integer order;
+    private Boolean isStoragePrice;
 }

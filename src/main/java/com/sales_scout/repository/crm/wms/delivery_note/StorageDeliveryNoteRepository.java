@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface StorageDeliveryNoteRepository extends JpaRepository<StorageDeliveryNote,Long> {
     List<StorageDeliveryNote> findByStorageContract_CompanyId(Long companyId);
+
+
 }

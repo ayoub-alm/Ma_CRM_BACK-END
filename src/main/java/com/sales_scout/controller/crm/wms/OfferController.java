@@ -2,13 +2,11 @@ package com.sales_scout.controller.crm.wms;
 
 import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 import com.sales_scout.dto.request.create.wms.StorageOfferCreateDto;
-import com.sales_scout.dto.response.crm.wms.CreatedStorageOfferDto;
 import com.sales_scout.dto.response.crm.wms.StockedItemResponseDto;
-import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
 import com.sales_scout.dto.response.crm.wms.StorageOfferResponseDto;
+import com.sales_scout.entity.crm.wms.offer.StorageOfferRequirement;
 import com.sales_scout.entity.crm.wms.offer.StorageOfferUnloadType;
 import com.sales_scout.exception.ResourceNotFoundException;
-import com.sales_scout.repository.crm.wms.offer.StorageOfferUnloadTypeRepository;
 import com.sales_scout.service.crm.wms.offer.StorageOfferService;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
@@ -208,6 +206,18 @@ public class OfferController {
         }
     }
 
+
+    @PutMapping("/update-storage-offer-requirement/{storageOfferRequirementId}")
+    public ResponseEntity<Boolean> updateStorageOfferUnloadingType(
+            @PathVariable Long storageOfferRequirementId,
+            @RequestBody StorageOfferRequirement storageOfferRequirement) throws EntityNotFoundException{
+        try {
+            return ResponseEntity.ok(this.storageOfferService.updateStorageOfferRequirement(storageOfferRequirementId, storageOfferRequirement));
+        }catch (EntityNotFoundException e){
+            throw new EntityNotFoundException();
+        }
+    }
+
     @PutMapping("/update-management-fees/{storageOfferId}")
     public ResponseEntity<StorageOfferResponseDto> updateManagementFees(
             @PathVariable Long storageOfferId,
@@ -238,6 +248,26 @@ public class OfferController {
         try {
             StorageOfferResponseDto updatedOffer =
                     storageOfferService.updateStorageOfferNote(storageOfferId, note);
+            return ResponseEntity.ok(updatedOffer);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Storage Offer not found", e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating Note", e);
+        }
+    }
+
+
+    @PutMapping("/update-devise/{storageOfferId}")
+    public ResponseEntity<StorageOfferResponseDto> updateDevise(
+            @PathVariable Long storageOfferId,
+            @RequestBody Map<String, String> requestBody) {
+        String devise = requestBody.get("devise"); // Extract value safely
+        if (devise == null) {
+            throw new IllegalArgumentException("note cannot be null");
+        }
+        try {
+            StorageOfferResponseDto updatedOffer =
+                    storageOfferService.updateStorageOfferDevise(storageOfferId, devise);
             return ResponseEntity.ok(updatedOffer);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Storage Offer not found", e);

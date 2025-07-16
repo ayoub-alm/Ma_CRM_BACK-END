@@ -38,5 +38,7 @@ public class StorageOfferResponseDto extends BaseDto {
     private Double managementFees;
     private Long numberOfReservedPlaces;
     private Double minimumBillingGuaranteed;
+    private Double minimumBillingGuaranteedFixed;
     private Long maxDisCountValue;
+    private String devise;
 }

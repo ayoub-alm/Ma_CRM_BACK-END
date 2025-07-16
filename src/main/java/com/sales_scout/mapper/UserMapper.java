@@ -1,6 +1,7 @@
 package com.sales_scout.mapper;
 
 import com.sales_scout.dto.request.UserRequestDto;
+import com.sales_scout.dto.response.CompanyResponseDto;
 import com.sales_scout.dto.response.RightsResponseDto;
 import com.sales_scout.dto.response.UserResponseDto;
 import com.sales_scout.entity.Right;
@@ -44,6 +45,12 @@ public class UserMapper {
                 .matriculate(userEntity.getMatriculate())
                 .logo(userEntity.getLogo())
                 .rights(rightsResponseDtos)
+                .companies(userEntity.getCompanies().stream().map(company -> {
+                    return CompanyResponseDto.builder()
+                            .id(company.getId())
+                            .name(company.getName())
+                            .build();
+                }).collect(Collectors.toList()))
                 .build();
     }
 

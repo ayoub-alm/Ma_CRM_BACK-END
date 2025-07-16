@@ -16,8 +16,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -53,6 +51,8 @@ public class StorageContract extends BaseEntity {
     private Long duration;
     private int numberOfSku;
     private String pdfUrl;
+    @Builder.Default
+    private boolean automaticRenewal = false;
     // Enum for the reason for storage (TEMPORARY, PERMANENT, SEASONAL)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -68,26 +68,22 @@ public class StorageContract extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "customer_id",nullable = false)
     private Customer customer;
-    @OneToMany(mappedBy = "storageContract", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<StorageContractRequirement> storageContractRequirements;
-    @OneToMany(mappedBy = "storageContract", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<StorageContractUnloadingType> storageContractUnloadingTypes;
+//    @OneToMany(mappedBy = "storageContract", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<StorageAnnexeRequirement> storageContractRequirements;
+//    @OneToMany(mappedBy = "storageContract", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<StorageAnnexeUnloadingType> storageContractUnloadingTypes;
     @ManyToOne
     @JoinColumn(name = "interlocutor_id",nullable = false)
     private Interlocutor interlocutor;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_method_id", nullable = false)
+    @JoinColumn(name = "payment_method_id", nullable = true)
     private PaymentMethod paymentMethod;
     private int paymentDeadline;
-    // Child contracts (annexes)
-    @OneToMany(mappedBy = "parentContract", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<StorageContract> annexes;
+
+    @OneToMany(mappedBy = "storageContract", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<StorageAnnexe> annexes;
 
     @OneToMany(mappedBy = "storageContract", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StorageDeliveryNote> notes;
-    // Parent contract
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_contract_id")
-    private StorageContract parentContract;
 
 }

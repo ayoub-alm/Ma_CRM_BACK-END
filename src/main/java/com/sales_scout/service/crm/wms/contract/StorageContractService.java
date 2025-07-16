@@ -2,18 +2,17 @@ package com.sales_scout.service.crm.wms.contract;
 
 import com.sales_scout.Auth.SecurityUtils;
 import com.sales_scout.dto.request.update.crm.StorageContractUpdateDto;
-import com.sales_scout.dto.response.crm.wms.StorageContractResponseDto;
+import com.sales_scout.dto.response.crm.wms.*;
+import com.sales_scout.entity.crm.wms.StockedItem;
 import com.sales_scout.entity.crm.wms.UnloadingType;
 import com.sales_scout.entity.crm.wms.contract.*;
 import com.sales_scout.entity.crm.wms.offer.*;
 import com.sales_scout.entity.data.PaymentMethod;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.exception.ResourceNotFoundException;
+import com.sales_scout.mapper.ProvisionMapper;
 import com.sales_scout.mapper.wms.StorageContractMapper;
-import com.sales_scout.repository.crm.wms.contract.ContractRequirementRepository;
-import com.sales_scout.repository.crm.wms.contract.ContractStockedItemRepository;
-import com.sales_scout.repository.crm.wms.contract.ContractUnloadingTypeRepository;
-import com.sales_scout.repository.crm.wms.contract.StorageContractRepository;
+import com.sales_scout.repository.crm.wms.contract.*;
 import com.sales_scout.repository.crm.wms.offer.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class StorageContractService {
@@ -35,7 +35,8 @@ public class StorageContractService {
     private final StorageOfferStockedItemRepository storageOfferStockedItemRepository;
     private final StorageOfferUnloadTypeRepository storageOfferUnloadTypeRepository;
     private final StorageOfferPaymentTypeRepository storageOfferPaymentTypeRepository;
-    public StorageContractService(StorageContractRepository storageContractRepository, StorageOfferRepository storageOfferRepository, StorageOfferRequirementRepository storageOfferRequirementRepository, ContractStockedItemRepository contractStockedItemRepository, ContractUnloadingTypeRepository contractUnloadingTypeRepository, ContractRequirementRepository contractRequirementRepository, StorageContractMapper storageContractMapper, StorageOfferStockedItemRepository storageOfferStockedItemRepository, StorageOfferUnloadTypeRepository storageOfferUnloadTypeRepository, StorageOfferPaymentTypeRepository storageOfferPaymentTypeRepository) {
+    private final StorageAnnexeRepository storageAnnexeRepository;
+    public StorageContractService(StorageContractRepository storageContractRepository, StorageOfferRepository storageOfferRepository, StorageOfferRequirementRepository storageOfferRequirementRepository, ContractStockedItemRepository contractStockedItemRepository, ContractUnloadingTypeRepository contractUnloadingTypeRepository, ContractRequirementRepository contractRequirementRepository, StorageContractMapper storageContractMapper, StorageOfferStockedItemRepository storageOfferStockedItemRepository, StorageOfferUnloadTypeRepository storageOfferUnloadTypeRepository, StorageOfferPaymentTypeRepository storageOfferPaymentTypeRepository, StorageAnnexeRepository storageAnnexeRepository) {
         this.storageContractRepository = storageContractRepository;
         this.storageOfferRepository = storageOfferRepository;
         this.storageOfferRequirementRepository = storageOfferRequirementRepository;
@@ -46,6 +47,7 @@ public class StorageContractService {
         this.storageOfferStockedItemRepository = storageOfferStockedItemRepository;
         this.storageOfferUnloadTypeRepository = storageOfferUnloadTypeRepository;
         this.storageOfferPaymentTypeRepository = storageOfferPaymentTypeRepository;
+        this.storageAnnexeRepository = storageAnnexeRepository;
     }
 
 
@@ -60,8 +62,6 @@ public class StorageContractService {
         if (storageOffer.isPresent()){
             Set<StorageOffer> offerSet = new HashSet<>();
             offerSet.add(storageOffer.get());
-            // get select Payment type from offer
-            PaymentMethod paymentMethod = this.storageOfferPaymentTypeRepository.findSelectedPaymentMethodsByStorageOfferId(storageOffer.get().getId()).getFirst();
             // build storage contract from offer and save it
             StorageContract storageContract = StorageContract.builder()
                     .ref(UUID.randomUUID())
@@ -77,7 +77,6 @@ public class StorageContractService {
                     .minimumBillingGuaranteed(storageOffer.get().getMinimumBillingGuaranteed())
                     .managementFees(storageOffer.get().getManagementFees())
                     .numberOfReservedPlaces(storageOffer.get().getNumberOfReservedPlaces())
-                    .paymentMethod(paymentMethod)
                     .paymentDeadline(storageOffer.get().getPaymentDeadline())
                     .liverStatus(storageOffer.get().getLiverStatus())
                     .storageReason(storageOffer.get().getStorageReason())
@@ -89,12 +88,22 @@ public class StorageContractService {
                     .build();
             storageContract.setCreatedBy(SecurityUtils.getCurrentUser());
             StorageContract savedStorageContract =  storageContractRepository.save(storageContract);
+
+            //create Annexe
+            int existingAnnexeCount = storageAnnexeRepository.countByStorageContractId(savedStorageContract.getId());
+
+            StorageAnnexe storageAnnexe = storageAnnexeRepository.save(StorageAnnexe.builder()
+                    .storageContract(savedStorageContract)
+                    .number("ANX" + (existingAnnexeCount + 1) + savedStorageContract.getNumber())
+                    .build());
+
+
             // get stocked item from contract and save it
-            List<StorageContractStockedItem> stockedItems = new ArrayList<StorageContractStockedItem>();
+            List<StorageAnnexeStockedItem> stockedItems = new ArrayList<StorageAnnexeStockedItem>();
             List<StorageOfferStockedItem>  storageOfferStockedItems = this.storageOfferStockedItemRepository.findAllByStorageOfferId(storageOffer.get().getId());
             storageOfferStockedItems.forEach((item) -> {
-                StorageContractStockedItem contractStockedItem = StorageContractStockedItem.builder()
-                        .storageContract(savedStorageContract)
+                StorageAnnexeStockedItem contractStockedItem = StorageAnnexeStockedItem.builder()
+                        .annexe(storageAnnexe)
                         .stockedItem(item.getStockedItem())
                         .ref(UUID.randomUUID())
                         .build();
@@ -102,13 +111,13 @@ public class StorageContractService {
             });
             contractStockedItemRepository.saveAll(stockedItems);
             // Get unloading type from offer and add it to contract with the same value of discount and init price ...
-            List<StorageContractUnloadingType> contractUnloadingTypes = new ArrayList<>();
+            List<StorageAnnexeUnloadingType> contractUnloadingTypes = new ArrayList<>();
             List<StorageOfferUnloadType>  storageOfferUnloadTypes = this.storageOfferUnloadTypeRepository.findAllByStorageOfferId(storageOffer.get().getId());
             storageOfferUnloadTypes.forEach(storageOfferUnloadType -> {
                 contractUnloadingTypes.add(
-                        StorageContractUnloadingType.builder()
+                        StorageAnnexeUnloadingType.builder()
                                 .ref(UUID.randomUUID())
-                                .storageContract(savedStorageContract)
+                                .annexe(storageAnnexe)
                                 .unloadingType(UnloadingType.builder()
                                         .ref(UUID.randomUUID())
                                         .id(storageOfferUnloadType.getUnloadingType().getId())
@@ -128,12 +137,12 @@ public class StorageContractService {
 
             List<StorageOfferRequirement> storageOfferRequirements = this.storageOfferRequirementRepository.findAllByStorageOfferId(storageOffer.get().getId());
             // Get requirement from offer and add it to contract with the same value of discount and init price ...
-            List<StorageContractRequirement> storageContractRequirements = new ArrayList<>();
+            List<StorageAnnexeRequirement> storageContractRequirements = new ArrayList<>();
             storageOfferRequirements.forEach(storageOfferRequirement -> {
                 storageContractRequirements.add(
-                        StorageContractRequirement.builder()
+                        StorageAnnexeRequirement.builder()
                                 .ref(UUID.randomUUID())
-                                .storageContract(savedStorageContract)
+                                .annexe(storageAnnexe)
                                 .requirement(storageOfferRequirement.getRequirement())
                                 .discountType(storageOfferRequirement.getDiscountType())
                                 .discountValue(storageOfferRequirement.getDiscountValue())
@@ -167,37 +176,21 @@ public class StorageContractService {
 
         StorageContract parentContract = storageContractRepository.findById(storageContractId)
                 .orElseThrow(() -> new ResourceNotFoundException("storageContract not Found with Id " + storageContractId, "", ""));
+        int existingAnnexeCount = storageAnnexeRepository.countByStorageContractId(parentContract.getId());
 
-        StorageContract annexContract = StorageContract.builder()
-                .ref(UUID.randomUUID())
-                .number("ANE-" + parentContract.getNumber())
-                .status(StorageContractStatus.builder().id(1L).build())
-                .company(storageOffer.getCompany())
-                .customer(storageOffer.getCustomer())
-                .storageOffers(Set.of(storageOffer))
-                .duration(storageOffer.getDuration())
-                .minimumBillingGuaranteed(storageOffer.getMinimumBillingGuaranteed())
-                .managementFees(storageOffer.getManagementFees())
-                .numberOfReservedPlaces(storageOffer.getNumberOfReservedPlaces())
-//                .paymentMethod(storageOffer.getPaymentMethod())
-                .paymentDeadline(storageOffer.getPaymentDeadline())
-                .liverStatus(storageOffer.getLiverStatus())
-                .storageReason(storageOffer.getStorageReason())
-                .interlocutor(Interlocutor.builder().id(storageOffer.getInterlocutor().getId()).build())
-                .startDate(LocalDate.now())
-                .productType(storageOffer.getProductType())
-                .note(storageOffer.getNote())
-                .parentContract(parentContract)
+        StorageAnnexe storageAnnexe = StorageAnnexe.builder()
+                .number("ANX-" + (existingAnnexeCount + 1) +"-"+ parentContract.getNumber())
+                .storageContract(parentContract)
                 .build();
 
-        annexContract.setCreatedBy(SecurityUtils.getCurrentUser());
+        storageAnnexe.setCreatedBy(SecurityUtils.getCurrentUser());
 
-        StorageContract savedAnnex = storageContractRepository.save(annexContract);
+        StorageAnnexe savedAnnex = storageAnnexeRepository.save(storageAnnexe);
 
         // save stocked items
         List<StorageOfferStockedItem> offerItems = storageOfferStockedItemRepository.findAllByStorageOfferId(storageOfferId);
-        List<StorageContractStockedItem> annexItems = offerItems.stream().map(item -> StorageContractStockedItem.builder()
-                .storageContract(savedAnnex)
+        List<StorageAnnexeStockedItem> annexItems = offerItems.stream().map(item -> StorageAnnexeStockedItem.builder()
+                .annexe(savedAnnex)
                 .stockedItem(item.getStockedItem())
                 .ref(UUID.randomUUID())
                 .build()).toList();
@@ -205,9 +198,9 @@ public class StorageContractService {
 
         // save unloading types
         List<StorageOfferUnloadType> offerUnloadTypes = storageOfferUnloadTypeRepository.findAllByStorageOfferId(storageOfferId);
-        List<StorageContractUnloadingType> annexUnloads = offerUnloadTypes.stream().map(u -> StorageContractUnloadingType.builder()
+        List<StorageAnnexeUnloadingType> annexUnloads = offerUnloadTypes.stream().map(u -> StorageAnnexeUnloadingType.builder()
                 .ref(UUID.randomUUID())
-                .storageContract(savedAnnex)
+                .annexe(savedAnnex)
                 .unloadingType(UnloadingType.builder()
                         .id(u.getUnloadingType().getId())
                         .name(u.getUnloadingType().getName())
@@ -223,9 +216,9 @@ public class StorageContractService {
 
         // save requirements
         List<StorageOfferRequirement> offerReqs = storageOfferRequirementRepository.findAllByStorageOfferId(storageOfferId);
-        List<StorageContractRequirement> annexReqs = offerReqs.stream().map(r -> StorageContractRequirement.builder()
+        List<StorageAnnexeRequirement> annexReqs = offerReqs.stream().map(r -> StorageAnnexeRequirement.builder()
                 .ref(UUID.randomUUID())
-                .storageContract(savedAnnex)
+                .annexe(savedAnnex)
                 .requirement(r.getRequirement())
                 .initPrice(r.getInitPrice())
                 .salesPrice(r.getSalesPrice())
@@ -234,10 +227,7 @@ public class StorageContractService {
                 .build()).toList();
         contractRequirementRepository.saveAll(annexReqs);
 
-        return StorageContractResponseDto.builder()
-                .id(savedAnnex.getId())
-                .ref(savedAnnex.getRef())
-                .build();
+        return storageContractMapper.toResponseDto(parentContract);
     }
 
     /**
@@ -291,6 +281,7 @@ public class StorageContractService {
             storageContract.setNoticePeriod(storageContractUpdateDto.getNoticePeriod());
             storageContract.setStartDate(storageContractUpdateDto.getStartDate());
 
+            storageContract.setAutomaticRenewal(storageContractUpdateDto.getAutomaticRenewal());
             // Compute end date based on duration (in months)
             LocalDate startDate = storageContractUpdateDto.getStartDate();
             Long duration = storageContract.getDuration();
@@ -314,7 +305,12 @@ public class StorageContractService {
 
             storageContract.setDeclaredValueOfStock(declaredValue);
             storageContract.setInsuranceValue(insuranceValue);
+            // update payment infos
+            storageContract.setPaymentMethod(PaymentMethod.builder()
+                    .id(storageContractUpdateDto.getPaymentMethodId()).build());
+            storageContract.setPaymentDeadline(storageContractUpdateDto.getPaymentDeadLine());
 
+            storageContract.setUpdatedBy(SecurityUtils.getCurrentUser());
             // Save and return response
             StorageContract updated = storageContractRepository.save(storageContract);
             return storageContractMapper.toResponseDto(updated);
@@ -351,5 +347,108 @@ public class StorageContractService {
     public List<StorageContractResponseDto> getActivesContractByCustomerId(Long customerId) {
         return storageContractRepository.findActiveContractsByCustomerId(customerId).stream()
                 .map(this.storageContractMapper::toResponseDto).toList();
+    }
+
+    /**
+     * This function allows to update create Storage contract payments infos
+     * @param contractId The contract ID
+     * @param paymentMethodId the selected Payment Method
+     * @param deadline Payment deadLine ( DAYS )
+     * @return {StorageContractResponseDto} updated storage contract
+     */
+    @Transactional
+    public StorageContractResponseDto updateStorageContractPaymentInfos(Long contractId, Long paymentMethodId, int deadline) {
+        StorageContract storageContract = storageContractRepository.findById(contractId)
+                .orElseThrow(() -> new ResourceNotFoundException("Contract not found", "id", contractId.toString()));
+
+        // Set payment info (assuming these fields exist; adjust if needed)
+        storageContract.setPaymentMethod(PaymentMethod.builder().id(paymentMethodId).build());
+        storageContract.setPaymentDeadline(deadline);
+        storageContract.setUpdatedBy(SecurityUtils.getCurrentUser());
+
+        StorageContract updated = storageContractRepository.save(storageContract);
+        return storageContractMapper.toResponseDto(updated);
+    }
+
+    /**
+     * This function allows to get storage Annexe by ID
+     * @param storageAnnexeId the storage Annexe ID
+     * @return {StorageAnnexeResponseDto}
+     */
+    public StorageAnnexeResponseDto getStorageAnnexeById(Long storageAnnexeId) {
+        StorageAnnexe storageAnnexe = this.storageAnnexeRepository.findById(storageAnnexeId)
+                .orElseThrow( ()-> new ResourceNotFoundException("Storage Annexe nout found with id "+ storageAnnexeId, "",""));
+
+        List<StorageRequirementResponseDto> requirements = contractRequirementRepository.findByAnnexeId(storageAnnexe.getId())
+                .stream()
+                .map(storageRequirement -> {
+                    return StorageRequirementResponseDto.builder()
+                            .id(storageRequirement.getRequirement().getId())
+                            .name(storageRequirement.getRequirement().getName())
+                            .ref(storageRequirement.getRequirement().getRef())
+                            .unitOfMeasurement(storageRequirement.getRequirement().getUnitOfMeasurement())
+                            .initPrice(storageRequirement.getRequirement().getInitPrice())
+                            .discountType(storageRequirement.getDiscountType())
+                            .discountValue(storageRequirement.getDiscountValue())
+                            .salesPrice(storageRequirement.getSalesPrice())
+                            .companyId(storageRequirement.getRequirement().getCompany().getId())
+                            .build();
+                })
+                .toList();
+
+        // Get all unloading types
+        List<UnloadingTypeResponseDto> unloadingTypes = contractUnloadingTypeRepository.findByAnnexeId(storageAnnexe.getId())
+                .stream()
+                .map(storageOfferUnloadType -> {
+                    return UnloadingTypeResponseDto.builder()
+                            .id(storageOfferUnloadType.getUnloadingType().getId())
+                            .name(storageOfferUnloadType.getUnloadingType().getName())
+                            .unitOfMeasurement(storageOfferUnloadType.getUnloadingType().getUnitOfMeasurement())
+                            .ref(storageOfferUnloadType.getUnloadingType().getRef())
+                            .initPrice(storageOfferUnloadType.getUnloadingType().getInitPrice())
+                            .discountType(storageOfferUnloadType.getDiscountType())
+                            .discountValue(storageOfferUnloadType.getDiscountValue())
+                            .salesPrice(storageOfferUnloadType.getSalesPrice())
+                            .build();
+                })
+                .toList();
+
+        List<StockedItem> stockedItems = contractStockedItemRepository.findByAnnexeId(storageAnnexe.getId())
+                .stream()
+                .map(StorageAnnexeStockedItem::getStockedItem)
+                .toList();
+
+        return StorageAnnexeResponseDto.builder()
+                .id(storageAnnexe.getId())
+                .number(storageAnnexe.getNumber())
+                .storageContract(this.storageContractMapper.toResponseDto(storageAnnexe.getStorageContract()))
+                .requirements(requirements)
+                .stockedItems(stockedItems.stream().map(item -> {
+                    List<ProvisionResponseDto> provisionResponseDtos = item.getStockedItemProvisions().stream()
+                            .map((prv) -> {
+                                ProvisionResponseDto provisionResponse = ProvisionMapper.toDto(prv.getProvision());
+                                provisionResponse.setSalesPrice(prv.getSalesPrice() != null ? prv.getSalesPrice() : prv.getInitPrice());
+                                provisionResponse.setDiscountValue(prv.getDiscountValue());
+                                provisionResponse.setDiscountType(prv.getDiscountType());
+                                return provisionResponse;
+                            }) // Fixed incorrect forEach usage
+                            .collect(Collectors.toList()); // Ensure proper collection
+
+                    return StockedItemResponseDto.builder()
+                            .ref(item.getRef().toString())
+                            .supportName(item.getSupport().getName())
+                            .isFragile(item.getIsFragile())
+                            .dimension(item.getDimension())
+                            .structureName(item.getStructure().getName())
+                            .stackedLevelName(item.getStackedLevel())
+                            .temperatureName(item.getTemperature().getName())
+                            .provisionResponseDto(provisionResponseDtos)
+                            .uvc(item.getUvc())
+                            .uc(item.getUc())
+                            .weight(item.getWeight())
+                            .build();
+                }).collect(Collectors.toList()))
+                .unloadingTypes(unloadingTypes)
+                .build();
     }
 }

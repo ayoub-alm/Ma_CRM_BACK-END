@@ -1,4 +1,4 @@
-package com.sales_scout.repository.crm.wms;
+package com.sales_scout.repository.crm.wms.delivery_note;
 
 import com.sales_scout.entity.crm.wms.deliveryNote.StorageDeliveryNoteStorageContractStockedItemProvision;
 import org.springframework.data.jpa.repository.JpaRepository;

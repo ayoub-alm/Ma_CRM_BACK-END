@@ -4,9 +4,9 @@ import com.sales_scout.Auth.SecurityUtils;
 import com.sales_scout.dto.request.create.wms.StorageDeliveryNoteCreateDto;
 import com.sales_scout.dto.response.crm.wms.StorageDeliveryNoteResponseDto;
 import com.sales_scout.entity.crm.wms.contract.StorageContract;
-import com.sales_scout.entity.crm.wms.contract.StorageContractRequirement;
-import com.sales_scout.entity.crm.wms.contract.StorageContractStockedItem;
-import com.sales_scout.entity.crm.wms.contract.StorageContractUnloadingType;
+import com.sales_scout.entity.crm.wms.contract.StorageAnnexeRequirement;
+import com.sales_scout.entity.crm.wms.contract.StorageAnnexeStockedItem;
+import com.sales_scout.entity.crm.wms.contract.StorageAnnexeUnloadingType;
 import com.sales_scout.entity.crm.wms.deliveryNote.*;
 import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.mapper.wms.StorageDeliveryNoteMapper;
@@ -14,14 +14,15 @@ import com.sales_scout.repository.crm.wms.contract.ContractRequirementRepository
 import com.sales_scout.repository.crm.wms.contract.ContractStockedItemRepository;
 import com.sales_scout.repository.crm.wms.contract.ContractUnloadingTypeRepository;
 import com.sales_scout.repository.crm.wms.contract.StorageContractRepository;
+import com.sales_scout.repository.crm.wms.delivery_note.DeliveryNoteUpdateRequestRepository;
 import com.sales_scout.repository.crm.wms.delivery_note.StorageDeliveryNoteRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StorageDeliveryNoteService {
@@ -31,14 +32,16 @@ public class StorageDeliveryNoteService {
     private final ContractUnloadingTypeRepository contractUnloadingTypeRepository;
     private final ContractRequirementRepository contractRequirementRepository;
     private final StorageDeliveryNoteMapper storageDeliveryNoteMapper;
+    private final DeliveryNoteUpdateRequestRepository deliveryNoteUpdateRequestRepository;
 
-    public StorageDeliveryNoteService(StorageDeliveryNoteRepository storageDeliveryNoteRepository, StorageContractRepository storageContractRepository, ContractStockedItemRepository contractStockedItemRepository, ContractUnloadingTypeRepository contractUnloadingTypeRepository, ContractRequirementRepository contractRequirementRepository, StorageDeliveryNoteMapper storageDeliveryNoteMapper) {
+    public StorageDeliveryNoteService(StorageDeliveryNoteRepository storageDeliveryNoteRepository, StorageContractRepository storageContractRepository, ContractStockedItemRepository contractStockedItemRepository, ContractUnloadingTypeRepository contractUnloadingTypeRepository, ContractRequirementRepository contractRequirementRepository, StorageDeliveryNoteMapper storageDeliveryNoteMapper, DeliveryNoteUpdateRequestRepository deliveryNoteUpdateRequestRepository) {
         this.storageDeliveryNoteRepository = storageDeliveryNoteRepository;
         this.storageContractRepository = storageContractRepository;
         this.contractStockedItemRepository = contractStockedItemRepository;
         this.contractUnloadingTypeRepository = contractUnloadingTypeRepository;
         this.contractRequirementRepository = contractRequirementRepository;
         this.storageDeliveryNoteMapper = storageDeliveryNoteMapper;
+        this.deliveryNoteUpdateRequestRepository = deliveryNoteUpdateRequestRepository;
     }
 
     /**
@@ -55,8 +58,8 @@ public class StorageDeliveryNoteService {
         List<StorageDeliveryNoteStorageContractRequirement> requirementItems = new ArrayList<>();
 
         // Stocked Items for main contract
-        List<StorageContractStockedItem> contractStockedItems = contractStockedItemRepository.findAllByStorageContractId(storageContract.getId());
-        for (StorageContractStockedItem item : contractStockedItems) {
+        List<StorageAnnexeStockedItem> contractStockedItems = contractStockedItemRepository.findByAnnexeStorageContractId(storageContract.getId());
+        for (StorageAnnexeStockedItem item : contractStockedItems) {
             item.getStockedItem().getStockedItemProvisions().forEach(provision -> {
                 provisionItems.add(StorageDeliveryNoteStorageContractStockedItemProvision.builder()
                         .quantity(0L)
@@ -67,8 +70,8 @@ public class StorageDeliveryNoteService {
         }
 
         // Unloading types for main contract
-        List<StorageContractUnloadingType> unloading = contractUnloadingTypeRepository.findAllByStorageContractId(storageContract.getId());
-        for (StorageContractUnloadingType type : unloading) {
+        List<StorageAnnexeUnloadingType> unloading = contractUnloadingTypeRepository.findAllByAnnexeStorageContractId(storageContract.getId());
+        for (StorageAnnexeUnloadingType type : unloading) {
             unloadingTypes.add(StorageDeliveryNoteStorageContractUnloadingType.builder()
                     .storageContractUnloadingType(type)
                     .quantity(0L)
@@ -76,43 +79,12 @@ public class StorageDeliveryNoteService {
         }
 
         // Requirements for main contract
-        List<StorageContractRequirement> requirements = contractRequirementRepository.findAllByStorageContractId(storageContract.getId());
-        for (StorageContractRequirement req : requirements) {
+        List<StorageAnnexeRequirement> requirements = contractRequirementRepository.findAllByAnnexeStorageContractId(storageContract.getId());
+        for (StorageAnnexeRequirement req : requirements) {
             requirementItems.add(StorageDeliveryNoteStorageContractRequirement.builder()
                     .storageContractRequirement(req)
                     .quantity(0L)
                     .build());
-        }
-
-        // Annexes (children)
-        List<StorageContract> annexes = storageContractRepository.findByParentContractId(storageContract.getId());
-        for (StorageContract annexe : annexes) {
-            List<StorageContractStockedItem> contractStockedItems2 = contractStockedItemRepository.findAllByStorageContractId(annexe.getId());
-            for (StorageContractStockedItem item : contractStockedItems2) {
-                item.getStockedItem().getStockedItemProvisions().forEach(provision -> {
-                    provisionItems.add(StorageDeliveryNoteStorageContractStockedItemProvision.builder()
-                            .quantity(0L)
-                            .storageContractStockedItem(item)
-                            .stockedItemProvision(provision)
-                            .build());
-                });
-            }
-
-            List<StorageContractUnloadingType> unloading2 = contractUnloadingTypeRepository.findAllByStorageContractId(annexe.getId());
-            for (StorageContractUnloadingType type : unloading2) {
-                unloadingTypes.add(StorageDeliveryNoteStorageContractUnloadingType.builder()
-                        .storageContractUnloadingType(type)
-                        .quantity(0L)
-                        .build());
-            }
-
-            List<StorageContractRequirement> requirements2 = contractRequirementRepository.findAllByStorageContractId(annexe.getId());
-            for (StorageContractRequirement req : requirements2) {
-                requirementItems.add(StorageDeliveryNoteStorageContractRequirement.builder()
-                        .storageContractRequirement(req)
-                        .quantity(0L)
-                        .build());
-            }
         }
 
         // Now build the full delivery note with all collections
@@ -227,5 +199,30 @@ public class StorageDeliveryNoteService {
         storageDeliveryNote.setUpdatedBy(SecurityUtils.getCurrentUser());
         // Convert to DTO (you may need to use a mapper or manually map fields)
         return storageDeliveryNoteMapper.toResponse(storageDeliveryNote);
+    }
+
+    /**
+     * This function allows  to add update request to storage delivery note
+     *  AND change the status of storage delivery note to IN MODIFICATION
+     * @param storageDeliveryNoteId
+     * @param note
+     * @return
+     */
+    @Transactional
+    public StorageDeliveryNoteResponseDto createUpdateRequestForDeliveryNote(Long storageDeliveryNoteId, String note) {
+
+        StorageDeliveryNote storageDeliveryNote = storageDeliveryNoteRepository.findById(storageDeliveryNoteId)
+                .orElseThrow(()-> new ResourceNotFoundException("Delivery Note not found with Id"+storageDeliveryNoteMapper,"",""));
+
+        StorageDeliveryNoteUpdateRequest storageDeliveryNoteUpdateRequest = StorageDeliveryNoteUpdateRequest.builder()
+                .storageDeliveryNote(storageDeliveryNote)
+                .status(1L)
+                .note(note)
+                .build();
+        storageDeliveryNoteUpdateRequest.setCreatedBy(SecurityUtils.getCurrentUser());
+        deliveryNoteUpdateRequestRepository.save(storageDeliveryNoteUpdateRequest);
+        storageDeliveryNote.setStatus(StorageDeliveryNoteStatus.builder().id(2L).build());
+        storageDeliveryNoteRepository.save(storageDeliveryNote);
+        return this.storageDeliveryNoteMapper.toResponse(storageDeliveryNote);
     }
 }

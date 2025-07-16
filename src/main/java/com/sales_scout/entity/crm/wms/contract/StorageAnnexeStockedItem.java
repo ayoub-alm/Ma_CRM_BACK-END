@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "storage_contract_stocked_items")
+@Table(name = "storage_annexe_stocked_items")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StorageContractStockedItem {
+public class StorageAnnexeStockedItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,6 +26,6 @@ public class StorageContractStockedItem {
     private StockedItem stockedItem;
 
     @ManyToOne
-    @JoinColumn(name = "contract_id", nullable = false )
-    private StorageContract storageContract;
+    @JoinColumn(name = "annexe_id", nullable = false )
+    private StorageAnnexe annexe;
 }

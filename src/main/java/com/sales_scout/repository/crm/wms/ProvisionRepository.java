@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ProvisionRepository extends JpaRepository<Provision, Long> {
     List<Provision> findAllByCompanyIdAndDeletedAtIsNull(Long companyId);
+    Provision findByCompanyIdAndIsStoragePriceIsTrue(Long companyId);
 }

@@ -26,9 +26,10 @@ public class StockedItemProvision extends BaseEntity {
     private Double salesPrice;
     private Double increaseValue;
     private UUID ref = UUID.randomUUID();
+    private Boolean isStoragePrice;
 
     @ManyToOne
-    @JoinColumn(name = "stocked_item_id", nullable = false)
+    @JoinColumn(name = "stocked_item_id", nullable = false )
     private StockedItem stockedItem;
 
     @ManyToOne

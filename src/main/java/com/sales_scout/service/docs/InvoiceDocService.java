@@ -139,6 +139,7 @@ public class InvoiceDocService {
     private Map<String, String> preparePlaceholders(StorageInvoice invoice) {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("Entreprise", String.valueOf(invoice.getStorageContract().getCompany().getName()));
+        placeholders.put("customer", String.valueOf(invoice.getStorageContract().getCompany().getName()));
         return placeholders;
     }
 

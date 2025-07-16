@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,12 +21,17 @@ public class StorageInvoice extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID ref;
     private String number;
     private Double totalHt;
     private Double tva;
     private Double totalTtc;
+    private LocalDate invoiceDate;
+    private LocalDate dueDate;
+    private LocalDate sendDate;
+    private String sendStatus;
+    private LocalDate returnDate;
+    private String returnStatus;
     @ManyToOne
     @JoinColumn(name = "status_id", referencedColumnName = "id", nullable = true)
     private StorageInvoiceStatus status;

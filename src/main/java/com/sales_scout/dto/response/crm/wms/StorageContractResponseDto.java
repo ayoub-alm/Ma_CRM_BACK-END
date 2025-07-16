@@ -2,6 +2,7 @@ package com.sales_scout.dto.response.crm.wms;
 
 import com.sales_scout.dto.response.InterlocutorResponseDto;
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.crm.wms.contract.StorageAnnexe;
 import com.sales_scout.entity.crm.wms.contract.StorageContract;
 import com.sales_scout.entity.crm.wms.contract.StorageContractStatus;
 import com.sales_scout.entity.data.PaymentMethod;
@@ -49,7 +50,8 @@ public class StorageContractResponseDto extends BaseEntity {
     private Double declaredValueOfStock;
     private Double insuranceValue;
     private String pdfUrl;
+    private boolean automaticRenewal;
     private StorageContractResponseDto parentContract;
-    private List<StorageContractResponseDto> annexes;
+    private List<StorageAnnexe> annexes;
     private StorageOfferResponseDto offer;
 }

@@ -101,6 +101,7 @@ import com.sales_scout.entity.Company;
 import com.sales_scout.entity.crm.wms.contract.*;
 import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interlocutor;
+import com.sales_scout.repository.crm.wms.contract.ContractRequirementRepository;
 import com.sales_scout.repository.crm.wms.contract.ContractStockedItemRepository;
 import com.sales_scout.repository.crm.wms.contract.ContractUnloadingTypeRepository;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -119,19 +120,20 @@ public class ContractAnnexDocService {
 
     private final ContractStockedItemRepository contractStockedItemRepository;
     private final ContractUnloadingTypeRepository contractUnloadingTypeRepository;
-
-    public ContractAnnexDocService(ContractStockedItemRepository contractStockedItemRepository, ContractUnloadingTypeRepository contractUnloadingTypeRepository) {
+    private final ContractRequirementRepository contractRequirementRepository;
+    public ContractAnnexDocService(ContractStockedItemRepository contractStockedItemRepository, ContractUnloadingTypeRepository contractUnloadingTypeRepository, ContractRequirementRepository contractRequirementRepository) {
         this.contractStockedItemRepository = contractStockedItemRepository;
         this.contractUnloadingTypeRepository = contractUnloadingTypeRepository;
+        this.contractRequirementRepository = contractRequirementRepository;
     }
 
-    public byte[] generateAnnexDocx(StorageContract annexContract) throws IOException {
+    public byte[] generateAnnexDocx(StorageAnnexe storageAnnexe) throws IOException {
         try (
                 InputStream inputStream = new ClassPathResource("templates/annexe.docx").getInputStream();
                 XWPFDocument document = new XWPFDocument(inputStream);
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-            Map<String, String> placeholders = preparePlaceholders(annexContract);
+            Map<String, String> placeholders = preparePlaceholders(storageAnnexe);
 
             // Replace all paragraphs, headers, footers
             replacePlaceholdersInDocument(document, placeholders);
@@ -139,9 +141,9 @@ public class ContractAnnexDocService {
             // Fill tables
             List<XWPFTable> tables = document.getTables();
             if (tables.size() >= 3) {
-                fillTable(tables.get(0), extractDepotage(annexContract));
-                fillTable(tables.get(1), extractLogisticsOperations(annexContract));
-                fillTable(tables.get(2), extractValueAddedServices(annexContract));
+                fillTable(tables.get(0), extractDepotage(storageAnnexe));
+                fillTable(tables.get(1), extractLogisticsOperations(storageAnnexe));
+                fillTable(tables.get(2), extractValueAddedServices(storageAnnexe));
             }
 
             this.applyWhiteHeaders(document);
@@ -151,38 +153,39 @@ public class ContractAnnexDocService {
         }
     }
 
-    private Map<String, String> preparePlaceholders(StorageContract contract) {
+    private Map<String, String> preparePlaceholders(StorageAnnexe storageAnnexe) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("company", Optional.ofNullable(contract.getCustomer()).map(Customer::getName).orElse("N/A"));
-        placeholders.put("RC", Optional.ofNullable(contract.getCompany()).map(Company::getRc).orElse("N/A"));
-        placeholders.put("IF", Optional.ofNullable(contract.getCompany()).map(Company::getIfm).orElse("N/A"));
-        placeholders.put("siege_social", Optional.ofNullable(contract.getCustomer()).map(Customer::getHeadOffice).orElse("N/A"));
-        placeholders.put("Representant", Optional.ofNullable(contract.getInterlocutor()).map(Interlocutor::getFullName).orElse("N/A"));
-        placeholders.put("Sa_qualite", Optional.ofNullable(contract.getInterlocutor()).map(Interlocutor::getJobTitle).orElse("N/A"));
-        placeholders.put("Type_de_produit", Optional.ofNullable(contract.getProductType()).orElse("N/A"));
-        placeholders.put("Nombre_de_SKU", Optional.of(contract.getNumberOfSku()).map(String::valueOf).orElse("0"));
-        placeholders.put("Duree_de_stockage", Optional.ofNullable(contract.getDuration()).map(String::valueOf).orElse("0"));
-        placeholders.put("Raison_de_stockage", Optional.ofNullable(contract.getStorageReason()).map(Enum::name).orElse("N/A"));
-        placeholders.put("Livre", Optional.ofNullable(contract.getLiverStatus()).map(Enum::name).orElse("N/A"));
-        placeholders.put("Delais_de_paiement", Optional.of(contract.getPaymentDeadline()).map(String::valueOf).orElse("N/A"));
-        placeholders.put("Date_effet", Optional.ofNullable(contract.getStartDate()).map(formatter::format).orElse("N/A"));
-        placeholders.put("Date_echeance", Optional.ofNullable(contract.getEndDate()).map(formatter::format).orElse("N/A"));
-        placeholders.put("Date_generer", LocalDate.now().format(formatter));
-        placeholders.put("Facturation_minimale_assuree", String.valueOf(Optional.ofNullable(contract.getMinimumBillingGuaranteed()).orElse(0.0)));
-        placeholders.put("Emplacements_palettes_reserves", String.valueOf(Optional.ofNullable(contract.getNumberOfReservedPlaces()).orElse(0L)));
-        placeholders.put("Valeur_de_frais_de_gestion", String.valueOf(Optional.ofNullable(contract.getManagementFees()).orElse(0.0)));
-        placeholders.put("Assurance_AD_Valorem_en_sus", "0.15%");
-        placeholders.put("Notes", Optional.ofNullable(contract.getNote()).orElse("Aucune"));
-        placeholders.put("parent_contract", Optional.ofNullable(contract.getParentContract().getNumber()).orElse("Aucune"));
-
+//        placeholders.put("company", Optional.ofNullable(contract.getCustomer()).map(Customer::getName).orElse("N/A"));
+//        placeholders.put("RC", Optional.ofNullable(contract.getCompany()).map(Company::getRc).orElse("N/A"));
+//        placeholders.put("IF", Optional.ofNullable(contract.getCompany()).map(Company::getIfm).orElse("N/A"));
+//        placeholders.put("siege_social", Optional.ofNullable(contract.getCustomer()).map(Customer::getHeadOffice).orElse("N/A"));
+//        placeholders.put("Representant", Optional.ofNullable(contract.getInterlocutor()).map(Interlocutor::getFullName).orElse("N/A"));
+//        placeholders.put("Sa_qualite", Optional.ofNullable(contract.getInterlocutor()).map(Interlocutor::getJobTitle).orElse("N/A"));
+//        placeholders.put("Type_de_produit", Optional.ofNullable(contract.getProductType()).orElse("N/A"));
+//        placeholders.put("Nombre_de_SKU", Optional.of(contract.getNumberOfSku()).map(String::valueOf).orElse("0"));
+//        placeholders.put("Duree_de_stockage", Optional.ofNullable(contract.getDuration()).map(String::valueOf).orElse("0"));
+//        placeholders.put("Raison_de_stockage", Optional.ofNullable(contract.getStorageReason()).map(Enum::name).orElse("N/A"));
+//        placeholders.put("Livre", Optional.ofNullable(contract.getLiverStatus()).map(Enum::name).orElse("N/A"));
+//        placeholders.put("Delais_de_paiement", Optional.of(contract.getPaymentDeadline()).map(String::valueOf).orElse("N/A"));
+//        placeholders.put("Date_effet", Optional.ofNullable(contract.getStartDate()).map(formatter::format).orElse("N/A"));
+//        placeholders.put("Date_echeance", Optional.ofNullable(contract.getEndDate()).map(formatter::format).orElse("N/A"));
+        placeholders.put("Date_generer", storageAnnexe.getCreatedAt().format(formatter));
+//        placeholders.put("Facturation_minimale_assuree", String.valueOf(Optional.ofNullable(contract.getMinimumBillingGuaranteed()).orElse(0.0)));
+//        placeholders.put("Emplacements_palettes_reserves", String.valueOf(Optional.ofNullable(contract.getNumberOfReservedPlaces()).orElse(0L)));
+//        placeholders.put("Valeur_de_frais_de_gestion", String.valueOf(Optional.ofNullable(contract.getManagementFees()).orElse(0.0)));
+        placeholders.put("company", Optional.ofNullable(storageAnnexe.getStorageContract().getCustomer().getName()).orElse("N/A"));
+        placeholders.put("Notes", Optional.ofNullable(storageAnnexe.getStorageContract().getNote()).orElse("Aucune"));
+        placeholders.put("parent_contract", Optional.ofNullable(storageAnnexe.getStorageContract().getNumber()).orElse("Aucune"));
+        placeholders.put("company_seller", Optional.ofNullable(storageAnnexe.getStorageContract().getCompany().getName()).orElse("Aucune"));
+        placeholders.put("ref", Optional.ofNullable(storageAnnexe.getNumber()).orElse("Aucune"));
         return placeholders;
     }
 
-    private List<List<String>> extractDepotage(StorageContract contract) {
+    private List<List<String>> extractDepotage(StorageAnnexe storageAnnexe) {
         List<List<String>> rows = new ArrayList<>();
-        for (StorageContractUnloadingType unloadingType : contractUnloadingTypeRepository.findAllByStorageContractId(contract.getId())) {
+        for (StorageAnnexeUnloadingType unloadingType : contractUnloadingTypeRepository.findAllByAnnexeId(storageAnnexe.getId())) {
             rows.add(List.of(
                     unloadingType.getUnloadingType().getName(),
                     unloadingType.getUnloadingType().getUnitOfMeasurement(),
@@ -192,9 +195,9 @@ public class ContractAnnexDocService {
         return rows;
     }
 
-    private List<List<String>> extractLogisticsOperations(StorageContract contract) {
+    private List<List<String>> extractLogisticsOperations(StorageAnnexe storageAnnexe) {
         List<List<String>> rows = new ArrayList<>();
-        for (StorageContractStockedItem item :contractStockedItemRepository.findAllByStorageContractId(contract.getId())) {
+        for (StorageAnnexeStockedItem item :contractStockedItemRepository.findAllByAnnexeId(storageAnnexe.getId())) {
             item.getStockedItem().getStockedItemProvisions().forEach(prv -> {
                 rows.add(List.of(
                         prv.getProvision().getName(),
@@ -206,9 +209,9 @@ public class ContractAnnexDocService {
         return rows;
     }
 
-    private List<List<String>> extractValueAddedServices(StorageContract contract) {
+    private List<List<String>> extractValueAddedServices(StorageAnnexe storageAnnexe) {
         List<List<String>> rows = new ArrayList<>();
-        for (StorageContractRequirement req : contract.getStorageContractRequirements()) {
+        for (StorageAnnexeRequirement req : contractRequirementRepository.findByAnnexeId(storageAnnexe.getId())) {
             rows.add(List.of(
                     req.getRequirement().getName(),
                     req.getRequirement().getUnitOfMeasurement(),

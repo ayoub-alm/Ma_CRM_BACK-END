@@ -7,6 +7,7 @@ import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 
 import com.sales_scout.dto.request.create.wms.StorageOfferCreateDto;
 import com.sales_scout.dto.request.create.wms.StorageRequirementRequestDto;
+import com.sales_scout.dto.request.update.crm.StorageOfferUpdateRequest;
 import com.sales_scout.dto.response.crm.wms.*;
 import com.sales_scout.entity.crm.wms.*;
 import com.sales_scout.entity.crm.wms.need.StorageNeed;
@@ -186,20 +187,22 @@ public class StorageOfferService {
     }
 
     @Transactional
-    public StorageOfferResponseDto updateStorageOffer(StorageOfferCreateDto storageOfferDto) throws Exception {
-        try{
+    public StorageOfferResponseDto updateStorageOffer(Long offerId, StorageOfferUpdateRequest storageOfferUpdateRequest) throws Exception {
 
-            storageOfferDto.setStorageReason(storageOfferDto.getStorageReason());
-            storageOfferDto.setProductType(storageOfferDto.getProductType());
-            StorageOffer storageOffer = storageOfferMapper.toEntity(storageOfferDto);
+            StorageOffer storageOffer = this.storageOfferRepository.findById(offerId)
+                    .orElseThrow(()-> new ResourceNotFoundException("", "", ""));
+
+            storageOffer.setStorageReason(storageOfferUpdateRequest.getStorageReason());
+            storageOffer.setNumberOfSku(storageOfferUpdateRequest.getNumberOfSku());
+            storageOffer.setDuration(storageOfferUpdateRequest.getDuration());
+            storageOffer.setProductType(storageOfferUpdateRequest.getProductType());
+            storageOffer.setLiverStatus(storageOfferUpdateRequest.getLiverStatus());
+
+            storageOffer.setUpdatedBy(SecurityUtils.getCurrentUser());
+
             StorageOffer savedStorageOffer = storageOfferRepository.save(storageOffer);
 
-            // Return the mapped response DTO
            return storageOfferMapper.toResponseDto(savedStorageOffer);
-        }catch (Exception e){
-            System.out.println(e.getCause());
-            throw new Exception("data none valide");
-        }
     }
 
 
@@ -951,4 +954,6 @@ public class StorageOfferService {
         storageOffer.setMinimumBillingGuaranteed(minimalBilling.get());
         storageOfferRepository.save(storageOffer);
     }
+
+
 }

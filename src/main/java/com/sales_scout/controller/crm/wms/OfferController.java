@@ -2,6 +2,7 @@ package com.sales_scout.controller.crm.wms;
 
 import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 import com.sales_scout.dto.request.create.wms.StorageOfferCreateDto;
+import com.sales_scout.dto.request.update.crm.StorageOfferUpdateRequest;
 import com.sales_scout.dto.response.crm.wms.StockedItemResponseDto;
 import com.sales_scout.dto.response.crm.wms.StorageOfferResponseDto;
 import com.sales_scout.entity.crm.wms.offer.StorageOfferRequirement;
@@ -79,15 +80,15 @@ public class OfferController {
         }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<StorageOfferResponseDto> updateStorageOffer(@RequestBody StorageOfferCreateDto storageOfferCreateDto) throws Exception, ResourceNotFoundException {
-        try {
-            return ResponseEntity.ok(this.storageOfferService.updateStorageOffer(storageOfferCreateDto));
-        }catch (Exception e){
-            log.error(String.valueOf(e.getCause()));
-            throw new ResourceNotFoundException(e.getMessage(),"offer not found",e.getCause());
-        }
-    }
+//    @PutMapping("/update/old")
+//    public ResponseEntity<StorageOfferResponseDto> updateStorageOffer(@RequestBody StorageOfferCreateDto storageOfferCreateDto) throws Exception, ResourceNotFoundException {
+//        try {
+//            return ResponseEntity.ok(this.storageOfferService.updateStorageOffer(storageOfferCreateDto));
+//        }catch (Exception e){
+//            log.error(String.valueOf(e.getCause()));
+//            throw new ResourceNotFoundException(e.getMessage(),"offer not found",e.getCause());
+//        }
+//    }
 
 
     @PostMapping("/add-item-to-need/{storageOfferId}")
@@ -389,6 +390,17 @@ public class OfferController {
         }
     }
 
+    @PutMapping("/update/{storageOfferId}")
+    public ResponseEntity<StorageOfferResponseDto> updateStorageOffer(
+            @RequestBody StorageOfferUpdateRequest storageOfferUpdateRequest, @PathVariable Long storageOfferId
+            ) throws ResourceNotFoundException {
+        try {
+           return ResponseEntity.ok(
+                   this.storageOfferService.updateStorageOffer(storageOfferId, storageOfferUpdateRequest));
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Storage Offer not found", e);
+        }
+    }
 
 //    @DeleteMapping("/delete-provision-from-offer/{storageOfferId}/{provisionId}")
 //    public ResponseEntity<Void> delete(@PathVariable Long storageOfferId, @PathVariable Long provisionId) {

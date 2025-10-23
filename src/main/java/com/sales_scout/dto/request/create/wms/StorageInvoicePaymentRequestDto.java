@@ -9,10 +9,15 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class StorageInvoicePaymentRequestDto {
+    private Long id;
     private String string;
     private String paymentMethod;
     private String ref;
     private Double amount;
     private Long invoiceId;
     private LocalDateTime createdAt;
+    private LocalDateTime receptionDate;
+    private LocalDateTime validationDate;
+    private boolean validationStatus;
+
 }

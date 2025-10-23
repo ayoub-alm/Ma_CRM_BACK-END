@@ -104,7 +104,7 @@ public class OfferDocService {
                 offer.getMinimumBillingGuaranteedFixed() : offer.getMinimumBillingGuaranteed()));
 
         placeholders.put("Emplacements_palettes_reserves", offer.getNumberOfReservedPlaces().toString());
-        placeholders.put("Valeur_de_frais_de_gestion", offer.getManagementFees().toString());
+        placeholders.put("Valeur_de_frais_de_gestion", String.format("%.2f",offer.getManagementFees()));
         placeholders.put("devise", offer.getDevise());
         if (offer.getNote() != null){
             placeholders.put("Notes", !Objects.equals(offer.getNote(), "") ? offer.getNote():"");
@@ -154,7 +154,7 @@ public class OfferDocService {
             data.add(Arrays.asList(
                     storageOfferUnloadType.getUnloadingType().getName(),
                     storageOfferUnloadType.getUnloadingType().getUnitOfMeasurement(),
-                    storageOfferUnloadType.getSalesPrice().toString()));
+                    storageOfferUnloadType.getSalesPrice() > 0 ? String.format("%.2f", storageOfferUnloadType.getSalesPrice()) : "Offert"));
         });
         return data;
     }
@@ -184,6 +184,8 @@ public class OfferDocService {
                         Double price = stockedItemProvision.getSalesPrice();
                         if (price != null && price != 0.0) {
                             salesPrice = String.format("%.2f", price);
+                        }else{
+                            salesPrice = "salesPrice";
                         }
 
                         data.add(Arrays.asList(provisionName + " " + supportName, unitOfMeasurement, salesPrice));
@@ -202,7 +204,7 @@ public class OfferDocService {
         storageOfferRequirements.forEach(StorageOfferRequirement -> {
             data.add(Arrays.asList(StorageOfferRequirement.getRequirement().getName(),
                     StorageOfferRequirement.getRequirement().getUnitOfMeasurement(),
-                    StorageOfferRequirement.getSalesPrice().toString()));
+                    StorageOfferRequirement.getSalesPrice() > 0 ? String.format("%.2f",StorageOfferRequirement.getSalesPrice()) : "Offert"));
        });
        return data;
     }

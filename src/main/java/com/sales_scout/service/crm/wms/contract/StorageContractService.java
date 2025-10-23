@@ -62,6 +62,13 @@ public class StorageContractService {
         if (storageOffer.isPresent()){
             Set<StorageOffer> offerSet = new HashSet<>();
             offerSet.add(storageOffer.get());
+
+            Double minimalBilling = 0D;
+            if (storageOffer.get().getMinimumBillingGuaranteedFixed() != null){
+                minimalBilling = storageOffer.get().getMinimumBillingGuaranteedFixed();
+            }else {
+                minimalBilling =  storageOffer.get().getMinimumBillingGuaranteed();
+            }
             // build storage contract from offer and save it
             StorageContract storageContract = StorageContract.builder()
                     .ref(UUID.randomUUID())
@@ -74,7 +81,7 @@ public class StorageContractService {
                     .customer(storageOffer.get().getCustomer())
                     .storageOffers(offerSet)
                     .duration(storageOffer.get().getDuration())
-                    .minimumBillingGuaranteed(storageOffer.get().getMinimumBillingGuaranteed())
+                    .minimumBillingGuaranteed(minimalBilling)
                     .managementFees(storageOffer.get().getManagementFees())
                     .numberOfReservedPlaces(storageOffer.get().getNumberOfReservedPlaces())
                     .paymentDeadline(storageOffer.get().getPaymentDeadline())
@@ -421,6 +428,7 @@ public class StorageContractService {
         return StorageAnnexeResponseDto.builder()
                 .id(storageAnnexe.getId())
                 .number(storageAnnexe.getNumber())
+                .createdAt(storageAnnexe.getCreatedAt())
                 .storageContract(this.storageContractMapper.toResponseDto(storageAnnexe.getStorageContract()))
                 .requirements(requirements)
                 .stockedItems(stockedItems.stream().map(item -> {

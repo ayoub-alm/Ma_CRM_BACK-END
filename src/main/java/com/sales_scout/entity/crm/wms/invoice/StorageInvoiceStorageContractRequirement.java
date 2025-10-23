@@ -19,7 +19,7 @@ public class StorageInvoiceStorageContractRequirement {
     @JoinColumn(name = "storage_contract_requirement_id")
     private StorageAnnexeRequirement storageContractRequirement;
     @ManyToOne
-    @JoinColumn(name = "storage_delivery_note_id")
+    @JoinColumn(name = "storage_invoice_id")
     private StorageInvoice storageInvoice;
     private Long quantity;
 

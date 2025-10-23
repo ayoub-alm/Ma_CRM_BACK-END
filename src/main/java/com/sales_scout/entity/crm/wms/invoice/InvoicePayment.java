@@ -3,6 +3,7 @@ package com.sales_scout.entity.crm.wms.invoice;
 import com.sales_scout.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "storage_invoice_payments")

@@ -1,6 +1,7 @@
 package com.sales_scout.entity.crm.wms.invoice;
 
 import com.sales_scout.entity.BaseEntity;
+import com.sales_scout.entity.crm.wms.assets.StorageCreditNote;
 import com.sales_scout.entity.crm.wms.contract.StorageContract;
 import com.sales_scout.entity.crm.wms.deliveryNote.StorageDeliveryNote;
 import com.sales_scout.entity.crm.wms.deliveryNote.StorageDeliveryNoteStatus;
@@ -50,4 +51,7 @@ public class StorageInvoice extends BaseEntity {
 
     @OneToMany(mappedBy = "storageInvoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private  List<StorageInvoiceStorageContractRequirement> storageInvoiceStorageContractRequirementList;
+
+    @OneToMany(mappedBy = "storageInvoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private  List<StorageCreditNote> storageCreditNotes;
 }

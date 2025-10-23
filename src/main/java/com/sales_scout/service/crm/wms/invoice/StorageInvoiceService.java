@@ -270,7 +270,7 @@ public class StorageInvoiceService {
             StorageDeliveryNoteUpdateRequest storageDeliveryNoteUpdateRequest = this.deliveryNoteUpdateRequestRepository.findById(requestId)
                     .orElseThrow(()-> new ResourceNotFoundException("Update request Not found with id "+ requestId,"",""));
     
-            storageDeliveryNoteUpdateRequest.setStatus(3L);
+            storageDeliveryNoteUpdateRequest.setStatus(2L);
             this.deliveryNoteUpdateRequestRepository.save(storageDeliveryNoteUpdateRequest);
             return storageInvoiceMapper.toResponse(updated);
         }
@@ -289,5 +289,11 @@ public class StorageInvoiceService {
 
         storageInvoice.setStatus(StorageInvoiceStatus.builder().id(2L).build());
         return  storageInvoiceMapper.toResponse(storageInvoiceRepository.save(storageInvoice));
+    }
+
+    public List<StorageInvoiceResponseDto> getStorageInvoiceByCustomerId(Long customerId) {
+        return storageInvoiceRepository.findAllByStorageContract_customerIdAndDeletedAtIsNull(customerId).stream()
+                 .map(storageInvoiceMapper::toResponse).toList();
+
     }
 }

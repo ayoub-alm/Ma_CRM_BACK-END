@@ -12,6 +12,8 @@ public interface StorageInvoiceRepository extends JpaRepository<StorageInvoice,L
 
     List<StorageInvoice> findAllByStorageContract_companyIdAndDeletedAtIsNull(Long companyId);
 
+    List<StorageInvoice> findAllByStorageContract_customerIdAndDeletedAtIsNull(Long companyId);
+
     Optional<StorageInvoice> findByIdAndDeletedAtIsNull(Long invoiceId);
 
     List<StorageInvoice> findByStorageDeliveryNoteId(Long storageDeliveryNoteId);

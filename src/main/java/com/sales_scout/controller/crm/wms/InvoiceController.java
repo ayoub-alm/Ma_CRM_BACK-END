@@ -123,4 +123,15 @@ public class InvoiceController {
             throw new ResourceNotFoundException("storage invoice not found", e.getMessage(),e.getCause());
         }
     }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<StorageInvoiceResponseDto>> getStorageInvoicesByCustomerId(
+            @PathVariable Long customerId)
+            throws ResourceNotFoundException {
+        try {
+            return ResponseEntity.ok(this.storageInvoiceService.getStorageInvoiceByCustomerId(customerId));
+        }catch (Exception e){
+            throw new ResourceNotFoundException("storage invoice not found", e.getMessage(),e.getCause());
+        }
+    }
 }

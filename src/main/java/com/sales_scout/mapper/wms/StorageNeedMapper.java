@@ -120,7 +120,7 @@ public class StorageNeedMapper {
         dto.setStockedItems(stockedItems.stream().map(StockedItemMapper::toResponseDto).collect(Collectors.toList()));
         dto.setUnloadingTypes(unloadingTypes.stream().map(UnloadingTypeMapper::toResponseDto).collect(Collectors.toList()));
         dto.setRequirements(requirements.stream().map(RequirementMapper::toResponseDto).collect(Collectors.toList()));
-        dto.setInterlocutor(interlocutorMapper.toResponseDto(storageNeed.getInterlocutor()));
+        dto.setInterlocutor(storageNeed.getInterlocutor() != null ? interlocutorMapper.toResponseDto(storageNeed.getInterlocutor()) : null);
         dto.setCreatedAt(storageNeed.getCreatedAt());
         dto.setUpdatedAt(storageNeed.getUpdatedAt());
         dto.setCreatedBy(storageNeed.getCreatedBy() != null ? userMapper.fromEntity(storageNeed.getCreatedBy()) : null);

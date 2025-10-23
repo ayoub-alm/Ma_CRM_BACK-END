@@ -5,11 +5,14 @@ import com.sales_scout.Auth.SecurityUtils;
 import com.sales_scout.dto.request.create.wms.ProvisionRequestDto;
 import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
+import com.sales_scout.dto.request.update.crm.StorageNeedUpdateDto;
 import com.sales_scout.dto.response.crm.wms.*;
 import com.sales_scout.entity.crm.wms.*;
 import com.sales_scout.entity.crm.wms.need.*;
+import com.sales_scout.entity.leads.Customer;
 import com.sales_scout.entity.leads.Interlocutor;
 import com.sales_scout.enums.crm.wms.NeedStatusEnum;
+import com.sales_scout.exception.ResourceNotFoundException;
 import com.sales_scout.mapper.wms.StorageNeedMapper;
 import com.sales_scout.repository.crm.wms.*;
 import com.sales_scout.repository.crm.wms.need.StorageNeedRepository;
@@ -106,6 +109,29 @@ public class StorageNeedService {
             System.out.println(e.getCause());
             throw new Exception("data none valide");
         }
+    }
+
+    /**
+     * this function allows to update storage need global infos
+     * @param storageNeedId the id of storage need to update
+     * @param storageNeedUpdateDto the data to update the storage need
+     * @return {StorageNeedResponseDto} updated storage need dto
+     */
+    public CreatedStorageNeedDto updateStorageNeed(Long storageNeedId, StorageNeedUpdateDto storageNeedUpdateDto){
+        StorageNeed storageNeed = storageNeedRepository.findById(storageNeedId).orElseThrow(() -> new ResourceNotFoundException("", "", ""));
+
+        storageNeed.setStorageReason(storageNeedUpdateDto.getStorageReason());
+        storageNeed.setDuration(storageNeedUpdateDto.getDuration());
+        storageNeed.setLiverStatus(storageNeedUpdateDto.getLiverStatus());
+        storageNeed.setProductType(storageNeedUpdateDto.getProductType());
+        storageNeed.setNumberOfSku(storageNeedUpdateDto.getNumberOfSku());
+        storageNeed.setInterlocutor(Interlocutor.builder().id(storageNeedUpdateDto.getInterlocutorId()).build());
+        storageNeed.setUpdatedBy(SecurityUtils.getCurrentUser());
+        storageNeed.setUpdatedAt(LocalDateTime.now());
+        storageNeed.setCustomer(Customer.builder().id(storageNeedUpdateDto.getCustomerId()).build());
+
+        return storageNeedMapper.createdStorageNeedDto(storageNeedRepository.save(storageNeed));
+//        return storageNeedMapper.toResponseDto(storageNeedRepository.save(storageNeed));
     }
 
     /**

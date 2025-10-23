@@ -1,12 +1,14 @@
 package com.sales_scout.controller.docs;
 
 import com.sales_scout.dto.response.crm.wms.StorageContractResponseDto;
+import com.sales_scout.entity.crm.wms.assets.StorageCreditNote;
 import com.sales_scout.entity.crm.wms.contract.StorageAnnexe;
 import com.sales_scout.entity.crm.wms.contract.StorageContract;
 import com.sales_scout.entity.crm.wms.invoice.StorageInvoice;
 import com.sales_scout.entity.crm.wms.offer.StorageOffer;
 import com.sales_scout.repository.crm.wms.contract.StorageAnnexeRepository;
 import com.sales_scout.repository.crm.wms.contract.StorageContractRepository;
+import com.sales_scout.repository.crm.wms.credit_note.StorageCreditNoteRepository;
 import com.sales_scout.repository.crm.wms.invoice.StorageInvoiceRepository;
 import com.sales_scout.repository.crm.wms.offer.StorageOfferRepository;
 import com.sales_scout.service.docs.*;
@@ -32,7 +34,9 @@ public class PrintController {
     private final StorageInvoiceRepository storageInvoiceRepository;
     private final InvoiceDocService invoiceDocService;
     private final StorageAnnexeRepository storageAnnexeRepository;
-    public PrintController(DocxService docxService, StorageOfferRepository storageOfferRepository, StorageContractRepository storageContractRepository, ContractDocService contractDocService, OfferDocService offerDocService, ContractAnnexDocService contractAnnexDocService, StorageInvoiceRepository storageInvoiceRepository, InvoiceDocService invoiceDocService, StorageAnnexeRepository storageAnnexeRepository) {
+    private final StorageCreditNoteRepository storageCreditNoteRepository;
+    private final StorageCreditNoteDocService creditNoteDocService;
+    public PrintController(DocxService docxService, StorageOfferRepository storageOfferRepository, StorageContractRepository storageContractRepository, ContractDocService contractDocService, OfferDocService offerDocService, ContractAnnexDocService contractAnnexDocService, StorageInvoiceRepository storageInvoiceRepository, InvoiceDocService invoiceDocService, StorageAnnexeRepository storageAnnexeRepository, StorageCreditNoteRepository storageCreditNoteRepository, StorageCreditNoteDocService creditNoteDocService) {
         this.docxService = docxService;
         this.storageOfferRepository = storageOfferRepository;
         this.storageContractRepository = storageContractRepository;
@@ -42,6 +46,8 @@ public class PrintController {
         this.storageInvoiceRepository = storageInvoiceRepository;
         this.invoiceDocService = invoiceDocService;
         this.storageAnnexeRepository = storageAnnexeRepository;
+        this.storageCreditNoteRepository = storageCreditNoteRepository;
+        this.creditNoteDocService = creditNoteDocService;
     }
 
     @GetMapping("/generate-contract/{contract_id}")
@@ -107,6 +113,31 @@ public class PrintController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentDispositionFormData("attachment", "annexe_contract" + contractAnnexeId + ".docx");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(document);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+
+    /**
+     *
+     * @param creditNoteId
+     * @return
+     */
+    @GetMapping("/credit-note/{creditNoteId}")
+    public ResponseEntity<byte[]> generateCreditNoteDoc(@PathVariable Long creditNoteId) {
+        StorageCreditNote creditNote = storageCreditNoteRepository.findById(creditNoteId)
+                .orElseThrow(() -> new RuntimeException("Storage credit note not found"));
+
+        try {
+            byte[] document = creditNoteDocService.generateCreditNoteDoc(creditNote);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "credit_note" + creditNote.getNumber() + ".docx");
 
             return ResponseEntity.ok()
                     .headers(headers)

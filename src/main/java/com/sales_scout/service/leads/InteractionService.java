@@ -109,8 +109,10 @@ public class InteractionService {
         // Validate required fields in InteractionRequestDto
         Objects.requireNonNull(interactionRequestDto, "InteractionRequestDto cannot be null.");
         Objects.requireNonNull(interactionRequestDto.getCustomerId(), "Prospect ID is required.");
-        Optional<Interaction> existInteraction = this.interactionRepository.findById(interactionRequestDto.getId());
-        // Fetch the associated Prospect (Customer)
+        Optional<Interaction> existInteraction = Optional.empty();
+        if (interactionRequestDto.getId() != null){
+            existInteraction = this.interactionRepository.findById(interactionRequestDto.getId());
+        }  // Fetch the associated Prospect (Customer)
         Customer prospect = prospectRepository.findById(interactionRequestDto.getCustomerId())
                 .orElseThrow(() -> new EntityNotFoundException("Prospect not found for ID: " + interactionRequestDto.getCustomerId()));
 
@@ -122,7 +124,7 @@ public class InteractionService {
         }
 
         // Fetch the current user (agent)
-        UserEntity user = authenticationService.getCurrentUser();
+        UserEntity user = SecurityUtils.getCurrentUser();
 
         // Fetch the affected user if provided
         UserEntity affectedTo = null;

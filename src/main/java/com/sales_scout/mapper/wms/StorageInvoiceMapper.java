@@ -99,10 +99,14 @@ public class StorageInvoiceMapper {
         Set<StorageInvoicePaymentRequestDto> storageInvoicePayment = invoicePaymentRepository.findByStorageInvoiceId(invoice.getId()).stream()
                 .map(invoicePayment -> {
                   return   StorageInvoicePaymentRequestDto.builder()
+                          .id(invoicePayment.getPayment().getId())
                           .amount(invoicePayment.getPayment().getAmount())
                           .ref(invoicePayment.getPayment().getRef())
                           .paymentMethod(invoicePayment.getPayment().getPaymentMethod())
                           .createdAt(invoicePayment.getCreatedAt())
+                          .receptionDate(invoicePayment.getPayment().getReceptionDate())
+                          .validationDate(invoicePayment.getPayment().getValidationDate())
+                          .validationStatus(invoicePayment.getPayment().isValidationStatus())
                           .build();
                 }).collect(Collectors.toSet());
         storageInvoiceResponseDto.setSendDate(invoice.getSendDate());
@@ -116,5 +120,12 @@ public class StorageInvoiceMapper {
         storageInvoiceResponseDto.setUpdatedBy(invoice.getUpdatedBy() != null ? userMapper.fromEntity(invoice.getUpdatedBy()): null);
 
         return storageInvoiceResponseDto;
+    }
+
+    public StorageInvoiceResponseDto toLightDto(StorageInvoice invoice) {
+        return StorageInvoiceResponseDto.builder()
+                .id(invoice.getId())
+                .number(invoice.getNumber())
+                .build();
     }
 }

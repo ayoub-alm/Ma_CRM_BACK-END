@@ -376,7 +376,7 @@ public class StorageOfferService {
                 .customer(storageNeed.getCustomer())
                 .numberOfReservedPlaces(numberOfReservedPlaces)
                 .minimumBillingGuaranteed(minimalBilling.get())
-                .devise("Dirham") // default devise
+                .devise("MAD") // default devise
                 .build();
         storageOffer.setCreatedBy(SecurityUtils.getCurrentUser());
         storageOffer.setUpdatedBy(SecurityUtils.getCurrentUser());
@@ -494,17 +494,17 @@ public class StorageOfferService {
 
     /**
      * this function allows to get storage offer by ID
-     * @param storageNeedId the id of the offer
+     * @param storageOfferId the id of the offer
      * @return
      */
-    public StorageOfferResponseDto getStorageOffersById(Long storageNeedId) throws EntityNotFoundException {
+    public StorageOfferResponseDto getStorageOffersById(Long storageOfferId) throws EntityNotFoundException {
         // Fetch all storage needs by company ID
-        Optional<StorageOffer> storageNeed = storageOfferRepository.findByIdAndDeletedAtIsNull(storageNeedId);
-        if (storageNeed.isPresent()) {
-            this.updateMinimalBilling(storageNeed.get());
-            return storageOfferMapper.toResponseDto(storageNeed.get());
+        Optional<StorageOffer> storageOffer = storageOfferRepository.findByIdAndDeletedAtIsNull(storageOfferId);
+        if (storageOffer.isPresent()) {
+            this.updateMinimalBilling(storageOffer.get());
+            return storageOfferMapper.toResponseDto(storageOffer.get());
         }else {
-            throw new EntityNotFoundException("No storage needs found for ID: " + storageNeedId);
+            throw new EntityNotFoundException("No storage needs found for ID: " + storageOfferId);
         }
     }
 
@@ -867,6 +867,12 @@ public class StorageOfferService {
         return storageOfferMapper.toResponseDto(storageOffer);
     }
 
+    /**
+     *
+     * @param storageOfferId
+     * @param selectMethodId
+     * @return
+     */
     public StorageOfferResponseDto updateSelectedPaymentMethod(Long storageOfferId, Long selectMethodId) {
         StorageOffer storageOffer = storageOfferRepository.findById(storageOfferId)
                 .orElseThrow(() -> new EntityNotFoundException("Storage Offer not found"));
@@ -905,10 +911,15 @@ public class StorageOfferService {
         return storageOfferMapper.toResponseDto(storageOfferRepository.save(storageOffer));
     }
 
+    /**
+     * @param storageOfferId
+     * @param numberOfPlaces
+     * @return
+     */
     public StorageOfferResponseDto updateReservedPlaces(Long storageOfferId, Long numberOfPlaces) {
         StorageOffer storageOffer = storageOfferRepository.findById(storageOfferId)
                 .orElseThrow(() -> new EntityNotFoundException("Storage Offer not found"));
-
+        this.updateMinimalBilling(storageOffer);
         storageOffer.setNumberOfReservedPlaces(numberOfPlaces);
         return storageOfferMapper.toResponseDto(storageOfferRepository.save(storageOffer));
     }

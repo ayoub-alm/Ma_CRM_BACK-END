@@ -45,10 +45,10 @@ public class OfferController {
         }
     }
 
-    @GetMapping("/{storageNeedId}")
-    public ResponseEntity<StorageOfferResponseDto> getStoragesOffersById(@PathVariable  Long storageNeedId) throws EntityNotFoundException, Exception {
+    @GetMapping("/{storageOfferId}")
+    public ResponseEntity<StorageOfferResponseDto> getStoragesOffersById(@PathVariable  Long storageOfferId) throws EntityNotFoundException, Exception {
         try {
-            return ResponseEntity.ok(storageOfferService.getStorageOffersById(storageNeedId));
+            return ResponseEntity.ok(storageOfferService.getStorageOffersById(storageOfferId));
         } catch (EntityNotFoundException e) {
            throw new EntityNotFoundException(e.getMessage());
         } catch (Exception e) {

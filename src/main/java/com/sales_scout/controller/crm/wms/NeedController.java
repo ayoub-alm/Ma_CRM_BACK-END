@@ -2,6 +2,7 @@ package com.sales_scout.controller.crm.wms;
 
 import com.sales_scout.dto.request.create.wms.StockedItemRequestDto;
 import com.sales_scout.dto.request.create.wms.StorageNeedCreateDto;
+import com.sales_scout.dto.request.update.crm.StorageNeedUpdateDto;
 import com.sales_scout.dto.response.crm.wms.CreatedStorageNeedDto;
 import com.sales_scout.dto.response.crm.wms.StockedItemResponseDto;
 import com.sales_scout.dto.response.crm.wms.StorageNeedResponseDto;
@@ -25,6 +26,11 @@ public class NeedController {
         this.storageNeedService = storageNeedService;
     }
 
+    /**
+     * This end point allows to get all storage needs by company id
+     * @param companyId the current company id
+     * @return  ResponseEntity<List<StorageNeedResponseDto>> list of Storage need by company id
+     */
     @GetMapping("")
     public ResponseEntity<List<StorageNeedResponseDto>> getStoragesNeedsByCompanyId(@RequestParam Long companyId) {
         try {
@@ -64,6 +70,16 @@ public class NeedController {
                 }
     }
 
+    @PutMapping("/{storageNeedId}")
+    public ResponseEntity<CreatedStorageNeedDto> updateStorageNeed(
+            @RequestBody StorageNeedUpdateDto storageNeedUpdateDto, @PathVariable Long storageNeedId ) throws Exception{
+        try {
+            return ResponseEntity.ok(this.storageNeedService.updateStorageNeed(storageNeedId, storageNeedUpdateDto));
+        }catch (Exception e){
+            log.error(String.valueOf(e.getCause()));
+            return ResponseEntity.status(500).body(null);
+        }
+    }
 
     @DeleteMapping("/{storageNeedId}")
     public ResponseEntity<Boolean> softDeleteStorageNeedById(@PathVariable  Long storageNeedId) throws EntityNotFoundException{

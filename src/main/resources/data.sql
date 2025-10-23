@@ -517,6 +517,17 @@ INSERT INTO `supports` (`id`, `created_at`, `created_by`, `deleted_at`, `updated
 (12, '2025-01-24 10:52:00.000000', NULL, NULL, NULL, NULL,  'Wooden Rack', 0x00000000000000000000000000000000, 2);
 
 
+INSERT INTO `customer_status` (`id`, `created_at`, `deleted_at`, `updated_at`, `background_color`, `color`, `css_class`, `display_order`, `name`, `created_by`, `updated_by`) VALUES
+(1, '2024-11-20 11:30:18', NULL, NULL, '#E3F2FD', '#0D47A1', 'status-new', 1, 'Nouvelle', NULL, NULL),
+(2, '2024-11-20 11:30:18', NULL, NULL, '#C8E6C9', '#1B5E20', 'status-qualified', 2, 'Qualifiée', NULL, NULL),
+(3, '2024-11-20 11:30:18', NULL, NULL, '#FFF3E0', '#E65100', 'status-interested', 3, 'Intéressée', NULL, NULL),
+(4, '2024-11-20 11:30:18', NULL, NULL, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Opportunité', NULL, NULL),
+(5, '2024-11-20 11:30:18', NULL, NULL, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Convertie', NULL, NULL),
+(6, '2024-11-20 11:30:18', NULL, NULL, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Disqualifiée', NULL, NULL),
+(7, '2024-11-20 11:30:18', NULL, NULL, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Perdue', NULL, NULL),
+(8, '2024-11-20 11:30:18', NULL, NULL, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'NRP', NULL, NULL);
+
+
 
 INSERT INTO `storage_need_status` (`id`, `background_color`, `color`, `css_class`, `display_order`, `name`, `ref`) VALUES
 (1, '#E3F2FD', '#0D47A1', 'status-new', 1, 'Nouvelle', 0x00000000000000000000000000000000),

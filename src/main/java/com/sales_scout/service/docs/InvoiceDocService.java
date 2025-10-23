@@ -56,10 +56,11 @@ public class InvoiceDocService {
             }
 
             XWPFParagraph paragraph = row.getCell(0).getParagraphs().get(0);
+            paragraph.setAlignment(ParagraphAlignment.CENTER);
             XWPFRun run = paragraph.createRun();
             run.setText("Facturation sur la facturation minimale.");
             run.setBold(true);
-            run.setFontSize(12);
+            run.setFontSize(11);
         } else {
             List<List<String>> combinedData = new ArrayList<>();
             combinedData.addAll(extractUnloadingTypes(invoice));
@@ -93,19 +94,19 @@ public class InvoiceDocService {
             billingInfo.add(Arrays.asList(
                     "TVA",
                     "20%",
-                    String.valueOf(guaranteedHt),
-                    String.valueOf(tva),
+                    String.format("%.2f",guaranteedHt),
+                    String.format("%.2f",tva),
                     "",
-                    String.valueOf(totalTtc),
+                    String.format("%.2f",totalTtc),
                     totalTtc + " Dhs"
             ));
             fillTable(tables.get(2), billingInfo);
         }else {
             List<List<String>> billingInfo = new ArrayList<>();
             billingInfo.add(Arrays.asList(
-                    "TVA", "20%", String.valueOf(invoice.getTotalHt()),
-                    String.valueOf(invoice.getTva()),
-                    "", String.valueOf(invoice.getTotalTtc())
+                    "TVA", "20%", String.format("%.2f",invoice.getTotalHt()),
+                    String.format("%.2f",invoice.getTva()),
+                    "", String.format("%.2f",invoice.getTotalTtc())
                     , String.valueOf(invoice.getTotalTtc() + "Dhs")
             ));
             fillTable(tables.get(2), billingInfo);
@@ -146,15 +147,16 @@ public class InvoiceDocService {
     private List<List<String>> extractUnloadingTypes(StorageInvoice invoice) {
         List<List<String>> data = new ArrayList<>();
         for (StorageInvoiceStorageContractUnloadingType item : invoice.getStorageInvoiceStorageContractUnloadingTypes()) {
-            data.add(Arrays.asList(
-//                    String.valueOf( item.getRef().toString().length() > 8 ? item.getRef().toString().substring(0, 8) : item.getRef()),
-                    String.valueOf( "DEP"+item.getId()),
-                    item.getStorageContractUnloadingType().getUnloadingType().getName(),
-                    String.valueOf(item.getQuantity()),
-                    String.valueOf(item.getStorageContractUnloadingType().getSalesPrice()),
-                    "",
-                    String.valueOf(item.getTotalHt())
-            ));
+            if (item.getQuantity() > 0){
+                data.add(Arrays.asList(
+                        String.valueOf( "DEP"+item.getId()),
+                        item.getStorageContractUnloadingType().getUnloadingType().getName(),
+                        String.valueOf(item.getQuantity()),
+                        String.format("%.2f",item.getStorageContractUnloadingType().getSalesPrice()),
+                        "",
+                        String.format("%.2f",item.getTotalHt())
+                ));
+            }
         }
         return data;
     }
@@ -162,15 +164,17 @@ public class InvoiceDocService {
     private List<List<String>> extractStockedItemProvisions(StorageInvoice invoice) {
         List<List<String>> data = new ArrayList<>();
         for (StorageInvoiceStorageContractStockedItemProvision item : invoice.getStorageInvoiceStorageContractStockedItemProvisions()) {
-            data.add(Arrays.asList(
-                    String.valueOf("PRV"+item.getId()),
+            if (item.getQuantity() > 0) {
+                data.add(Arrays.asList(
+                        String.valueOf("PRV" + item.getId()),
 //                    String.valueOf( item.getRef().toString().length() > 8 ? item.getRef().toString().substring(0, 8) : item.getRef()),
-                    item.getStockedItemProvision().getProvision().getName().concat(" "+item.getStockedItemProvision().getStockedItem().getSupport().getName()).concat(" "+ item.getStockedItemProvision().getStockedItem().getStructure().getName()),
-                    String.valueOf(item.getQuantity()),
-                    String.valueOf(item.getStockedItemProvision().getSalesPrice()),
-                    "",
-                    String.valueOf(item.getTotalHt())
-            ));
+                        item.getStockedItemProvision().getProvision().getName().concat(" " + item.getStockedItemProvision().getStockedItem().getSupport().getName()).concat(" " + item.getStockedItemProvision().getStockedItem().getStructure().getName()),
+                        String.valueOf(item.getQuantity()),
+                        String.format("%.2f",item.getStockedItemProvision().getSalesPrice()),
+                        "",
+                        String.format("%.2f",item.getTotalHt())
+                ));
+            }
         }
         return data;
     }
@@ -178,16 +182,18 @@ public class InvoiceDocService {
     private List<List<String>> extractRequirements(StorageInvoice invoice) {
         List<List<String>> data = new ArrayList<>();
         for (StorageInvoiceStorageContractRequirement item : invoice.getStorageInvoiceStorageContractRequirementList()) {
-            data.add(Arrays.asList(
-                    String.valueOf("RQ"+item.getId()),
+            if (item.getQuantity() > 0) {
+                data.add(Arrays.asList(
+                        String.valueOf("RQ" + item.getId()),
 //                    String.valueOf( item.getRef().toString().length() > 8 ? item.getRef().toString().substring(0, 8) : item.getRef()),
-                    item.getStorageContractRequirement().getRequirement().getName(),
-                    String.valueOf(item.getQuantity()),
-                    String.valueOf(item.getStorageContractRequirement().getSalesPrice()),
-                    "",
-                    String.valueOf(item.getTotalHt())
+                        item.getStorageContractRequirement().getRequirement().getName(),
+                        String.valueOf(item.getQuantity()),
+                        String.format("%.2f", item.getStorageContractRequirement().getSalesPrice()),
+                        "",
+                        String.format("%.2f",item.getTotalHt())
 
-            ));
+                ));
+            }
         }
         return data;
     }

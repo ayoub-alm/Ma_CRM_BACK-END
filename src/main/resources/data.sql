@@ -562,3 +562,9 @@ INSERT INTO `storage_invoice_status` (`id`, `background_color`, `color`, `css_cl
 (2, '#C8E6C9', '#1B5E20', 'status-qualified', 2, 'En traitment', 0x00000000000000000000000000000000),
 (3, '#FFF3E0', '#E65100', 'status-interested', 3, 'Validé', 0x00000000000000000000000000000000),
 (4, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Envoye', 0x00000000000000000000000000000000);
+
+     INSERT INTO `storage_credit_note_status` (`id`, `background_color`, `color`, `css_class`, `display_order`, `name`, `ref`) VALUES
+(1, '#E3F2FD', '#0D47A1', 'status-new', 1, 'Nouvelle', 0x00000000000000000000000000000000),
+(2, '#C8E6C9', '#1B5E20', 'status-qualified', 2, 'En traitment', 0x00000000000000000000000000000000),
+(3, '#FFF3E0', '#E65100', 'status-interested', 3, 'Validé', 0x00000000000000000000000000000000),
+(4, '#FFECB3', '#FF6F00', 'status-opportunity', 4, 'Envoye', 0x00000000000000000000000000000000);

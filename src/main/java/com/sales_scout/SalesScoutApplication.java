@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @CrossOrigin
 @SpringBootApplication
-//@EnableJpaAuditing(auditorAwareRef = "auditorAware") // ✅ Required for auditing
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableTransactionManagement
 public class SalesScoutApplication {
 	public static void main(String[] args) {
